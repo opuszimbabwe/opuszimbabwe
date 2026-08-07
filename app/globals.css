@@ -1,0 +1,2 @@
+@tailwind base;@tailwind components;@tailwind utilities;:root{--primary:#E85D2A;--accent:#4258FF;--success:#22C55E;--dark:#1a1a1a;--lavender:#EDE9FE;--fg:#454545;--muted:#F5F5F5;--muted-fg:#6b7280;--border:#e5e7eb}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:#454545;background:#fff}
+@keyframes rise-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
