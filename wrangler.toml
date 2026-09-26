@@ -14,9 +14,8 @@ pages_build_output_dir = "out"
 [[d1_databases]]
 binding = "DB"
 database_name = "opuszim-content"
-# Placeholder for local development. Replace with the real id printed by:
-#   npx wrangler d1 create opuszim-content
-database_id = "00000000-0000-0000-0000-000000000000"
+# Committed so Git-integrated Pages builds bind to the live database.
+database_id = "885cb934-939a-4080-a48f-40901a111cc2"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
