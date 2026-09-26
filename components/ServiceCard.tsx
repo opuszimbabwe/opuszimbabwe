@@ -1,4 +1,65 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-export default function ServiceCard({gradient,title,icon,heading,description,ctaText,ctaHref}:{gradient:string;title:string;icon:any;heading:string;description:string;ctaText:string;ctaHref:string}){const Icon=icon;return <article className="rounded-[26px] overflow-hidden bg-white border border-[#e8e8e8] shadow-[0_4px_20px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_16px_40px_rgba(0,0,0,0.13)] hover:border-primary/20 flex flex-col"><div className="relative h-[200px] flex-shrink-0" style={{background:`linear-gradient(${gradient})`}}><span className="absolute top-4 left-4 text-[.65rem] font-semibold text-white/70 uppercase tracking-[.1em]">{title}</span></div><div className="relative bg-white flex-1 flex flex-col" style={{marginTop:'-48px'}}><div className="absolute inset-0 bg-white" style={{borderTopRightRadius:'52px'}}/><div className="relative z-10" style={{height:'52px'}}><svg className="absolute" style={{top:0,left:0,width:28,height:52}} viewBox="0 0 28 52" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M0,52 L0,28 C0,12 12,0 28,0 L28,52 Z"/></svg><div className="absolute flex items-center justify-center bg-white rounded-full border-[3px] border-[#f0f0f0] shadow-[0_6px_18px_rgba(0,0,0,0.15)]" style={{top:'-52px',left:'28px',width:'80px',height:'80px'}}><div className="w-[62px] h-[62px] rounded-full bg-primary/10 flex items-center justify-center text-primary"><Icon size={26} strokeWidth={1.7}/></div></div><svg className="absolute" style={{top:0,left:108,width:28,height:52}} viewBox="0 0 28 52" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M0,52 L0,0 L28,0 C12,0 0,12 0,28 Z"/></svg></div><div className="relative z-10 px-6 pb-6 pt-2 flex flex-col flex-1"><h3 className="text-[1.05rem] font-bold text-dark">{heading}</h3><p className="text-[.9rem] text-[#6b7280] mt-2 leading-6 flex-1">{description}</p><Link href={ctaHref} className="inline-flex items-center gap-1.5 mt-5 bg-primary hover:bg-dark text-white rounded-full px-4 py-2 text-[.82rem] font-semibold transition-colors duration-200 self-start">{ctaText}<ArrowRight size={13}/></Link></div></div></article>}
+export default function ServiceCard({
+  gradient,
+  title,
+  icon,
+  heading,
+  description,
+  ctaText,
+  ctaHref
+}: {
+  gradient: string;
+  title: string;
+  icon: any;
+  heading: string;
+  description: string;
+  ctaText: string;
+  ctaHref: string
+}) {
+  const Icon = icon;
+
+  // Use light grey for top like pricing card, but keep gradient hint for special cards
+  const isOrangeGradient = gradient.includes('#E85D2A') || gradient.includes('E85D2A');
+  const topBgClass = isOrangeGradient ? 'bg-gradient-to-br from-[#fff0e6] to-[#ffe4cc]' : 'bg-[#f1f1f1]';
+  const topInlineStyle = isOrangeGradient ? {} : {};
+
+  return (
+    <article className="bg-white rounded-[20px] p-2.5 flex flex-col shadow-[0_8px_20px_rgba(0,0,0,0.06)] border border-[#f0f0f0] min-h-[380px] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_16px_40px_rgba(0,0,0,0.10)] hover:border-primary/15 group">
+      {/* Top section like pricing card */}
+      <div className={`${topBgClass} rounded-[14px] p-4 pb-5 relative overflow-hidden`} style={topInlineStyle}>
+        <div className="flex items-start justify-between gap-3">
+          <span className="inline-block bg-white rounded-full px-3 py-1 text-[.62rem] font-semibold uppercase tracking-[.08em] text-dark shadow-sm">
+            {title}
+          </span>
+          <div className="h-9 w-9 rounded-full bg-white shadow-sm flex items-center justify-center text-dark/70 group-hover:text-primary transition-colors flex-shrink-0">
+            <Icon size={16} strokeWidth={1.8} />
+          </div>
+        </div>
+        <h3 className="text-[1.35rem] leading-[1.15] font-bold text-dark mt-8 max-w-[90%] tracking-tight">
+          {heading}
+        </h3>
+      </div>
+
+      {/* Middle content */}
+      <div className="px-1.5 pt-4 flex-1 flex flex-col">
+        <p className="text-[.9rem] text-[#6b7280] leading-[1.65] flex-1">
+          {description}
+        </p>
+
+        {/* CTA with brand gradient red -> orange */}
+        <Link
+          href={ctaHref}
+          className="inline-flex items-center gap-1.5 mt-6 rounded-full px-5 py-2.5 text-[.85rem] font-semibold text-white shadow-[0_4px_12px_rgba(232,93,42,0.25)] transition-all duration-200 hover:shadow-[0_6px_16px_rgba(232,93,42,0.35)] hover:brightness-[1.05] self-start"
+          style={{
+            background: 'linear-gradient(90deg, #E85D2A 0%, #F97316 50%, #F4A226 100%)'
+          }}
+        >
+          {ctaText}
+          <ArrowRight size={14} className="transition-transform group-hover:translate-x-[2px]" />
+        </Link>
+      </div>
+    </article>
+  )
+}
