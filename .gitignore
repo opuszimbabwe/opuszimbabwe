@@ -3,5 +3,8 @@ node_modules
 out
 .env*
 !.env.example
+.dev.vars
+.wrangler
+*.tsbuildinfo
 .DS_Store
 npm-debug.log*

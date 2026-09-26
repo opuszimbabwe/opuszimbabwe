@@ -1,0 +1,13 @@
+name = "opuszimbabwe"
+compatibility_date = "2026-09-01"
+compatibility_flags = [ "nodejs_compat" ]
+pages_build_output_dir = "out"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "opuszim-content"
+database_id = "885cb934-939a-4080-a48f-40901a111cc2"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "opuszim-uploads"

@@ -1,18 +1,8 @@
 import Link from 'next/link';
-import {Globe,LayoutDashboard,Bot,Palette,Server,Plug,ArrowRight,TrendingUp,Settings,Link2} from 'lucide-react';
-import ServiceCard from '@/components/ServiceCard';
+import {Globe,Bot,ArrowRight,TrendingUp,Settings,Link2} from 'lucide-react';
+import ServicesShowcase from '@/components/ServicesShowcase';
 import HomeHero from '@/components/HomeHero';
 import FaqAccordion from '@/components/FaqAccordion';
-
-const services: [string,string,string,string,string,string,string][] = [
-  ['ONLINE PRESENCE','Website Design & Development','Your website is often the first thing a customer sees. We build websites that represent your business professionally, load fast, work on every device, and are ready from day one.','160deg,#1a1a1a,#454545','Globe','web-design','/images/service-web-design.png'],
-  ['BUSINESS SYSTEMS','Software & Systems','Manual processes slow businesses down. We build management systems, platforms and tools that bring your operations into one organised digital environment — built around how your organisation actually works.','160deg,#1a1a1a,#454545','LayoutDashboard','software-development','/images/service-software.jpg'],
-  ['AI & AUTOMATION','AI & Automation','Repetitive tasks are costing you time and money. We build practical AI tools and automated workflows — from WhatsApp chatbots to full business automation — that work quietly in the background so your team doesn\'t have to.','160deg,#1a1a1a,#454545','Bot','ai-automation','/images/service-ai.jpg'],
-  ['BRAND & DESIGN','Graphic Design & Branding','Credibility starts with how you look. We design logos, flyers, social media graphics, brochures and marketing materials that make your business look as professional as the service you provide.','160deg,#E85D2A,#F4A226','Palette','graphic-design','/images/service-graphic.png'],
-  ['DOMAINS & HOSTING','Domain & Hosting','A professional domain, reliable hosting and a business email address are the foundation of any credible digital presence. We handle the setup and keep everything running.','160deg,#454545,#6b7280','Server','domains-hosting','/images/service-hosting.png'],
-  ['INTEGRATIONS','API & Integrations','Your website, payment system, CRM and communication tools should not operate in silos. We connect your platforms so data flows between them, reducing manual work and improving how your business runs.','160deg,#1a1a1a,#6b7280','Plug','api-integrations','/images/service-api.jpg']
-];
-const iconMap:Record<string,any>={Globe,LayoutDashboard,Bot,Palette,Server,Plug};
 const reasons=[
   ['Quality','Professional digital products built with attention to detail, usability and long-term value.'],
   ['Convenience','From websites and domains to payments and support, accessing digital services stays straightforward.'],
@@ -57,11 +47,7 @@ export default function Home(){
       <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">What We Do</p>
       <h2 className="text-[1.7rem] md:text-[2rem] font-bold text-dark mt-3 text-center mx-auto max-w-3xl leading-tight">One team. Every digital capability your organisation needs.</h2>
       <p className="mt-4 text-muted-fg text-center mx-auto max-w-2xl leading-7">From your first online presence to automated systems and connected platforms — everything under one roof, with one team that knows your business.</p>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 text-left">
-        {services.map(([eyebrow,name,description,g,icon,slug,img])=>
-          <ServiceCard key={slug as string} title={eyebrow as string} gradient={g as string} icon={iconMap[icon as string]} heading={name as string} description={description as string} image={img as string} ctaText="Learn more" ctaHref={`/services/${slug}`}/>
-        )}
-      </div>
+      <ServicesShowcase/>
     </section>
 
     <section className="py-20 max-w-5xl mx-auto px-6 text-center">

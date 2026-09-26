@@ -1,8 +1,9 @@
 'use client';
-import Image from 'next/image';
 import Link from 'next/link';
 import {useEffect,useState} from 'react';
 import {ArrowRight} from 'lucide-react';
+import {DEFAULT_SETTINGS} from '@/lib/content';
+import {useSiteContent} from '@/lib/use-site-content';
 
 const services=[
   ['Website Design & Development','/images/hero-website-design.png','/services/web-design'],
@@ -15,15 +16,17 @@ const services=[
 
 export default function HomeHero(){
   const[i,setI]=useState(0);
+  const{content}=useSiteContent();
   useEffect(()=>{
     const t=setInterval(()=>setI(x=>(x+1)%services.length),4000);
     return()=>clearInterval(t)
   },[]);
   const [name,img,href]=services[i];
+  const heroBackground=content?.settings.hero_background||DEFAULT_SETTINGS.hero_background;
   return (
     <section className="min-h-[92vh] bg-dark relative flex items-center overflow-hidden">
       <div className="absolute inset-0">
-        <Image src="/images/hero-bg.jpg" alt="" fill priority className="object-cover"/>
+        <img src={heroBackground} alt="" className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20"/>
       </div>
       <div className="relative max-w-7xl mx-auto px-6 py-20 w-full grid md:grid-cols-[1.1fr_0.9fr] gap-10 items-center">

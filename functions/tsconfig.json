@@ -1,0 +1,7 @@
+{
+  // Used by the Pages Functions bundler (esbuild) for files under functions/.
+  // Keeps Functions compilation independent of the app's root tsconfig target.
+  "compilerOptions": {
+    "target": "es2022"
+  }
+}
