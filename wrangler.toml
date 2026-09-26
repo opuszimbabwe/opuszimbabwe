@@ -1,24 +1,12 @@
-# Cloudflare Pages project config (static export + Pages Functions in ./functions).
-# Local commands (no login needed):
-#   npm run db:migrate:local   # apply migrations to the local D1 database
-#   npm run db:check           # verify schema + seed data locally
-#   npm run build && npm run pages:local   # serve out/ + functions/ locally
-#
-# Production: see docs/ADMIN.md — `npx wrangler login` then create the real
-# D1 database / R2 bucket and replace the database_id below.
-
 name = "opuszimbabwe"
-compatibility_date = "2024-11-01"
+compatibility_date = "2026-09-01"
 compatibility_flags = [ "nodejs_compat" ]
 pages_build_output_dir = "out"
 
 [[d1_databases]]
 binding = "DB"
 database_name = "opuszim-content"
-# Placeholder for local development. Replace with the real id printed by:
-#   npx wrangler d1 create opuszim-content
 database_id = "885cb934-939a-4080-a48f-40901a111cc2"
-migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "MEDIA"
