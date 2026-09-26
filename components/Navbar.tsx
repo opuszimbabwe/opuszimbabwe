@@ -30,14 +30,19 @@ const navItems: NavItem[] = [
   { label: 'Contact', href: '/contact', icon: Mail },
 ]
 
+function cleanPath(path: string) {
+  return path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path
+}
+
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const pathname = usePathname()
 
   const isActive = (item: NavItem) => {
-    if (item.match) return item.match(pathname)
-    return pathname === item.href
+    const current = cleanPath(pathname)
+    if (item.match) return item.match(current)
+    return current === cleanPath(item.href)
   }
 
   const pillClass = 'bg-white rounded-full px-4 py-1.5 shadow-sm font-bold text-dark text-[13px] flex items-center gap-1.5 transition-all'

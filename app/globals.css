@@ -52,6 +52,41 @@ h3 { font-size: 1.15rem; }
   .reveal, .reveal.animated { animation: none; opacity: 1; }
 }
 
+.svc-avatar-ring {
+  position: absolute;
+  z-index: 2;
+  top: -65px;
+  left: 24px;
+  display: grid;
+  width: 130px;
+  height: 130px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.svc-avatar-ring::before,
+.svc-avatar-ring::after {
+  position: absolute;
+  top: 65px;
+  width: 35px;
+  height: 35px;
+  background: #fff;
+  content: '';
+}
+
+.svc-avatar-ring::before {
+  left: -30px;
+  -webkit-mask: radial-gradient(circle at 0 0, transparent 30px, #000 30.5px);
+  mask: radial-gradient(circle at 0 0, transparent 30px, #000 30.5px);
+}
+
+.svc-avatar-ring::after {
+  right: -30px;
+  -webkit-mask: radial-gradient(circle at 100% 0, transparent 30px, #000 30.5px);
+  mask: radial-gradient(circle at 100% 0, transparent 30px, #000 30.5px);
+}
+
 /* Centre section headings globally */
 .section-heading { text-align: center; }
 .section-eyebrow { text-align: center; }
