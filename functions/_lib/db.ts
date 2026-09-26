@@ -34,6 +34,7 @@ export type DbExtras = {
   hero_intro: string;
   hero_cta: string;
   hero_background: string;
+  visual_background: string;
   hero_background_kind: string;
   hero_gradient: string;
   why_items: string;
@@ -103,6 +104,7 @@ function mapExtras(row: DbExtras) {
     hero_intro: row.hero_intro,
     hero_cta: row.hero_cta,
     hero_background: row.hero_background,
+    visual_background: row.visual_background || '',
     hero_background_kind: row.hero_background_kind === 'gradient' ? 'gradient' : 'image',
     hero_gradient: row.hero_gradient,
     why_items: parseJsonUnknown(row.why_items) ?? [],

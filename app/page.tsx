@@ -36,17 +36,27 @@ export default function Home(){
       </div>
     </section>
 
-    {/* What We Do - Monzo-style carousel of admin-managed service hero slides */}
-    <section id="services" className="py-20 max-w-7xl mx-auto px-6 text-center">
-      <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">What We Do</p>
-      <h2 className="text-[1.7rem] md:text-[2rem] font-bold text-dark mt-3 text-center mx-auto max-w-3xl leading-tight">One team. Every digital capability your organisation needs.</h2>
-      <p className="mt-4 text-muted-fg text-center mx-auto max-w-2xl leading-7">From your first online presence to automated systems and connected platforms — everything under one roof, with one team that knows your business.</p>
-      <ServicesShowcase/>
+    {/* Homepage services — all six remain the actual services. */}
+    <section id="services" className="py-20 mx-auto max-w-7xl px-6 text-center">
+      <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em]">What We Do</p>
+      <h2 className="mx-auto mt-3 max-w-3xl text-[1.7rem] font-bold leading-tight text-dark md:text-[2rem]">One team. Every digital capability your organisation needs.</h2>
+      <p className="mx-auto mt-4 max-w-2xl leading-7 text-muted-fg">From your first online presence to automated systems and connected platforms — everything under one roof, with one team that knows your business.</p>
+      <ServicesShowcase
+        serviceIds={['web-design', 'graphic-design', 'domains-hosting']}
+        eyebrow=""
+        heading="Digital Presence"
+        intro=""
+      />
+      <ServicesShowcase
+        serviceIds={['software-development', 'ai-automation', 'api-integrations']}
+        eyebrow=""
+        heading=""
+        intro=""
+      />
     </section>
 
     <section className="py-20 max-w-5xl mx-auto px-6 text-center">
-      <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">What is OPUS?</p>
-      <h2 className="text-3xl font-bold text-dark mt-3 text-center mx-auto">More than digital services. A digital ecosystem for your business.</h2>
+      <h2 className="text-3xl font-bold text-dark mt-3 text-center mx-auto">What is OPUS?</h2>
       <p className="mt-5 text-lg text-center mx-auto max-w-3xl leading-7">OPUS is a digitalisation company helping businesses and organisations build the digital ecosystem around their work. From websites and software to AI, automation, hosting and integrations, we connect the digital pieces so your business can work better.</p>
       <Link href="/services" className="inline-flex text-primary font-semibold mt-6 mx-auto">See What We Do <ArrowRight size={16} className="ml-1"/></Link>
     </section>
@@ -54,7 +64,6 @@ export default function Home(){
     {/* The Opus Approach - CENTRE ALIGNED (admin-managed) */}
     <section className="py-20 bg-[#f8f7fb]">
       <div className="max-w-7xl mx-auto px-6 text-center">
-        <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">The Opus Approach</p>
         <h2 className="text-3xl font-bold text-dark mt-3 text-center mx-auto">Your business is more than one digital tool.</h2>
         <p className="mt-4 max-w-3xl mx-auto text-center text-muted-fg leading-7">A website should not exist separately from your operations. Your digital tools should work together.</p>
         <OpusApproach/>
@@ -88,9 +97,12 @@ export default function Home(){
       <Link href="/faq" className="inline-flex text-primary font-semibold mt-6">See all questions <ArrowRight size={16} className="ml-1"/></Link>
     </section>
 
-    <section className="py-20 bg-dark text-white text-center">
-      <h2 className="text-3xl font-bold">Ready to get your business online properly?</h2>
-      <Link href="/contact" className="inline-flex bg-primary hover:bg-white hover:text-dark text-white rounded-full px-8 py-3.5 font-semibold mt-7 transition-colors">Contact Us</Link>
+    <section className="px-6 py-20">
+      <div className="mx-auto max-w-6xl rounded-[32px] bg-dark px-7 py-16 text-center text-white shadow-[0_16px_45px_rgba(0,0,0,.14)] sm:px-12">
+        <h2 className="mt-3 text-3xl font-bold md:text-5xl">Ready to get your business going?</h2>
+        <p className="mx-auto mt-4 max-w-xl leading-7 text-white/70">Tell us what you need and we will take it from there.</p>
+        <Link href="/contact" className="mt-8 inline-flex rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_8px_20px_rgba(232,93,42,.25)] transition hover:brightness-105" style={{background:'linear-gradient(90deg,#E85D2A 0%,#F97316 52%,#F4A226 100%)'}}>Contact Us</Link>
+      </div>
     </section>
   </main>
 }

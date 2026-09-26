@@ -51,7 +51,7 @@ export default function ServiceHero({
   const href = contactHref(serviceName || eyebrow, domainCta ? '' : undefined);
 
   return (
-    <section className="relative isolate overflow-hidden bg-dark">
+    <section className="relative isolate mx-4 mt-6 overflow-hidden rounded-[36px] bg-dark shadow-[0_16px_45px_rgba(0,0,0,0.14)] sm:mx-6 lg:mx-auto lg:max-w-[1400px]">
       <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={backgroundStyle} />
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/72 to-black/85" />
 
@@ -61,7 +61,8 @@ export default function ServiceHero({
         <p className="mx-auto mt-5 max-w-2xl text-[1.05rem] leading-7 text-white/80">{intro}</p>
         <Link
           href={href}
-          className="mt-8 inline-flex rounded-full bg-primary px-7 py-3.5 font-semibold text-white transition-all hover:brightness-110"
+          className="mt-8 inline-flex rounded-full px-7 py-3.5 font-semibold text-white shadow-[0_8px_20px_rgba(232,93,42,0.25)] transition-all hover:brightness-110"
+          style={{ background: 'linear-gradient(90deg,#E85D2A 0%,#F97316 52%,#F4A226 100%)' }}
         >
           {cta}
         </Link>

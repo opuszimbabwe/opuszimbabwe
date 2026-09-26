@@ -1,6 +1,6 @@
 # Opus Zimbabwe — Admin Dashboard, D1 & R2
 
-The `/admin` dashboard edits public site content stored in **Cloudflare D1**;
+The `/sysadmin` dashboard edits public site content stored in **Cloudflare D1**;
 uploaded images are stored in **Cloudflare R2**. Admin access is protected by
 **Cloudflare Access**, allow-listed to `info.opuszim@gmail.com`.
 
@@ -19,13 +19,13 @@ even if the database or functions are unavailable.
 
 | Piece | Where | Purpose |
 | --- | --- | --- |
-| `/admin` dashboard | `app/admin/page.tsx` + `components/admin/AdminDashboard.tsx` | Six tabs — Services, Pricing, Home, FAQ, Projects, Brand (noindex, not in nav/sitemap) |
+| `/sysadmin` dashboard | `app/sysadmin/page.tsx` + `components/admin/AdminDashboard.tsx` | Six tabs — Services, Pricing, Home, FAQ, Projects, Brand (noindex, not in nav/sitemap) |
 | Public content API | `functions/api/content.ts` | `GET /api/content` — services (incl. per-service extras), pricing, projects, settings |
 | Web app manifest | `functions/api/manifest.ts` | `GET /api/manifest` — `application/manifest+json` using the admin-set icon |
 | Admin APIs | `functions/api/admin/*` | Session, service PATCH (card + hero/why/related), pricing PUT, projects PUT, partners PUT, settings PUT, R2 upload |
 | Image serving | `functions/api/media/[key].ts` | Public immutable serving of R2 uploads |
 | Auth enforcement | `functions/_lib/auth.ts` | Cloudflare Access email allowlist + optional strict JWT verification |
-| D1 schema + seed | `migrations/0001_init.sql`, `migrations/0002_seed.sql`, `migrations/0003_service_extras_projects.sql`, `migrations/0004_partners.sql` | Tables: `services`, `pricing_cards`, `settings`, `service_extras`, `projects`, `partners` |
+| D1 schema + seed | `migrations/0001_init.sql` through `migrations/0005_service_visuals.sql` | Tables: `services`, `pricing_cards`, `settings`, `service_extras`, `projects`, `partners`; `service_extras.visual_background` stores each service page's admin-managed visual/example image |
 | Static fallback | `lib/content.ts` | Exact copy of the original static site content (services, pricing, projects, extras, settings) |
 
 ## Local development (no Cloudflare login required)
@@ -104,14 +104,13 @@ Verify the ID took effect with `npx wrangler d1 list` (it should match the
 npx wrangler d1 migrations apply opuszim-content --remote
 ```
 
-This runs `migrations/0001_init.sql`, `migrations/0002_seed.sql` and
-`migrations/0003_service_extras_projects.sql` (schema + seed content identical
-to the static site, plus service heroes/Why Opus/related links and the projects
-table). Migration 0003 is **additive** — it only creates new tables and
-`INSERT OR IGNORE`s rows, so it is safe on top of the current production data.
-Apply it before or together with deploying the new code: the public site keeps
-rendering its built-in fallback content, but `/api/content` needs the new
-tables.
+This applies all migrations through `0005_service_visuals.sql` (schema + seed
+content identical to the static site, service heroes/Why Opus/related links,
+projects, partners, and the admin-managed visual/example image for every service
+page). Migration 0005 is additive and seeds the existing service images, so it
+is safe on top of the current production data. Apply it before or together with
+deploying the new code: the public site keeps rendering its built-in fallback
+content, but `/api/content` needs the new column.
 
 ### 3. Deploy
 
@@ -124,13 +123,13 @@ tables.
 - **Or direct:** `npx wrangler pages deploy` (uses `pages_build_output_dir`
   from `wrangler.toml`, bindings come from the same file).
 
-### 4. Protect /admin with Cloudflare Access
+### 4. Protect /sysadmin with Cloudflare Access
 
 Cloudflare Zero Trust dashboard (**dash.cloudflare.com** → Zero Trust →
 *Access* → *Applications* → *Add an application* → **Self-hosted**):
 
 1. **Application domain(s):** your production hostname with the paths
-   `/admin*` and `/api/admin*` (add both, or two applications).
+   `/sysadmin*` and `/api/admin*` (add both, or two applications).
    Also add the same paths for the `<project>.pages.dev` hostname so the
    preview URL cannot bypass Access.
    Do **not** protect `/`, `/api/content`, or `/api/media/*` — the public
@@ -216,8 +215,8 @@ Missing or empty settings fall back to the built-in values in
 
 ## Notes
 
-- `/admin` is `noindex`, absent from the navbar and sitemap, and
-  `robots.txt` disallows `/admin/` and `/api/`.
+- `/sysadmin` is `noindex`, absent from the navbar and sitemap, and
+  `robots.txt` disallows `/sysadmin/` and `/api/`.
 - `/api/manifest` is public (the manifest is public site metadata) and is
   generated per request, so an icon change is live as soon as it is saved.
 - Service pages pre-fill the enquiry form: CTAs link to

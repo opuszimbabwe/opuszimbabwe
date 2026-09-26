@@ -3,11 +3,10 @@
 // upgrades to D1 content when /api/content is available.
 
 import Link from 'next/link';
-import { Globe, LayoutDashboard, Bot, Palette, Server, Plug, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { staticServices, ServiceRecord } from '@/lib/content';
+import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
-
-const iconMap: Record<string, any> = { Globe, LayoutDashboard, Bot, Palette, Server, Plug };
 
 export default function ServicesList() {
   const { content } = useSiteContent();
@@ -15,7 +14,7 @@ export default function ServicesList() {
   return (
     <div className="max-w-5xl mx-auto px-6">
       {services.map((s) => {
-        const Icon = iconMap[s.icon] ?? Globe;
+        const Icon = resolveIcon(s.icon);
         return (
           <div key={s.id} className="py-16 border-b border-[#eeeeee] grid md:grid-cols-[2fr_1.6fr] gap-12 items-start">
             <div>
