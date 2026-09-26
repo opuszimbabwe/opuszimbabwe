@@ -95,3 +95,20 @@ h3 { font-size: 1.15rem; }
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Horizontal carousels (Monzo-style service cards): scroll, but hide the bar */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* "Why choose us" scroll reveal — respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .why-body,
+  .why-line {
+    transition: none;
+  }
+}

@@ -1,9 +1,10 @@
-// PATCH /api/admin/services — update fields of one service card
+// PATCH /api/admin/services — update fields of one service card, including its
+// service-page hero (image or gradient), "Why Opus" cards and related links
 // (Cloudflare Access protected). Only the fields present in the request
 // body are updated; omitted fields are left untouched.
 
 import { json, requireAdmin } from '../../_lib/auth';
-import { isUrlPath } from '../../_lib/db';
+import { isGradient, isUrlPath } from '../../_lib/db';
 import { PagesHandler } from '../../_lib/types';
 
 function str(v: unknown, max: number, fallback = ''): string {
@@ -16,7 +17,31 @@ function strArray(v: unknown, maxItems = 40, maxLen = 200): string[] {
   return v.filter((x): x is string => typeof x === 'string').map((x) => x.slice(0, maxLen)).slice(0, maxItems);
 }
 
+function pairs(
+  v: unknown,
+  fields: { key: string; max: number }[],
+  maxItems: number
+): Record<string, string>[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .filter((x): x is Record<string, unknown> => !!x && typeof x === 'object')
+    .slice(0, maxItems)
+    .map((item) => {
+      const out: Record<string, string> = {};
+      for (const field of fields) out[field.key] = str(item[field.key], field.max);
+      return out;
+    })
+    .filter((item) => fields.some((field) => item[field.key].trim()));
+}
+
 const ICONS = new Set(['Globe', 'LayoutDashboard', 'Bot', 'Palette', 'Server', 'Plug']);
+
+const EXTRA_TEXT_FIELDS: { key: string; column: string; max: number }[] = [
+  { key: 'hero_eyebrow', column: 'hero_eyebrow', max: 300 },
+  { key: 'hero_headline', column: 'hero_headline', max: 500 },
+  { key: 'hero_intro', column: 'hero_intro', max: 2000 },
+  { key: 'hero_cta', column: 'hero_cta', max: 200 },
+];
 
 export const onRequestPatch: PagesHandler = async (context) => {
   const auth = await requireAdmin(context);
@@ -87,19 +112,83 @@ export const onRequestPatch: PagesHandler = async (context) => {
     values.push(body.visible === false || body.visible === 0 ? 0 : 1);
   }
 
-  if (sets.length === 0) return json({ error: 'no_fields_to_update' }, 400);
+  // --- service page hero / Why Opus / related links (service_extras) -------
+  const extras = body?.extras && typeof body.extras === 'object' && !Array.isArray(body.extras) ? body.extras : null;
+  const extraSets: string[] = [];
+  const extraValues: unknown[] = [];
 
-  sets.push("updated_at = datetime('now')");
-  values.push(id);
+  if (extras) {
+    for (const field of EXTRA_TEXT_FIELDS) {
+      if (typeof extras[field.key] === 'string') {
+        extraSets.push(`${field.column} = ?`);
+        extraValues.push(str(extras[field.key], field.max));
+      }
+    }
+    if (typeof extras.hero_background === 'string') {
+      const background = str(extras.hero_background, 500);
+      if (background && !isUrlPath(background)) return json({ error: 'invalid_hero_background' }, 400);
+      extraSets.push('hero_background = ?');
+      extraValues.push(background);
+    }
+    if (extras.hero_background_kind !== undefined) {
+      const kind = extras.hero_background_kind === 'gradient' ? 'gradient' : 'image';
+      extraSets.push('hero_background_kind = ?');
+      extraValues.push(kind);
+    }
+    if (typeof extras.hero_gradient === 'string') {
+      if (!isGradient(extras.hero_gradient)) return json({ error: 'invalid_hero_gradient' }, 400);
+      extraSets.push('hero_gradient = ?');
+      extraValues.push(str(extras.hero_gradient, 200).trim());
+    }
+    if (extras.why_items !== undefined) {
+      const items = pairs(extras.why_items, [{ key: 'title', max: 200 }, { key: 'body', max: 600 }], 12);
+      extraSets.push('why_items = ?');
+      extraValues.push(JSON.stringify(items));
+    }
+    if (extras.related_items !== undefined) {
+      const items = pairs(extras.related_items, [{ key: 'label', max: 200 }, { key: 'href', max: 300 }], 12).map(
+        (item) => ({ label: item.label, href: isUrlPath(item.href) ? item.href : '' })
+      );
+      extraSets.push('related_items = ?');
+      extraValues.push(JSON.stringify(items));
+    }
+  }
+
+  const db = context.env.DB;
 
   try {
-    const result = await context.env.DB.prepare(`UPDATE services SET ${sets.join(', ')} WHERE id = ?`)
-      .bind(...values)
-      .run();
+    if (sets.length > 0) {
+      const updateSets = [...sets, "updated_at = datetime('now')"];
+      const result = await db
+        .prepare(`UPDATE services SET ${updateSets.join(', ')} WHERE id = ?`)
+        .bind(...values, id)
+        .run();
+      const changed = (result as any)?.meta?.changes ?? 0;
+      if (!changed) return json({ error: 'service_not_found', id }, 404);
+    }
 
-    const changed = (result as any)?.meta?.changes ?? 0;
-    if (!changed) return json({ error: 'service_not_found', id }, 404);
-    return json({ ok: true, id, updated: sets.length - 1 });
+    if (extraSets.length > 0) {
+      if (sets.length === 0) {
+        // Extras-only save: make sure the service itself exists.
+        const exists = await db.prepare('SELECT 1 AS ok FROM services WHERE id = ?').bind(id).first();
+        if (!exists) return json({ error: 'service_not_found', id }, 404);
+      }
+      const columns = ['service_id', ...extraSets.map((s) => s.split(' = ')[0])];
+      const placeholders = columns.map(() => '?').join(', ');
+      const updates = extraSets.join(', ');
+      // Values are bound twice: once for the INSERT, once for the DO UPDATE set.
+      await db
+        .prepare(
+          `INSERT INTO service_extras (${columns.join(', ')}) VALUES (${placeholders})
+           ON CONFLICT(service_id) DO UPDATE SET ${updates}, updated_at = datetime('now')`
+        )
+        .bind(id, ...extraValues, ...extraValues)
+        .run();
+    }
+
+    if (sets.length === 0 && extraSets.length === 0) return json({ error: 'no_fields_to_update' }, 400);
+
+    return json({ ok: true, id, updated: sets.length, extras_updated: extraSets.length });
   } catch (err) {
     return json({ error: 'database_error' }, 500);
   }

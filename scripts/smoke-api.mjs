@@ -10,6 +10,15 @@ const ACCESS_HEADERS = {
   'Cf-Access-Jwt-Assertion': 'local-smoke-test-token',
 };
 
+const SERVICE_IDS = [
+  'web-design',
+  'software-development',
+  'ai-automation',
+  'graphic-design',
+  'domains-hosting',
+  'api-integrations',
+];
+
 let passed = 0;
 let failed = 0;
 
@@ -227,6 +236,458 @@ async function main() {
     check('missing media key returns 404', res.status === 404);
     const bad = await req('/api/media/../../etc/passwd');
     check('path traversal key rejected', bad.res.status === 404 || bad.res.status === 400);
+  }
+
+  // -------------------------------------------------------------------------
+  // Service page heroes, Why Opus cards and related links (migration 0003)
+  // -------------------------------------------------------------------------
+  console.log('\nService heroes / Why Opus / related:');
+  {
+    const before = await req('/api/content');
+    const extras = before.json?.extras || {};
+    check('extras returned for all 6 services', SERVICE_IDS.every((id) => !!extras[id]), `${Object.keys(extras).length} keys`);
+
+    const original = extras['web-design'];
+    check(
+      'web-design hero + Why Opus + related links seeded',
+      original?.hero_headline === 'A website that represents your business the way it deserves to be represented.' &&
+        original?.hero_background === '/images/hero-website-design.png' &&
+        original?.why_items?.length === 4 &&
+        original?.related_items?.length === 4
+    );
+
+    const { res, json } = await req('/api/admin/services', {
+      method: 'PATCH',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        id: 'web-design',
+        extras: { hero_background_kind: 'gradient', hero_gradient: '135deg,#123456,#abcdef' },
+      }),
+    });
+    check('PATCH hero background (gradient) succeeds', res.status === 200 && json?.ok === true, `extras_updated=${json?.extras_updated}`);
+    const after = await req('/api/content');
+    const changed = after.json?.extras?.['web-design'];
+    check(
+      'gradient hero visible via /api/content',
+      changed?.hero_background_kind === 'gradient' && changed?.hero_gradient === '135deg,#123456,#abcdef'
+    );
+
+    const badGradient = await req('/api/admin/services', {
+      method: 'PATCH',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ id: 'web-design', extras: { hero_gradient: 'url(javascript:alert(1))' } }),
+    });
+    check('invalid hero gradient rejected (400)', badGradient.res.status === 400);
+
+    const badBackground = await req('/api/admin/services', {
+      method: 'PATCH',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ id: 'web-design', extras: { hero_background: 'javascript:alert(1)' } }),
+    });
+    check('unsafe hero background rejected (400)', badBackground.res.status === 400);
+
+    const { res: patchRes } = await req('/api/admin/services', {
+      method: 'PATCH',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        id: 'web-design',
+        extras: {
+          hero_eyebrow: 'SMOKE HERO EYEBROW',
+          why_items: [{ title: 'Smoke reason', body: 'Smoke body' }],
+          related_items: [{ label: 'Smoke link', href: '/services/web-design' }],
+        },
+      }),
+    });
+    check('PATCH hero eyebrow / why / related succeeds', patchRes.status === 200);
+    const afterEdit = await req('/api/content');
+    const edited = afterEdit.json?.extras?.['web-design'];
+    check(
+      'hero eyebrow, Why Opus and related updated',
+      edited?.hero_eyebrow === 'SMOKE HERO EYEBROW' &&
+        edited?.why_items?.length === 1 &&
+        edited?.why_items?.[0]?.title === 'Smoke reason' &&
+        edited?.related_items?.length === 1 &&
+        edited?.related_items?.[0]?.label === 'Smoke link'
+    );
+
+    await req('/api/admin/services', {
+      method: 'PATCH',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ id: 'web-design', extras: original }),
+    });
+    const restored = await req('/api/content');
+    const back = restored.json?.extras?.['web-design'];
+    check(
+      'hero / why / related restored',
+      back?.hero_eyebrow === original.hero_eyebrow &&
+        back?.hero_background_kind === 'image' &&
+        back?.why_items?.length === 4 &&
+        back?.related_items?.length === 4
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Projects (migration 0003): active = link, coming_soon = badge
+  // -------------------------------------------------------------------------
+  console.log('\nProjects:');
+  {
+    const before = await req('/api/content');
+    const seeded = before.json?.projects || [];
+    check(
+      '4 projects from D1 (2 active, 2 coming_soon, badge rows unlinked)',
+      seeded.length === 4 &&
+        seeded.filter((p) => p.status === 'active').length === 2 &&
+        seeded.filter((p) => p.status === 'coming_soon').length === 2 &&
+        seeded.filter((p) => p.status === 'coming_soon').every((p) => p.url === '')
+    );
+
+    const unauth = await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ projects: [] }),
+    });
+    check('projects mutation without Access headers rejected (401)', unauth.res.status === 401);
+
+    const badUrl = await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ projects: [{ id: 'x', name: 'Bad', url: 'javascript:alert(1)', status: 'active' }] }),
+    });
+    check('non-https project URL rejected (400)', badUrl.res.status === 400);
+
+    const noUrl = await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ projects: [{ id: 'x', name: 'No link', url: '', status: 'active' }] }),
+    });
+    check('active project without URL rejected (400)', noUrl.res.status === 400);
+
+    const { res, json } = await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        projects: [
+          { ...seeded[0], description: 'SMOKE EDIT' },
+          { id: '', name: 'Smoke Project', url: 'https://example.com', tag: 'Smoke', location: 'Harare', description: 'Test only', status: 'active', visible: true },
+        ],
+      }),
+    });
+    check('PUT projects (edit + add + remove) succeeds', res.status === 200 && json?.count === 2, `count=${json?.count}`);
+
+    const after = await req('/api/content');
+    const projects = after.json?.projects || [];
+    check(
+      'edited + new project visible via /api/content',
+      projects.length === 2 &&
+        projects.find((p) => p.id === seeded[0].id)?.description === 'SMOKE EDIT' &&
+        projects.some((p) => p.name === 'Smoke Project' && p.status === 'active')
+    );
+
+    await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ projects: seeded }),
+    });
+    const restored = await req('/api/content');
+    check(
+      'projects restored to 4 seeded rows',
+      restored.json?.projects?.length === 4 &&
+        restored.json?.projects?.[0]?.description === seeded[0].description
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Trusted partners (migration 0004) — admin add/edit/remove
+  // -------------------------------------------------------------------------
+  console.log('\nTrusted partners:');
+  {
+    const before = await req('/api/content');
+    const seeded = before.json?.partners || [];
+    check(
+      '4 partners from D1 (names + static logos, one linked)',
+      seeded.length === 4 &&
+        seeded.every((p) => p.name && p.logo?.startsWith('/images/partner-')) &&
+        seeded.filter((p) => p.url?.startsWith('https://')).length === 1
+    );
+
+    const unauth = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ partners: [] }),
+    });
+    check('partners mutation without Access headers rejected (401)', unauth.res.status === 401);
+
+    const badUrl = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: [{ id: 'x', name: 'Bad', logo: '/images/logo.png', url: 'javascript:alert(1)' }] }),
+    });
+    check('non-https partner URL rejected (400)', badUrl.res.status === 400);
+
+    const badLogo = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: [{ id: 'x', name: 'Bad', logo: 'javascript:alert(1)', url: '' }] }),
+    });
+    check('unsafe partner logo rejected (400)', badLogo.res.status === 400);
+
+    const { res, json } = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        partners: [
+          { ...seeded[0], name: 'SMOKE PARTNER' },
+          { id: '', name: 'Smoke Partner', logo: '/images/logo.png', url: 'https://example.com', visible: true },
+        ],
+      }),
+    });
+    check('PUT partners (edit + add + remove) succeeds', res.status === 200 && json?.count === 2, `count=${json?.count}`);
+
+    const after = await req('/api/content');
+    const partners = after.json?.partners || [];
+    check(
+      'edited + new partner visible via /api/content',
+      partners.length === 2 &&
+        partners.some((p) => p.name === 'SMOKE PARTNER') &&
+        partners.some((p) => p.name === 'Smoke Partner' && p.url === 'https://example.com')
+    );
+
+    await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: seeded }),
+    });
+    const restored = await req('/api/content');
+    check(
+      'partners restored to 4 seeded rows',
+      restored.json?.partners?.length === 4 && restored.json?.partners?.[0]?.name === seeded[0].name
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Branding + the admin-served web manifest
+  // -------------------------------------------------------------------------
+  console.log('\nBranding & manifest:');
+  {
+    const before = await req('/api/content');
+    const original = {
+      navbar_logo: before.json?.settings?.navbar_logo,
+      manifest_icon: before.json?.settings?.manifest_icon,
+      socials: before.json?.settings?.footer_socials,
+      cards: before.json?.settings?.contact_cards,
+    };
+
+    const { res } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ navbar_logo: '/images/logo-light.png' }),
+    });
+    const afterLogo = await req('/api/content');
+    check(
+      'PUT navbar_logo succeeds and is visible',
+      res.status === 200 && afterLogo.json?.settings?.navbar_logo === '/images/logo-light.png'
+    );
+
+    const badLogo = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ navbar_logo: 'javascript:alert(1)' }),
+    });
+    check('unsafe navbar logo rejected (400)', badLogo.res.status === 400);
+
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ navbar_logo: original.navbar_logo }),
+    });
+    const restoredLogo = await req('/api/content');
+    check('navbar logo restored', restoredLogo.json?.settings?.navbar_logo === original.navbar_logo);
+
+    const { res: iconRes } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ manifest_icon: '/images/icon-192.png' }),
+    });
+    check('PUT manifest_icon succeeds', iconRes.status === 200);
+
+    const manifest = await req('/api/manifest');
+    check(
+      'GET /api/manifest responds 200 application/manifest+json',
+      manifest.res.status === 200 &&
+        (manifest.res.headers.get('content-type') || '').includes('application/manifest+json')
+    );
+    check(
+      'manifest serves the admin-set icon with site metadata',
+      Array.isArray(manifest.json?.icons) &&
+        manifest.json.icons.some((i) => i.src === '/images/icon-192.png') &&
+        manifest.json.name === 'Opus Zimbabwe — Digital Services for Zimbabwe' &&
+        manifest.json.start_url === '/' &&
+        manifest.json.display === 'standalone'
+    );
+
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ manifest_icon: original.manifest_icon }),
+    });
+    const restoredManifest = await req('/api/manifest');
+    check('manifest icon restored', restoredManifest.json?.icons?.some((i) => i.src === original.manifest_icon));
+
+    const { res: brandRes } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        footer_socials: [{ label: 'Smoke', href: 'https://example.com', icon: 'Globe' }],
+        contact_cards: [{ title: 'Smoke card', line: 'line', note: 'note', href: 'https://example.com', icon: 'Mail' }],
+      }),
+    });
+    const afterBrand = await req('/api/content');
+    check(
+      'PUT footer_socials + contact_cards succeeds and is visible',
+      brandRes.status === 200 &&
+        afterBrand.json?.settings?.footer_socials?.length === 1 &&
+        afterBrand.json?.settings?.footer_socials?.[0]?.label === 'Smoke' &&
+        afterBrand.json?.settings?.contact_cards?.length === 1 &&
+        afterBrand.json?.settings?.contact_cards?.[0]?.title === 'Smoke card'
+    );
+
+    const badSocial = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ footer_socials: [{ label: 'Bad', href: 'javascript:alert(1)', icon: 'Globe' }] }),
+    });
+    check('unsafe social link rejected (400)', badSocial.res.status === 400);
+
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ footer_socials: original.socials, contact_cards: original.cards }),
+    });
+    const restoredBrand = await req('/api/content');
+    check(
+      'footer socials + contact cards restored',
+      restoredBrand.json?.settings?.footer_socials?.length === original.socials.length &&
+        restoredBrand.json?.settings?.contact_cards?.length === original.cards.length
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Home sections (approach, Built for Zimbabwe) and both FAQ lists
+  // -------------------------------------------------------------------------
+  console.log('\nHome sections & FAQ lists:');
+  {
+    const before = await req('/api/content');
+    const original = {
+      approach: before.json?.settings?.approach_items,
+      built: before.json?.settings?.built_for_zimbabwe,
+      faqHome: before.json?.settings?.faq_home,
+      faqPage: before.json?.settings?.faq_page,
+    };
+    check(
+      'home sections seeded (5 approach steps, 3 home FAQs, 8 page FAQs, Built heading)',
+      original.approach?.length === 5 &&
+        original.faqHome?.length === 3 &&
+        original.faqPage?.length === 8 &&
+        Boolean(original.built?.heading)
+    );
+
+    const { res } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        approach_items: [{ title: 'Smoke step', body: 'Smoke body', icon: 'Bot' }],
+        built_for_zimbabwe: { eyebrow: 'Smoke eyebrow', heading: 'Smoke heading', body: 'Smoke body', image: '/images/hero-bg.jpg' },
+      }),
+    });
+    check('PUT approach_items + built_for_zimbabwe succeeds', res.status === 200);
+
+    const after = await req('/api/content');
+    check(
+      'approach + Built for Zimbabwe visible via /api/content',
+      after.json?.settings?.approach_items?.length === 1 &&
+        after.json?.settings?.approach_items?.[0]?.title === 'Smoke step' &&
+        after.json?.settings?.built_for_zimbabwe?.heading === 'Smoke heading'
+    );
+
+    const badBuilt = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        built_for_zimbabwe: { eyebrow: 'x', heading: 'y', body: 'z', image: 'javascript:alert(1)' },
+      }),
+    });
+    check('unsafe Built for Zimbabwe image rejected (400)', badBuilt.res.status === 400);
+
+    const { res: faqRes } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        faq_home: [{ q: 'Smoke home question', a: 'Smoke home answer' }],
+        faq_page: [{ q: 'Smoke page question', a: 'Smoke page answer' }],
+      }),
+    });
+    const afterFaq = await req('/api/content');
+    check(
+      'both FAQ lists save independently',
+      faqRes.status === 200 &&
+        afterFaq.json?.settings?.faq_home?.length === 1 &&
+        afterFaq.json?.settings?.faq_home?.[0]?.q === 'Smoke home question' &&
+        afterFaq.json?.settings?.faq_page?.length === 1 &&
+        afterFaq.json?.settings?.faq_page?.[0]?.q === 'Smoke page question'
+    );
+
+    const badFaq = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ faq_home: 'not-an-array' }),
+    });
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        approach_items: original.approach,
+        built_for_zimbabwe: original.built,
+        faq_home: original.faqHome,
+        faq_page: original.faqPage,
+      }),
+    });
+    const restored = await req('/api/content');
+    check(
+      'non-array FAQ rejected (400) and home/FAQ content restored',
+      badFaq.res.status === 400 &&
+        restored.json?.settings?.approach_items?.length === original.approach.length &&
+        restored.json?.settings?.built_for_zimbabwe?.heading === original.built.heading &&
+        restored.json?.settings?.faq_home?.length === original.faqHome.length &&
+        restored.json?.settings?.faq_page?.length === original.faqPage.length
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Static export renders the new content
+  // -------------------------------------------------------------------------
+  console.log('\nStatic export (new sections):');
+  {
+    const { res, text } = await req('/services/web-design/');
+    check('service page renders its full-bleed hero headline', res.status === 200 && text.includes('A website that represents your business'));
+
+    const projects = await req('/projects/');
+    check(
+      'projects page renders seeded projects (active link + coming soon badge)',
+      projects.res.status === 200 &&
+        projects.text.includes('Great Couples International Trust') &&
+        projects.text.includes('Coming soon')
+    );
+
+    const contact = await req('/contact/?service=Website%20Design%20%26%20Development&domain=example.co.zw');
+    check('contact prefill URL (?service=…&domain=…) responds 200', contact.res.status === 200);
+
+    const home = await req('/');
+    check(
+      'home renders the trusted partner logos + why-choose-us headings',
+      home.text.includes('/images/partner-great-couples.png') &&
+        home.text.includes('Fast, affordable, and built to last') &&
+        home.text.includes('Local Payments')
+    );
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);

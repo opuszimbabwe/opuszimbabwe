@@ -4,6 +4,8 @@ import Image from 'next/image'
 import { Menu, X, Home, LayoutDashboard, Globe, FolderKanban, HelpCircle, Mail } from 'lucide-react'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { DEFAULT_SETTINGS } from '@/lib/content'
+import { useSiteContent } from '@/lib/use-site-content'
 
 const services = [
   ['Website Design & Development', '/services/web-design'],
@@ -38,6 +40,9 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const pathname = usePathname()
+  const { content } = useSiteContent()
+  // Navbar logo is admin-managed (Brand tab in /admin).
+  const logo = content?.settings?.navbar_logo || DEFAULT_SETTINGS.navbar_logo
 
   const isActive = (item: NavItem) => {
     const current = cleanPath(pathname)
@@ -53,7 +58,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" aria-label="Opus Zimbabwe home" className="flex-shrink-0 flex items-center">
-          <Image src="/images/logo.png" alt="Opus Zimbabwe" width={44} height={44} className="h-10 w-auto object-contain" style={{ background: 'transparent' }} />
+          <Image src={logo} alt="Opus Zimbabwe" width={44} height={44} className="h-10 w-auto object-contain" style={{ background: 'transparent' }} />
         </Link>
 
         {/* Center grey pill nav - desktop */}
