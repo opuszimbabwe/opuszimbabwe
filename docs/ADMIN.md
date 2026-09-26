@@ -73,10 +73,23 @@ credentials; never share passwords or tokens with anyone).
 npx wrangler login
 
 npx wrangler d1 create opuszim-content
-# → copy the printed database_id into wrangler.toml (database_id = "...")
+# → copy ONLY the database_id value into the existing database_id line in
+#   wrangler.toml. Keep binding = "DB" — do not paste the snippet's binding
+#   name (it suggests "opuszim_content", but the code reads env.DB).
 
 npx wrangler r2 bucket create opuszim-uploads
 ```
+
+> **R2 not enabled yet?** `r2 bucket create` fails with `code: 10042`
+> ("Please enable R2 through the Cloudflare Dashboard") until R2 is switched
+> on for your account: open **dash.cloudflare.com → R2**, enable it (the free
+> tier is more than enough; Cloudflare may ask for a payment method inside
+> its own dashboard — that's its normal signup flow, handled entirely there),
+> then re-run the command. Local development does not need the remote bucket —
+> `npm run pages:local` uses a simulated local R2.
+
+Verify the ID took effect with `npx wrangler d1 list` (it should match the
+`database_id` in `wrangler.toml`).
 
 ### 2. Apply migrations remotely
 
