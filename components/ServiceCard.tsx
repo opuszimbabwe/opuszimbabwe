@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
@@ -29,12 +28,10 @@ export default function ServiceCard({
   return (
     <article className="group relative isolate overflow-hidden rounded-[40px] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgba(0,0,0,0.13)]">
       <div className="absolute inset-x-0 top-0 h-[350px] overflow-hidden rounded-[40px] bg-[#e9e9e9]">
-        <Image
+        <img
           src={image}
           alt=""
-          fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/55" />
         <span className={`absolute left-6 top-6 rounded-full border border-white/60 bg-white/90 px-3.5 py-1.5 text-[.65rem] font-bold uppercase tracking-[.12em] text-dark shadow-sm backdrop-blur-sm ${isOrangeGradient ? 'ring-1 ring-[#E85D2A]/20' : ''}`}>

@@ -1,6 +1,8 @@
 'use client'
 import {useState} from 'react'
 import Link from 'next/link'
+import {staticPricing} from '@/lib/content'
+import {useSiteContent} from '@/lib/use-site-content'
 
 function Card({
   name,
@@ -77,13 +79,21 @@ function BillingToggle({yearly,setYearly}:{yearly:boolean;setYearly:(v:boolean)=
   )
 }
 
-export function PricingSection({pricing}:{pricing:{name:string;monthlyPrice:string;yearlyPrice:string;features:string[]}[]}){
+export function PricingSection({pricing}:{pricing?:{name:string;monthlyPrice:string;yearlyPrice:string;features:string[]}[]}){
   const[yearly,setYearly]=useState(false);
+  const{content}=useSiteContent();
+  // D1-backed pricing wins when available; otherwise fall back to the
+  // statically provided cards (or the built-in defaults).
+  type LegacyCard={name:string;monthlyPrice:string;yearlyPrice:string;features:string[]};
+  const fallback:LegacyCard[]=pricing??staticPricing.map(p=>({name:p.name,monthlyPrice:p.monthly_price,yearlyPrice:p.yearly_price,features:p.features}));
+  const cards = content && content.pricing.length
+    ? content.pricing.filter(p=>p.visible).map(p=>({key:p.id,name:p.name,monthlyPrice:p.monthly_price,yearlyPrice:p.yearly_price,features:p.features}))
+    : fallback.map((p,i)=>({key:`${p.name}-${i}`,name:p.name,monthlyPrice:p.monthlyPrice,yearlyPrice:p.yearlyPrice,features:p.features}));
   return (
     <div>
       <BillingToggle yearly={yearly} setYearly={setYearly}/>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {pricing.map(p=><Card key={p.name} {...p} yearly={yearly}/>)}
+        {cards.map(p=><Card key={p.key} name={p.name} monthlyPrice={p.monthlyPrice} yearlyPrice={p.yearlyPrice} features={p.features} yearly={yearly}/>)}
       </div>
     </div>
   )

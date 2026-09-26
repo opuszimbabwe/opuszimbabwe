@@ -1,19 +1,26 @@
 # Opus Zimbabwe — Backend Handoff
 
 ## Current phase
-The repository is a static Next.js frontend for Cloudflare Pages. No live payment, domain, database, authentication, admin, or external API calls are connected.
+The public site is a static Next.js export for Cloudflare Pages. An admin
+content layer now exists: `/admin` dashboard (Cloudflare Access protected,
+allow-listed to info.opuszim@gmail.com), Cloudflare D1 for content
+(services, pricing, hero background), and R2 for uploaded images via Pages
+Functions in `functions/`. The public site falls back to baked-in static
+content whenever the API is unavailable. No live payment or domain APIs are
+connected.
+
+Setup and deployment: docs/ADMIN.md.
 
 ## Public routes
 /, /services, /domains, /projects, /faq, /contact, plus the six standalone service pages under /services/.
 
-## Backend phase to be designed
-The future backend should support:
+## Remaining backend work
+The future backend should still add:
 
-- Admin authentication and role-based access
+- Admin authentication and role-based access beyond the single allow-listed admin
 - Private admin deployment at admin.opuszim.co.zw
 - Partner records: logo, name, description, URL, visible, featured, order
 - Project records: name, URL, description, screenshot, thumbnail, visible, featured, order
-- Image uploads using object storage
 - Contact/enquiry submissions
 - Checkout and payment integration after payment requirements are confirmed
 - Domain-registration enquiry workflow
