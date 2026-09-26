@@ -18,7 +18,9 @@ export const metadata = {
     apple: '/images/logo.png',
     shortcut: '/images/favicon-96x96.png',
   },
-  manifest: '/manifest.json',
+  // Served by the Pages Function /api/manifest so the admin-set icon applies
+  // without a rebuild (falls back to the built-in icon if it is unreachable).
+  manifest: '/api/manifest',
 };
 
 export default function Layout({children}:{children:React.ReactNode}){

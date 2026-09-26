@@ -1,2 +1,50 @@
 import Link from 'next/link';
-export default function ServicePage(){return <main className="py-20 max-w-5xl mx-auto px-6"><p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em]">Software & Systems</p><h1 className="text-4xl font-bold text-dark mt-3">Systems that keep work moving.</h1><p className="mt-5 max-w-2xl">Practical digital services designed around how your organisation works. Explore the service and speak with our team about the right next step.</p><div className="grid md:grid-cols-2 gap-6 mt-12">{['Planning and consultation','Design and implementation','Handover and ongoing support'].map(x=><div className="bg-muted rounded-[20px] p-6"><h2 className="font-bold text-dark">{x}</h2><p className="text-sm text-muted-fg mt-2">A clear, outcome-focused approach from first conversation to delivery.</p></div>)}</div><Link href="/contact" className="inline-flex bg-primary text-white rounded-full px-6 py-3 font-semibold mt-10">Start a Project</Link></main>}
+import ServiceExtras from '@/components/ServiceExtras';
+import ServiceHero from '@/components/ServiceHero';
+import { DEFAULT_EXTRAS } from '@/lib/content';
+
+export default function ServicePage() {
+  return (
+    <main>
+      <ServiceHero
+        serviceId="software-development"
+        serviceName="Software & Systems"
+        fallback={{
+          eyebrow: 'Software & Systems',
+          headline: 'Systems that keep work moving.',
+          intro: 'Custom management systems, platforms and business tools built around your real workflows.',
+          cta: 'Discuss Your System',
+        }}
+      />
+      <section className="mx-auto max-w-5xl px-6 py-20">
+        <p className="mt-5 max-w-2xl">
+          Practical digital services designed around how your organisation works. Explore the service and speak with
+          our team about the right next step.
+        </p>
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          {['Planning and consultation', 'Design and implementation', 'Handover and ongoing support'].map((x) => (
+            <div key={x} className="rounded-[20px] bg-muted p-6">
+              <h2 className="font-bold text-dark">{x}</h2>
+              <p className="mt-2 text-sm text-muted-fg">
+                A clear, outcome-focused approach from first conversation to delivery.
+              </p>
+            </div>
+          ))}
+        </div>
+        <Link
+          href="/services/software-development"
+          className="mt-10 inline-flex rounded-full bg-primary px-6 py-3 font-semibold text-white"
+        >
+          See full service details
+        </Link>
+      </section>
+      <section className="mx-auto max-w-5xl border-t border-[#eeeeee] px-6 py-20">
+        <ServiceExtras
+          serviceId="software-development"
+          fallbackWhy={DEFAULT_EXTRAS.why_items}
+          fallbackRelated={DEFAULT_EXTRAS.related_items}
+        />
+      </section>
+    </main>
+  );
+}

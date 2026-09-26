@@ -1,8 +1,11 @@
 import Link from 'next/link';
-import {Globe,Bot,ArrowRight,TrendingUp,Settings,Link2} from 'lucide-react';
+import {ArrowRight} from 'lucide-react';
 import ServicesShowcase from '@/components/ServicesShowcase';
 import HomeHero from '@/components/HomeHero';
 import FaqAccordion from '@/components/FaqAccordion';
+import OpusApproach from '@/components/OpusApproach';
+import BuiltForZimbabwe from '@/components/BuiltForZimbabwe';
+import HomeProjects from '@/components/HomeProjects';
 const reasons=[
   ['Quality','Professional digital products built with attention to detail, usability and long-term value.'],
   ['Convenience','From websites and domains to payments and support, accessing digital services stays straightforward.'],
@@ -20,7 +23,7 @@ const faqs=[
 export default function Home(){
   return <main>
     <HomeHero/>
-    
+
     {/* Organisations We Have Built For - CENTRE ALIGNED */}
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6 text-center">
@@ -42,7 +45,7 @@ export default function Home(){
       </div>
     </section>
 
-    {/* What We Do - CENTRE ALIGNED */}
+    {/* What We Do - Monzo-style carousel of admin-managed service hero slides */}
     <section id="services" className="py-20 max-w-7xl mx-auto px-6 text-center">
       <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">What We Do</p>
       <h2 className="text-[1.7rem] md:text-[2rem] font-bold text-dark mt-3 text-center mx-auto max-w-3xl leading-tight">One team. Every digital capability your organisation needs.</h2>
@@ -57,32 +60,13 @@ export default function Home(){
       <Link href="/services" className="inline-flex text-primary font-semibold mt-6 mx-auto">See What We Do <ArrowRight size={16} className="ml-1"/></Link>
     </section>
 
-    {/* The Opus Approach - CENTRE ALIGNED */}
+    {/* The Opus Approach - CENTRE ALIGNED (admin-managed) */}
     <section className="py-20 bg-[#f8f7fb]">
       <div className="max-w-7xl mx-auto px-6 text-center">
         <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">The Opus Approach</p>
         <h2 className="text-3xl font-bold text-dark mt-3 text-center mx-auto">Your business is more than one digital tool.</h2>
         <p className="mt-4 max-w-3xl mx-auto text-center text-muted-fg leading-7">A website should not exist separately from your operations. Your digital tools should work together.</p>
-        <div className="grid md:grid-cols-5 gap-4 mt-10 text-left">
-          {[
-            ['Get Online','Build the digital presence your customers can find.',Globe],
-            ['Operate Better','Replace repetitive manual processes.',Settings],
-            ['Automate','Let technology handle repetitive tasks.',Bot],
-            ['Connect','Integrate the platforms you already use.',Link2],
-            ['Grow','Build a foundation that expands with you.',TrendingUp]
-          ].map(([h,d,Icon])=>{
-            const ApproachIcon=Icon as React.ElementType;
-            return (
-              <div key={h as string} className="bg-white rounded-[20px] p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)] border border-[#f0f0f0]">
-                <div className="h-12 w-12 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <ApproachIcon size={25} strokeWidth={1.8}/>
-                </div>
-                <h3 className="font-bold text-dark text-[1.05rem] mt-5">{h as string}</h3>
-                <p className="text-[0.9rem] leading-6 mt-2 text-[#6b7280]">{d as string}</p>
-              </div>
-            )
-          })}
-        </div>
+        <OpusApproach/>
       </div>
     </section>
 
@@ -107,37 +91,20 @@ export default function Home(){
       </div>
     </section>
 
+    {/* Our Projects (admin-managed: active = link, coming_soon = badge) */}
     <section className="py-20 max-w-7xl mx-auto px-6 text-center">
       <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">Our Projects</p>
       <h2 className="text-[1.53rem] font-bold text-dark mt-2 text-center mx-auto">Live work. Real clients. Real results.</h2>
-      <div className="grid md:grid-cols-2 gap-6 mt-8 text-left max-w-4xl mx-auto">
-        <a href="https://greatcouples.org.zw" className="bg-muted rounded-[26px] p-7 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all">
-          <h3 className="text-xl font-bold text-dark">Great Couples International Trust</h3>
-          <p className="mt-3 flex items-center gap-1">Visit project website <ArrowRight className="inline text-primary" size={16}/></p>
-        </a>
-        <a href="https://primepidg.co.zw" className="bg-muted rounded-[26px] p-7 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all">
-          <h3 className="text-xl font-bold text-dark">Prime Property Investment & Development Group</h3>
-          <p className="mt-3 flex items-center gap-1">Visit project website <ArrowRight className="inline text-primary" size={16}/></p>
-        </a>
-      </div>
+      <HomeProjects/>
     </section>
 
-    <section className="py-20 bg-[#f8f7fb] bg-cover bg-center" style={{backgroundImage:"url('/images/hero-digital-solutions.png')"}}>
-      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
-        <div className="bg-white/90 rounded-[28px] p-8 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.08)]">
-          <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em]">Built for Zimbabwe</p>
-          <h2 className="text-3xl font-bold text-dark mt-3">Professional digital services that understand your market, your clients, and your budget.</h2>
-          <p className="mt-4 leading-7">Most digital agencies in Zimbabwe either overcharge or underdeliver. Opus Zimbabwe was built to close that gap — corporate quality, local understanding, and a team that is reachable when you need them.</p>
-        </div>
-        <div aria-hidden="true" className="min-h-64"/>
-      </div>
-    </section>
+    <BuiltForZimbabwe/>
 
     <section className="py-20 max-w-3xl mx-auto px-6 text-center">
       <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">FAQ</p>
       <h2 className="text-2xl font-bold text-dark mt-2 text-center">Common questions.</h2>
       <div className="mt-7 text-left">
-        <FaqAccordion items={faqs}/>
+        <FaqAccordion list="home" items={faqs}/>
       </div>
       <Link href="/faq" className="inline-flex text-primary font-semibold mt-6">See all questions <ArrowRight size={16} className="ml-1"/></Link>
     </section>

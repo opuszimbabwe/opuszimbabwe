@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { Facebook, Instagram, Linkedin, Twitter, MessageCircle } from 'lucide-react'
+import FooterSocials from '@/components/FooterSocials'
 
 const services=[
   ['Website Design & Development','/services/web-design'],
@@ -10,26 +10,13 @@ const services=[
   ['Domain & Hosting','/services/domains-hosting'],
   ['API & Integrations','/services/api-integrations']
 ]
-const socials=[
-  ['Facebook','https://www.facebook.com/opuszim',Facebook],
-  ['Instagram','https://www.instagram.com/opuszimbabwe',Instagram],
-  ['LinkedIn','https://www.linkedin.com/in/opuszimbabwe',Linkedin],
-  ['X','https://x.com/OpusZimbabwe',Twitter],
-  ['WhatsApp','https://wa.me/263773979162',MessageCircle]
-] as const
 
 export default function Footer(){
   return (
     <footer id="footer" className="bg-[#f5f5f5] text-dark">
       <div className="h-[3px] w-full bg-primary" style={{background: 'linear-gradient(90deg, #E85D2A 0%, #F97316 50%, #F4A226 100%)'}}/>
       <div className="max-w-7xl mx-auto px-6 py-14">
-        <div className="flex justify-end gap-3 mb-12">
-          {socials.map(([label,href,Icon])=>
-            <a key={label} aria-label={label} title={label} href={href} target="_blank" rel="noreferrer" className="h-10 w-10 rounded-full border border-dark/15 flex items-center justify-center text-[#6b7280] hover:bg-dark hover:text-white hover:border-dark transition-colors">
-              <Icon size={17}/>
-            </a>
-          )}
-        </div>
+        <FooterSocials/>
 
         <div className="grid md:grid-cols-3 gap-10">
           <div>
