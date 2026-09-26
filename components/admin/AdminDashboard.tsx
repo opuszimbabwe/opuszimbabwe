@@ -26,10 +26,8 @@ import {
   staticPartners,
   staticProjects,
 } from '@/lib/content';
-import { ICON_NAMES, resolveIcon } from '@/lib/icons';
+import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
-
-const ICON_OPTIONS = ['Globe', 'LayoutDashboard', 'Bot', 'Palette', 'Server', 'Plug'];
 
 type Tab = 'services' | 'pricing' | 'home' | 'faq' | 'projects' | 'partners' | 'brand';
 
@@ -277,7 +275,7 @@ function ImageField({
   );
 }
 
-function IconPicker({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function IconPicker({ label, value, onChange, onUpload }: { label: string; value: string; onChange: (v: string) => void; onUpload?: () => void }) {
   const Icon = resolveIcon(value);
   return (
     <label className="block">
@@ -286,17 +284,15 @@ function IconPicker({ label, value, onChange }: { label: string; value: string; 
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f5f5f5] text-dark">
           <Icon size={18} />
         </span>
-        <select
-          className="w-full rounded-xl border-2 border-[#e5e7eb] bg-[#f5f5f5] px-3 py-2.5 text-[.9rem] outline-none focus:border-[#E85D2A]"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        >
-          {ICON_NAMES.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <div className="flex min-w-0 flex-1 gap-2">
+          <input
+            className="min-w-0 flex-1 rounded-xl border-2 border-[#e5e7eb] bg-[#f5f5f5] px-3 py-2.5 text-[.9rem] outline-none focus:border-[#E85D2A]"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Lucide name or /api/media/icon.png"
+          />
+          {onUpload && <button type="button" onClick={onUpload} className="shrink-0 rounded-xl bg-dark px-3 text-[.75rem] font-semibold text-white">Upload</button>}
+        </div>
       </div>
     </label>
   );
@@ -481,6 +477,26 @@ export default function AdminDashboard() {
         const id = target.slice('service:'.length);
         patchExtras(id, { hero_background: url });
         setMessage({ kind: 'ok', text: `Uploaded to R2: ${url} — press Save on the card to apply.` });
+      } else if (target && target.startsWith('visual:')) {
+        const id = target.slice('visual:'.length);
+        patchExtras(id, { visual_background: url });
+        setMessage({ kind: 'ok', text: `Uploaded visual to R2: ${url} — press Save on the card to apply.` });
+      } else if (target && target.startsWith('serviceicon:')) {
+        const id = target.slice('serviceicon:'.length);
+        patchService(id, { icon: url });
+        setMessage({ kind: 'ok', text: `Uploaded icon to R2: ${url} — press Save on the card to apply.` });
+      } else if (target && target.startsWith('approachicon:')) {
+        const index = Number(target.slice('approachicon:'.length));
+        setSettings((prev) => prev && Number.isFinite(index) ? { ...prev, approach_items: prev.approach_items.map((item, i) => i === index ? { ...item, icon: url } : item) } : prev);
+        setMessage({ kind: 'ok', text: `Uploaded icon to R2: ${url} — press Save approach to apply.` });
+      } else if (target && target.startsWith('socialicon:')) {
+        const index = Number(target.slice('socialicon:'.length));
+        setSettings((prev) => prev && Number.isFinite(index) ? { ...prev, footer_socials: prev.footer_socials.map((item, i) => i === index ? { ...item, icon: url } : item) } : prev);
+        setMessage({ kind: 'ok', text: `Uploaded icon to R2: ${url} — press Save socials to apply.` });
+      } else if (target && target.startsWith('contacticon:')) {
+        const index = Number(target.slice('contacticon:'.length));
+        setSettings((prev) => prev && Number.isFinite(index) ? { ...prev, contact_cards: prev.contact_cards.map((item, i) => i === index ? { ...item, icon: url } : item) } : prev);
+        setMessage({ kind: 'ok', text: `Uploaded icon to R2: ${url} — press Save contact cards to apply.` });
       } else if (target && target.startsWith('card:')) {
         const id = target.slice('card:'.length);
         patchService(id, { image: url });
@@ -546,7 +562,7 @@ export default function AdminDashboard() {
             <Banner kind="ok">Signed in via Cloudflare Access as <b>{session.email}</b>.</Banner>
           ) : (
             <Banner kind="info">
-              Cloudflare Access session not detected. The dashboard will load, but saving requires an Access sign-in for <b>info.opuszim@gmail.com</b> covering <code>/admin*</code> and <code>/api/admin/*</code>. See <code>docs/ADMIN.md</code>.
+              Cloudflare Access session not detected. The dashboard will load, but saving requires an Access sign-in for <b>info.opuszim@gmail.com</b> covering <code>/sysadmin*</code> and <code>/api/admin/*</code>. See <code>docs/ADMIN.md</code>.
             </Banner>
           ))}
 
@@ -604,12 +620,7 @@ export default function AdminDashboard() {
                         hint="Static path (/images/…) or R2 upload (/api/media/…)."
                       />
                       <div className="grid grid-cols-2 gap-3">
-                        <label className="block">
-                          <span className="block text-[.72rem] font-semibold uppercase tracking-widest text-muted-fg mb-1.5">Icon</span>
-                          <select className="w-full rounded-xl border-2 border-[#e5e7eb] bg-[#f5f5f5] px-3 py-2.5 text-[.9rem] outline-none focus:border-[#E85D2A]" value={s.icon} onChange={(e) => patchService(s.id, { icon: e.target.value })}>
-                            {ICON_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-                          </select>
-                        </label>
+                        <IconPicker label="Icon (name or upload)" value={s.icon} onChange={(v) => patchService(s.id, { icon: v })} onUpload={() => pickFile(`serviceicon:${s.id}`)} />
                         <Field label="Order" value={String(s.order_index)} onChange={(v) => patchService(s.id, { order_index: Number(v) || 0 })} />
                       </div>
                       <Field label="Card gradient" value={s.gradient} onChange={(v) => patchService(s.id, { gradient: v })} hint="160deg,#1a1a1a,#454545" />
@@ -668,6 +679,16 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="mt-5 rounded-xl border border-[#ececec] bg-white p-4">
+                    <ImageField
+                      label="Visual / example image"
+                      value={extra.visual_background}
+                      onChange={(v) => patchExtras(s.id, { visual_background: v })}
+                      onUpload={() => pickFile(`visual:${s.id}`)}
+                      hint="This image is shown in section 04 on the service page. Static path or R2 upload."
+                    />
                   </div>
 
                   <div className="mt-6 grid gap-6 md:grid-cols-2">
@@ -800,7 +821,7 @@ export default function AdminDashboard() {
                   <div className="rounded-xl border border-[#ececec] p-3 grid gap-3 md:grid-cols-[1fr_1.4fr]">
                     <div className="space-y-3">
                       <Field label="Title" value={item.title} onChange={(v) => patch({ title: v })} />
-                      <IconPicker label="Icon" value={item.icon} onChange={(v) => patch({ icon: v })} />
+                      <IconPicker label="Icon (name or upload)" value={item.icon} onChange={(v) => patch({ icon: v })} onUpload={() => pickFile(`approachicon:${settings.approach_items.indexOf(item)}`)} />
                     </div>
                     <div>
                       <Field label="Body" value={item.body} onChange={(v) => patch({ body: v })} rows={3} />
@@ -1010,7 +1031,7 @@ export default function AdminDashboard() {
                     <Field label="Label" value={item.label} onChange={(v) => patch({ label: v })} />
                     <Field label="Link" value={item.href} onChange={(v) => patch({ href: v })} hint="https://…" />
                     <div>
-                      <IconPicker label="Icon" value={item.icon} onChange={(v) => patch({ icon: v })} />
+                      <IconPicker label="Icon (name or upload)" value={item.icon} onChange={(v) => patch({ icon: v })} onUpload={() => pickFile(`socialicon:${settings.footer_socials.indexOf(item)}`)} />
                       <button type="button" onClick={remove} className="mt-2 text-[.75rem] font-semibold text-red-500 hover:underline">Remove</button>
                     </div>
                   </div>
@@ -1031,7 +1052,7 @@ export default function AdminDashboard() {
                 render={(item, patch, remove) => (
                   <div className="rounded-xl border border-[#ececec] p-3 grid gap-3 md:grid-cols-2">
                     <Field label="Title" value={item.title} onChange={(v) => patch({ title: v })} />
-                    <IconPicker label="Icon" value={item.icon} onChange={(v) => patch({ icon: v })} />
+                    <IconPicker label="Icon (name or upload)" value={item.icon} onChange={(v) => patch({ icon: v })} onUpload={() => pickFile(`contacticon:${settings.contact_cards.indexOf(item)}`)} />
                     <Field label="Line" value={item.line} onChange={(v) => patch({ line: v })} />
                     <Field label="Note" value={item.note} onChange={(v) => patch({ note: v })} />
                     <div className="md:col-span-2">

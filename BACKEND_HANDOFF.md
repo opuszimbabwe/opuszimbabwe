@@ -2,7 +2,7 @@
 
 ## Current phase
 The public site is a static Next.js export for Cloudflare Pages. An admin
-content layer now exists: `/admin` dashboard (Cloudflare Access protected,
+content layer now exists: `/sysadmin` dashboard (Cloudflare Access protected,
 allow-listed to info.opuszim@gmail.com), Cloudflare D1 for content
 (services, pricing, hero background), and R2 for uploaded images via Pages
 Functions in `functions/`. The public site falls back to baked-in static

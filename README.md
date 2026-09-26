@@ -19,7 +19,7 @@ npm start
 
 ## Admin dashboard & content API
 
-`/admin` (private, Cloudflare Access protected) edits site content stored in
+`/sysadmin` (private, Cloudflare Access protected) edits site content stored in
 Cloudflare D1 — service cards and images, pricing cards, hero background —
 with images uploaded to R2. The public site keeps rendering the built-in
 static fallback content when the API is unavailable.

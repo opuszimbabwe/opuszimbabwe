@@ -88,7 +88,7 @@ check('hero_background setting present', hero.length === 1 && hero[0].value === 
 
 // 3. Service page heroes, Why Opus cards and related links (migration 0003)
 console.log('\nService heroes / Why Opus / related:');
-const extras = query('SELECT service_id, hero_eyebrow, hero_headline, hero_intro, hero_cta, hero_background, hero_background_kind, hero_gradient, why_items, related_items FROM service_extras ORDER BY service_id');
+const extras = query('SELECT service_id, hero_eyebrow, hero_headline, hero_intro, hero_cta, hero_background, visual_background, hero_background_kind, hero_gradient, why_items, related_items FROM service_extras ORDER BY service_id');
 check('6 service_extras rows', extras.length === 6, `found ${extras.length}`);
 check(
   'one extras row per service',
@@ -101,6 +101,10 @@ check(
 check(
   'hero background is a site path for every row',
   extras.every((e) => typeof e.hero_background === 'string' && e.hero_background.startsWith('/images/'))
+);
+check(
+  'visual/example image is set for every row',
+  extras.every((e) => typeof e.visual_background === 'string' && e.visual_background.startsWith('/images/'))
 );
 check(
   'hero background kind is image or gradient',

@@ -83,7 +83,7 @@ export const onRequestPatch: PagesHandler = async (context) => {
     values.push(JSON.stringify(strArray(body.items)));
   }
   if (typeof body.icon === 'string') {
-    if (!ICONS.has(body.icon)) return json({ error: 'invalid_icon' }, 400);
+    if (!ICONS.has(body.icon) && !isUrlPath(body.icon)) return json({ error: 'invalid_icon' }, 400);
     sets.push('icon = ?');
     values.push(body.icon);
   }
@@ -129,6 +129,12 @@ export const onRequestPatch: PagesHandler = async (context) => {
       if (background && !isUrlPath(background)) return json({ error: 'invalid_hero_background' }, 400);
       extraSets.push('hero_background = ?');
       extraValues.push(background);
+    }
+    if (typeof extras.visual_background === 'string') {
+      const visual = str(extras.visual_background, 500);
+      if (visual && !isUrlPath(visual)) return json({ error: 'invalid_visual_background' }, 400);
+      extraSets.push('visual_background = ?');
+      extraValues.push(visual);
     }
     if (extras.hero_background_kind !== undefined) {
       const kind = extras.hero_background_kind === 'gradient' ? 'gradient' : 'image';

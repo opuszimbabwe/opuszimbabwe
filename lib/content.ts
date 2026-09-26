@@ -30,6 +30,7 @@ export type ServiceExtras = {
   hero_intro: string;
   hero_cta: string;
   hero_background: string;
+  visual_background: string;
   hero_background_kind: 'image' | 'gradient';
   hero_gradient: string;
   why_items: WhyItem[];
@@ -148,6 +149,7 @@ export const DEFAULT_EXTRAS: Omit<ServiceExtras, 'service_id'> = {
   hero_intro: '',
   hero_cta: '',
   hero_background: '',
+  visual_background: '',
   hero_background_kind: 'image',
   hero_gradient: '160deg,#1a1a1a,#454545',
   why_items: [
@@ -303,6 +305,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We design and develop professional websites for businesses, NGOs, schools, churches and organisations across Zimbabwe — built to be fast, credible and ready to grow with you.',
     hero_cta: 'View Packages',
     hero_background: '/images/hero-website-design.png',
+    visual_background: '/images/service-web-design.png',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#1a1a1a,#454545',
     why_items: [
@@ -325,6 +328,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We build custom management systems, platforms and business tools that bring your operations into one organised digital environment — built around the way your organisation actually works.',
     hero_cta: 'Discuss Your System',
     hero_background: '/images/hero-software-systems.png',
+    visual_background: '/images/service-software.jpg',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#1a1a1a,#454545',
     why_items: [
@@ -347,6 +351,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We build practical AI tools and automated workflows that reduce repetitive work, improve how you respond to customers, and free your team to focus on what actually requires human attention.',
     hero_cta: 'Explore AI Solutions',
     hero_background: '/images/hero-ai-automation.png',
+    visual_background: '/images/service-ai.jpg',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#1a1a1a,#454545',
     why_items: [
@@ -369,6 +374,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We design logos, marketing materials and visual identities that make your business look credible, consistent and ready to compete.',
     hero_cta: 'Start a Design Project',
     hero_background: '/images/hero-graphic-design.png',
+    visual_background: '/images/service-graphic.png',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#E85D2A,#F4A226',
     why_items: [
@@ -391,6 +397,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We register domains, set up reliable hosting and configure professional business email — the digital infrastructure every serious organisation needs.',
     hero_cta: 'Register a Domain',
     hero_background: '/images/hero-domains-hosting.png',
+    visual_background: '/images/service-hosting.png',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#454545,#6b7280',
     why_items: [
@@ -413,6 +420,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
     hero_intro: 'We connect your website, software, payment systems and third-party platforms so your digital tools work as one joined-up system instead of a collection of disconnected parts.',
     hero_cta: 'Discuss Your Integration',
     hero_background: '/images/hero-api-integrations.png',
+    visual_background: '/images/service-api.jpg',
     hero_background_kind: 'image',
     hero_gradient: '160deg,#1a1a1a,#6b7280',
     why_items: [
@@ -613,6 +621,7 @@ function normalizeExtras(raw: any): ServiceExtras | null {
     hero_intro: str(raw.hero_intro, '').slice(0, 2000),
     hero_cta: str(raw.hero_cta, '').slice(0, 200),
     hero_background: str(raw.hero_background, '').slice(0, 500),
+    visual_background: str(raw.visual_background, staticExtras[String(raw.service_id)]?.visual_background || '').slice(0, 500),
     hero_background_kind: kind,
     hero_gradient: str(raw.hero_gradient, '160deg,#1a1a1a,#454545').slice(0, 200),
     why_items: why,

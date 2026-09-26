@@ -1,2 +1,22 @@
 import type { MetadataRoute } from 'next'
-export default function sitemap(): MetadataRoute.Sitemap { const base='https://opuszim.co.zw'; return ['','/services','/domains','/projects','/faq','/contact','/services/web-design','/services/software-development','/services/ai-automation','/services/graphic-design','/services/domains-hosting','/services/api-integrations'].map(path=>({url:base+path,lastModified:new Date()})) }
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const base = 'https://opuszim.co.zw'
+  return [
+    '',
+    '/services',
+    '/domains',
+    '/projects',
+    '/faq',
+    '/contact',
+    '/privacy',
+    '/terms',
+    '/sitemap',
+    '/services/web-design',
+    '/services/software-development',
+    '/services/ai-automation',
+    '/services/graphic-design',
+    '/services/domains-hosting',
+    '/services/api-integrations',
+  ].map((path) => ({ url: base + path, lastModified: new Date() }))
+}

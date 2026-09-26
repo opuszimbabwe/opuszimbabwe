@@ -14,7 +14,7 @@ export default function OpusApproach() {
     : DEFAULT_SETTINGS.approach_items;
 
   return (
-    <div className="mt-10 grid gap-4 text-left md:grid-cols-5">
+    <div className="mx-auto mt-10 grid max-w-6xl gap-4 text-center md:grid-cols-5">
       {items.map((item) => {
         const Icon = resolveIcon(item.icon);
         return (
@@ -22,7 +22,7 @@ export default function OpusApproach() {
             key={item.title}
             className="rounded-[20px] border border-[#f0f0f0] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.03)]"
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
               <Icon size={25} strokeWidth={1.8} />
             </div>
             <h3 className="mt-5 text-[1.05rem] font-bold text-dark">{item.title}</h3>
