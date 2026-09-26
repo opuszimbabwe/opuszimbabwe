@@ -52,6 +52,15 @@ export type DbProject = {
   visible: number;
 };
 
+export type DbPartner = {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  order_index: number;
+  visible: number;
+};
+
 // Settings whose value is a site-relative or https URL.
 export const URL_SETTINGS = ['hero_background', 'navbar_logo', 'manifest_icon'] as const;
 // Settings whose value is a JSON document (arrays, or the built_for_zimbabwe object).
@@ -102,10 +111,11 @@ function mapExtras(row: DbExtras) {
 }
 
 export async function readContent(env: Env) {
-  const [serviceRows, pricingRows, projectRows, extrasRows, settingsRows] = await Promise.all([
+  const [serviceRows, pricingRows, projectRows, partnerRows, extrasRows, settingsRows] = await Promise.all([
     env.DB.prepare('SELECT * FROM services ORDER BY order_index, name').all<DbService>(),
     env.DB.prepare('SELECT * FROM pricing_cards ORDER BY order_index, name').all<DbPricing>(),
     env.DB.prepare('SELECT * FROM projects ORDER BY order_index, name').all<DbProject>(),
+    env.DB.prepare('SELECT * FROM partners ORDER BY order_index, name').all<DbPartner>(),
     env.DB.prepare('SELECT * FROM service_extras').all<DbExtras>(),
     env.DB.prepare('SELECT key, value FROM settings').all<{ key: string; value: string }>(),
   ]);
@@ -147,6 +157,15 @@ export async function readContent(env: Env) {
     visible: row.visible === 1,
   }));
 
+  const partners = (partnerRows.results || []).map((row) => ({
+    id: row.id,
+    name: row.name,
+    logo: row.logo,
+    url: row.url,
+    order_index: row.order_index,
+    visible: row.visible === 1,
+  }));
+
   // Keyed by service id so the site can look up a service page hero in one step.
   const extras: Record<string, ReturnType<typeof mapExtras>> = {};
   for (const row of extrasRows.results || []) {
@@ -162,6 +181,7 @@ export async function readContent(env: Env) {
     services,
     pricing,
     projects,
+    partners,
     extras,
     settings: {
       hero_background: settingsMap.hero_background || '',

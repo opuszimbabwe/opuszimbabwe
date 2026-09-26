@@ -397,6 +397,74 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
+  // Trusted partners (migration 0004) — admin add/edit/remove
+  // -------------------------------------------------------------------------
+  console.log('\nTrusted partners:');
+  {
+    const before = await req('/api/content');
+    const seeded = before.json?.partners || [];
+    check(
+      '4 partners from D1 (names + static logos, one linked)',
+      seeded.length === 4 &&
+        seeded.every((p) => p.name && p.logo?.startsWith('/images/partner-')) &&
+        seeded.filter((p) => p.url?.startsWith('https://')).length === 1
+    );
+
+    const unauth = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ partners: [] }),
+    });
+    check('partners mutation without Access headers rejected (401)', unauth.res.status === 401);
+
+    const badUrl = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: [{ id: 'x', name: 'Bad', logo: '/images/logo.png', url: 'javascript:alert(1)' }] }),
+    });
+    check('non-https partner URL rejected (400)', badUrl.res.status === 400);
+
+    const badLogo = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: [{ id: 'x', name: 'Bad', logo: 'javascript:alert(1)', url: '' }] }),
+    });
+    check('unsafe partner logo rejected (400)', badLogo.res.status === 400);
+
+    const { res, json } = await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        partners: [
+          { ...seeded[0], name: 'SMOKE PARTNER' },
+          { id: '', name: 'Smoke Partner', logo: '/images/logo.png', url: 'https://example.com', visible: true },
+        ],
+      }),
+    });
+    check('PUT partners (edit + add + remove) succeeds', res.status === 200 && json?.count === 2, `count=${json?.count}`);
+
+    const after = await req('/api/content');
+    const partners = after.json?.partners || [];
+    check(
+      'edited + new partner visible via /api/content',
+      partners.length === 2 &&
+        partners.some((p) => p.name === 'SMOKE PARTNER') &&
+        partners.some((p) => p.name === 'Smoke Partner' && p.url === 'https://example.com')
+    );
+
+    await req('/api/admin/partners', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ partners: seeded }),
+    });
+    const restored = await req('/api/content');
+    check(
+      'partners restored to 4 seeded rows',
+      restored.json?.partners?.length === 4 && restored.json?.partners?.[0]?.name === seeded[0].name
+    );
+  }
+
+  // -------------------------------------------------------------------------
   // Branding + the admin-served web manifest
   // -------------------------------------------------------------------------
   console.log('\nBranding & manifest:');
@@ -612,6 +680,14 @@ async function main() {
 
     const contact = await req('/contact/?service=Website%20Design%20%26%20Development&domain=example.co.zw');
     check('contact prefill URL (?service=…&domain=…) responds 200', contact.res.status === 200);
+
+    const home = await req('/');
+    check(
+      'home renders the trusted partner logos + why-choose-us headings',
+      home.text.includes('/images/partner-great-couples.png') &&
+        home.text.includes('Fast, affordable, and built to last') &&
+        home.text.includes('Local Payments')
+    );
   }
 
   console.log(`\n${passed} passed, ${failed} failed`);

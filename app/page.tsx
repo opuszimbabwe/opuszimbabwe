@@ -6,6 +6,8 @@ import FaqAccordion from '@/components/FaqAccordion';
 import OpusApproach from '@/components/OpusApproach';
 import BuiltForZimbabwe from '@/components/BuiltForZimbabwe';
 import HomeProjects from '@/components/HomeProjects';
+import TrustedPartners from '@/components/TrustedPartners';
+import WhyChooseUs from '@/components/WhyChooseUs';
 const reasons=[
   ['Quality','Professional digital products built with attention to detail, usability and long-term value.'],
   ['Convenience','From websites and domains to payments and support, accessing digital services stays straightforward.'],
@@ -30,18 +32,7 @@ export default function Home(){
         <p className="text-primary text-[.8rem] font-semibold uppercase tracking-[.12em] text-center">Organisations We Have Built For</p>
         <h2 className="text-2xl font-bold text-dark mt-3 text-center mx-auto">Real organisations. Real digital work.</h2>
         <p className="mt-3 text-muted-fg text-center mx-auto max-w-2xl">Trusted by businesses, NGOs, and institutions across Zimbabwe.</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10 items-center max-w-4xl mx-auto">
-          {[
-            ['/images/partner-great-couples.png','Great Couples International Trust'],
-            ['/images/partner-forgepoint.png','ForgePoint Technologies'],
-            ['/images/partner-rays-of-hope.png','Rays of Hope Academy'],
-            ['/images/partner-killing-giants.png','Killing Giants']
-          ].map(([src,alt])=>
-            <div key={src} className="bg-white rounded-2xl p-5 h-32 flex items-center justify-center border border-[#f5f5f5] shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
-              <img src={src} alt={alt} className="max-h-24 max-w-full object-contain" />
-            </div>
-          )}
-        </div>
+        <TrustedPartners/>
       </div>
     </section>
 
@@ -74,20 +65,8 @@ export default function Home(){
       <div className="max-w-5xl mx-auto px-6">
         <p className="text-primary text-[.78rem] font-semibold uppercase tracking-[.14em] text-center">Why choose Opus Zimbabwe</p>
         <h2 className="text-3xl font-bold text-dark mt-3 max-w-xl mx-auto text-center">Fast, affordable, and built to last — with a team that picks up the phone.</h2>
-        <div className="mt-16">
-          {reasons.map(([title,body],i)=>
-            <div key={title} className="flex items-stretch gap-6 md:gap-10 py-10 border-b border-[#eeeeee]">
-              <div className="flex-shrink-0 w-px self-stretch bg-primary/30"/>
-              <div className="flex-1 py-1">
-                <h3 className="text-xl font-bold text-dark">{title}</h3>
-                <p className="mt-2 text-[1rem] text-fg max-w-lg leading-7">{body}</p>
-              </div>
-              <div className="flex-shrink-0 w-8 flex items-start justify-end pt-1">
-                <span className="text-[.7rem] font-bold text-primary/40 tracking-widest">{String(i+1).padStart(2,'0')}</span>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Expands reason by reason as the visitor scrolls; each stays open. */}
+        <WhyChooseUs items={reasons.map(([title,body])=>({title,body}))}/>
       </div>
     </section>
 

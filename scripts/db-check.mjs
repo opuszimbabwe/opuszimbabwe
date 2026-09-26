@@ -40,11 +40,11 @@ function parseJson(label, value) {
 console.log('Checking local D1 database (opuszim-content)...\n');
 
 // 1. Tables exist
-const tables = query("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('services','pricing_cards','settings','service_extras','projects') ORDER BY name");
+const tables = query("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('services','pricing_cards','settings','service_extras','projects','partners') ORDER BY name");
 console.log('Schema:');
 check(
-  'tables exist (services, pricing_cards, settings, service_extras, projects)',
-  tables.length === 5,
+  'tables exist (services, pricing_cards, settings, service_extras, projects, partners)',
+  tables.length === 6,
   tables.map((t) => t.name).join(', ')
 );
 
@@ -140,7 +140,26 @@ check(
   projects.every((p) => (p.status === 'active' ? /^https:\/\//.test(p.url) : p.url === ''))
 );
 
-// 5. Branding / home / FAQ settings (migration 0003)
+// 5. Trusted partners (migration 0004)
+console.log('\nTrusted partners:');
+const partners = query('SELECT id, name, logo, url, order_index, visible FROM partners ORDER BY order_index');
+check('4 partner rows', partners.length === 4, `found ${partners.length}`);
+check(
+  'partner names (Great Couples, ForgePoint, Rays of Hope, Killing Giants)',
+  ['Great Couples International Trust', 'ForgePoint Technologies', 'Rays of Hope Academy', 'Killing Giants'].every(
+    (name) => partners.some((p) => p.name === name)
+  )
+);
+check(
+  'partner logos are site paths',
+  partners.every((p) => typeof p.logo === 'string' && p.logo.startsWith('/images/'))
+);
+check(
+  'partner URLs are empty or https',
+  partners.every((p) => p.url === '' || /^https:\/\//.test(p.url))
+);
+
+// 6. Branding / home / FAQ settings (migration 0003)
 console.log('\nBranding, home & FAQ settings:');
 const settingsRows = query('SELECT key, value FROM settings');
 const settingsMap = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
@@ -168,7 +187,7 @@ check(
   built && typeof built === 'object' && !Array.isArray(built) && Boolean(built.eyebrow && built.heading && built.body && built.image)
 );
 
-// 6. Write round-trip (update + restore) to prove the database is writable
+// 7. Write round-trip (update + restore) to prove the database is writable
 console.log('\nWrite round-trip:');
 try {
   query("UPDATE settings SET value='/tmp/db-check-probe.png' WHERE key='hero_background'");

@@ -11,6 +11,7 @@ import {
   ContactCard,
   DEFAULT_SETTINGS,
   FaqItem,
+  PartnerRecord,
   PricingRecord,
   ProjectRecord,
   RelatedItem,
@@ -22,6 +23,7 @@ import {
   normalizeContent,
   staticContent,
   staticExtras,
+  staticPartners,
   staticProjects,
 } from '@/lib/content';
 import { ICON_NAMES, resolveIcon } from '@/lib/icons';
@@ -29,7 +31,7 @@ import { useSiteContent } from '@/lib/use-site-content';
 
 const ICON_OPTIONS = ['Globe', 'LayoutDashboard', 'Bot', 'Palette', 'Server', 'Plug'];
 
-type Tab = 'services' | 'pricing' | 'home' | 'faq' | 'projects' | 'brand';
+type Tab = 'services' | 'pricing' | 'home' | 'faq' | 'projects' | 'partners' | 'brand';
 
 type Session = { email: string } | null;
 
@@ -309,6 +311,7 @@ export default function AdminDashboard() {
   const [extras, setExtras] = useState<Record<string, ServiceExtras> | null>(null);
   const [pricing, setPricing] = useState<PricingRecord[] | null>(null);
   const [projects, setProjects] = useState<ProjectRecord[] | null>(null);
+  const [partners, setPartners] = useState<PartnerRecord[] | null>(null);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [message, setMessage] = useState<{ kind: 'ok' | 'err' | 'info'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -331,12 +334,14 @@ export default function AdminDashboard() {
       setExtras(structuredClone(content.extras));
       setPricing(structuredClone(content.pricing));
       setProjects(structuredClone(content.projects));
+      setPartners(structuredClone(content.partners));
       setSettings(structuredClone(content.settings));
     } else if (status === 'failed') {
       setServices(structuredClone(staticContent.services));
       setExtras(structuredClone(staticExtras));
       setPricing(structuredClone(staticContent.pricing));
       setProjects(structuredClone(staticProjects));
+      setPartners(structuredClone(staticPartners));
       setSettings(structuredClone(DEFAULT_SETTINGS));
       setMessage({ kind: 'info', text: 'Content API unreachable — editing the built-in fallback content. Saving will fail until the API is available.' });
     }
@@ -413,6 +418,23 @@ export default function AdminDashboard() {
     }
   };
 
+  const savePartners = async () => {
+    if (!partners) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      await api('/api/admin/partners', {
+        method: 'PUT',
+        body: JSON.stringify({ partners }),
+      });
+      setMessage({ kind: 'ok', text: `Saved ${partners.length} partner${partners.length === 1 ? '' : 's'}.` });
+    } catch (e: any) {
+      setMessage({ kind: 'err', text: e.message });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const saveSettings = async (keys: (keyof SiteSettings)[], label: string) => {
     if (!settings) return;
     setBusy(true);
@@ -463,6 +485,12 @@ export default function AdminDashboard() {
         const id = target.slice('card:'.length);
         patchService(id, { image: url });
         setMessage({ kind: 'ok', text: `Uploaded to R2: ${url} — press Save on the card to apply.` });
+      } else if (target && target.startsWith('partnerlogo:')) {
+        const index = Number(target.slice('partnerlogo:'.length));
+        setPartners((prev) =>
+          prev && Number.isFinite(index) ? prev.map((p, i) => (i === index ? { ...p, logo: url } : p)) : prev
+        );
+        setMessage({ kind: 'ok', text: `Uploaded to R2: ${url} — press Save partners to apply.` });
       }
     } catch (err: any) {
       setMessage({ kind: 'err', text: err.message });
@@ -481,6 +509,7 @@ export default function AdminDashboard() {
       setExtras(structuredClone(normalized.extras));
       setPricing(structuredClone(normalized.pricing));
       setProjects(structuredClone(normalized.projects));
+      setPartners(structuredClone(normalized.partners));
       setSettings(structuredClone(normalized.settings));
       setMessage({ kind: 'ok', text: 'Reloaded from D1.' });
     } catch (e: any) {
@@ -894,6 +923,58 @@ export default function AdminDashboard() {
             />
             <button disabled={busy} onClick={saveProjects} className="mt-5 rounded-full bg-primary hover:brightness-110 text-white px-6 py-2.5 text-[.85rem] font-semibold disabled:opacity-50">
               Save projects
+            </button>
+          </Card>
+        )}
+
+        {/* PARTNERS */}
+        {tab === 'partners' && partners && (
+          <Card
+            title="Trusted partners"
+            hint="The “Organisations We Have Built For” logo row on the home page. Add, edit, remove — then save."
+          >
+            <ListEditor<PartnerRecord>
+              items={partners}
+              onChange={setPartners}
+              blank={() => ({ id: '', name: '', logo: '', url: '', order_index: partners.length, visible: true })}
+              addLabel="Add partner"
+              emptyLabel="No partners yet."
+              render={(item, patch, remove) => (
+                <div className="rounded-xl border border-[#ececec] p-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <Field label="Name" value={item.name} onChange={(v) => patch({ name: v })} />
+                    <Field label="Website (optional)" value={item.url} onChange={(v) => patch({ url: v })} hint="https://… — leave empty to show the logo unlinked" />
+                  </div>
+                  <div className="mt-3 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+                    <ImageField
+                      label="Logo"
+                      value={item.logo}
+                      onChange={(v) => patch({ logo: v })}
+                      onUpload={() => pickFile(`partnerlogo:${partners.indexOf(item)}`)}
+                      hint="Static path (/images/…) or R2 upload (/api/media/…)."
+                    />
+                    <label className="flex items-center gap-2 text-[.8rem] font-semibold text-dark md:pb-2.5">
+                      <input type="checkbox" checked={item.visible} onChange={(e) => patch({ visible: e.target.checked })} />
+                      Visible
+                    </label>
+                  </div>
+                  {item.logo && (
+                    <div className="mt-3 flex h-20 w-40 items-center justify-center rounded-lg border border-[#ececec] bg-white p-2">
+                      <img src={item.logo} alt="" className="max-h-full max-w-full object-contain" />
+                    </div>
+                  )}
+                  <button type="button" onClick={remove} className="mt-3 text-[.75rem] font-semibold text-red-500 hover:underline">
+                    Remove partner
+                  </button>
+                </div>
+              )}
+            />
+            <button
+              disabled={busy}
+              onClick={savePartners}
+              className="mt-5 rounded-full bg-primary px-6 py-2.5 text-[.85rem] font-semibold text-white hover:brightness-110 disabled:opacity-50"
+            >
+              Save partners
             </button>
           </Card>
         )}

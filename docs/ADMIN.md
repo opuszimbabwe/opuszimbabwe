@@ -22,10 +22,10 @@ even if the database or functions are unavailable.
 | `/admin` dashboard | `app/admin/page.tsx` + `components/admin/AdminDashboard.tsx` | Six tabs — Services, Pricing, Home, FAQ, Projects, Brand (noindex, not in nav/sitemap) |
 | Public content API | `functions/api/content.ts` | `GET /api/content` — services (incl. per-service extras), pricing, projects, settings |
 | Web app manifest | `functions/api/manifest.ts` | `GET /api/manifest` — `application/manifest+json` using the admin-set icon |
-| Admin APIs | `functions/api/admin/*` | Session, service PATCH (card + hero/why/related), pricing PUT, projects PUT, settings PUT, R2 upload |
+| Admin APIs | `functions/api/admin/*` | Session, service PATCH (card + hero/why/related), pricing PUT, projects PUT, partners PUT, settings PUT, R2 upload |
 | Image serving | `functions/api/media/[key].ts` | Public immutable serving of R2 uploads |
 | Auth enforcement | `functions/_lib/auth.ts` | Cloudflare Access email allowlist + optional strict JWT verification |
-| D1 schema + seed | `migrations/0001_init.sql`, `migrations/0002_seed.sql`, `migrations/0003_service_extras_projects.sql` | Tables: `services`, `pricing_cards`, `settings`, `service_extras`, `projects` |
+| D1 schema + seed | `migrations/0001_init.sql`, `migrations/0002_seed.sql`, `migrations/0003_service_extras_projects.sql`, `migrations/0004_partners.sql` | Tables: `services`, `pricing_cards`, `settings`, `service_extras`, `projects`, `partners` |
 | Static fallback | `lib/content.ts` | Exact copy of the original static site content (services, pricing, projects, extras, settings) |
 
 ## Local development (no Cloudflare login required)
@@ -185,6 +185,11 @@ curl -i https://your-domain/api/admin/session
   description, visibility). **Status** decides how a project renders:
   `active` → a link to the live site (a URL is required),
   `coming_soon` → a “Coming soon” badge with no link.
+- **Partners tab** — the “Organisations We Have Built For” logo row on the
+  home page. Add, edit or remove partners: **name**, **logo** (paste a static
+  path or *Upload* to R2), optional **website** (a partner with a URL renders
+  as a link; without one the logo is shown unlinked) and **visibility**.
+  Order follows the list order. One *Save partners* writes the whole list.
 - **Brand tab** — navbar logo, the icon served by `/api/manifest` (512×512 PNG
   works best; takes effect immediately, no rebuild), the footer social links
   and the three contact cards on `/contact` (icon, title, line, note, link).
@@ -218,6 +223,10 @@ Missing or empty settings fall back to the built-in values in
 - Service pages pre-fill the enquiry form: CTAs link to
   `/contact?service=…`, and domain CTAs add `&domain=…` (the `/domains`
   cards pass the extension the visitor clicked).
+- The “Why choose Opus Zimbabwe” list on the home page is built-in content
+  (`app/page.tsx`, rendered by `components/WhyChooseUs.tsx`). Each reason is
+  collapsed until it scrolls into view, then expands and **stays expanded** —
+  a one-way reveal, so scrolling back up never re-collapses it.
 - Uploaded files are validated: image types only (jpg/png/webp/gif/avif),
   5 MB max, random immutable keys (served with `immutable` cache headers).
 - No secrets live in the repo. `.env*`, `.dev.vars` and `.wrangler/` are

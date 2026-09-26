@@ -104,3 +104,11 @@ h3 { font-size: 1.15rem; }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* "Why choose us" scroll reveal — respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .why-body,
+  .why-line {
+    transition: none;
+  }
+}

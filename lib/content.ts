@@ -48,6 +48,17 @@ export type ProjectRecord = {
   visible: boolean;
 };
 
+// Trusted partner ("Organisations We Have Built For" logo row on the home page).
+// `url` is optional — without it the logo renders unlinked.
+export type PartnerRecord = {
+  id: string;
+  name: string;
+  logo: string;
+  url: string;
+  order_index: number;
+  visible: boolean;
+};
+
 export type PricingRecord = {
   id: string;
   name: string;
@@ -80,6 +91,7 @@ export type SiteContent = {
   services: ServiceRecord[];
   pricing: PricingRecord[];
   projects: ProjectRecord[];
+  partners: PartnerRecord[];
   extras: Record<string, ServiceExtras>;
   settings: SiteSettings;
 };
@@ -469,10 +481,47 @@ export const staticProjects: ProjectRecord[] = [
   },
 ];
 
+// Trusted partners — mirrors migrations/0004_partners.sql.
+export const staticPartners: PartnerRecord[] = [
+  {
+    id: 'great-couples',
+    name: 'Great Couples International Trust',
+    logo: '/images/partner-great-couples.png',
+    url: 'https://greatcouples.org.zw',
+    order_index: 0,
+    visible: true,
+  },
+  {
+    id: 'forgepoint',
+    name: 'ForgePoint Technologies',
+    logo: '/images/partner-forgepoint.png',
+    url: '',
+    order_index: 1,
+    visible: true,
+  },
+  {
+    id: 'rays-of-hope',
+    name: 'Rays of Hope Academy',
+    logo: '/images/partner-rays-of-hope.png',
+    url: '',
+    order_index: 2,
+    visible: true,
+  },
+  {
+    id: 'killing-giants',
+    name: 'Killing Giants',
+    logo: '/images/partner-killing-giants.png',
+    url: '',
+    order_index: 3,
+    visible: true,
+  },
+];
+
 export const staticContent: SiteContent = {
   services: staticServices,
   pricing: staticPricing,
   projects: staticProjects,
+  partners: staticPartners,
   extras: staticExtras,
   settings: DEFAULT_SETTINGS,
 };
@@ -571,6 +620,21 @@ function normalizeExtras(raw: any): ServiceExtras | null {
   };
 }
 
+function normalizePartner(raw: any, index: number): PartnerRecord | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const id = str(raw.id, '').trim();
+  const name = str(raw.name, '').trim();
+  if (!id || !name) return null;
+  return {
+    id,
+    name,
+    logo: str(raw.logo, '').slice(0, 500),
+    url: str(raw.url, '').slice(0, 500),
+    order_index: Number.isFinite(Number(raw.order_index)) ? Number(raw.order_index) : index,
+    visible: raw.visible === true || raw.visible === 1 || raw.visible === '1',
+  };
+}
+
 function normalizeProject(raw: any, index: number): ProjectRecord | null {
   if (!raw || typeof raw !== 'object') return null;
   const id = str(raw.id, '').trim();
@@ -663,6 +727,13 @@ export function normalizeContent(raw: any): SiteContent | null {
         .sort((a: ProjectRecord, b: ProjectRecord) => a.order_index - b.order_index)
     : staticProjects;
 
+  const partners = Array.isArray(raw.partners)
+    ? raw.partners
+        .map(normalizePartner)
+        .filter((p: PartnerRecord | null): p is PartnerRecord => p !== null)
+        .sort((a: PartnerRecord, b: PartnerRecord) => a.order_index - b.order_index)
+    : staticPartners;
+
   const extras: Record<string, ServiceExtras> = { ...staticExtras };
   const rawExtras = raw.extras && typeof raw.extras === 'object' ? raw.extras : {};
   for (const value of Object.values(rawExtras as Record<string, unknown>)) {
@@ -691,5 +762,5 @@ export function normalizeContent(raw: any): SiteContent | null {
     built_for_zimbabwe: normalizeBuilt((rawSettings as any).built_for_zimbabwe),
   };
 
-  return { services, pricing, projects, extras, settings };
+  return { services, pricing, projects, partners, extras, settings };
 }
