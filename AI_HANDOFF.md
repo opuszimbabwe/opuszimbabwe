@@ -122,4 +122,3 @@ hero and visibility, then save against the Pages/Cloudflare-hosted site.
 Keep image URLs as site paths (`/images/...`) or uploaded R2 paths
 (`/api/media/...`); do not invent `/images` assets that are not present in
 `public/` or configured in R2.
-
