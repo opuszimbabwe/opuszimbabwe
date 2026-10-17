@@ -89,7 +89,9 @@ jobs:
 
       - name: List pending migrations
         if: inputs.task == 'list' || inputs.task == 'migrate'
-        run: npx wrangler d1 migrations list opuszim-content --remote | tee migrations-list.txt
+        run: |
+          set -o pipefail
+          npx wrangler d1 migrations list opuszim-content --remote | tee migrations-list.txt
 
       # Backups run before migrate as well, so a migrate always has a restore point.
       - name: Back up database (SQL export)
@@ -117,7 +119,9 @@ jobs:
 
       - name: Verify database contents
         if: inputs.task == 'verify' || inputs.task == 'migrate'
-        run: npx wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql | tee verify.txt
+        run: |
+          set -o pipefail
+          npx wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql | tee verify.txt
 
       - name: Write job summary
         if: always()
