@@ -1,0 +1,136 @@
+name: D1 (remote)
+
+# Run remote D1 maintenance from the GitHub website — no local terminal needed.
+#
+# Actions tab → "D1 (remote)" → Run workflow → pick a task:
+#   verify  – read-only checks (safe, run any time)
+#   list    – show which migrations are pending
+#   backup  – export the database to a downloadable SQL artifact
+#   migrate – back up, then apply every pending migration, then verify
+#
+# Repository secrets required (Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   – Cloudflare token with "Account → D1 → Edit"
+#                            and "Account → Account Settings → Read"
+#   CLOUDFLARE_ACCOUNT_ID  – from the Cloudflare dashboard sidebar
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Task to run against the remote opuszim-content database'
+        type: choice
+        required: true
+        default: verify
+        options:
+          - verify
+          - list
+          - backup
+          - migrate
+      confirm:
+        description: 'Type MIGRATE to confirm schema/data changes (required for the migrate task)'
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+# Never let two remote runs overlap — migrations must not race.
+concurrency:
+  group: d1-remote
+  cancel-in-progress: false
+
+jobs:
+  remote:
+    name: ${{ inputs.task }} · opuszim-content
+    runs-on: ubuntu-latest
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+      CI: '1'
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Cloudflare credentials
+        run: |
+          missing=0
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is not set. Add it under Settings → Secrets and variables → Actions."
+            missing=1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is not set. Add it under Settings → Secrets and variables → Actions."
+            missing=1
+          fi
+          exit $missing
+
+      - name: Require confirmation for migrate
+        if: inputs.task == 'migrate' && inputs.confirm != 'MIGRATE'
+        run: |
+          echo "::error::Re-run the workflow with the confirm field set to MIGRATE. Nothing was changed."
+          exit 1
+
+      - name: Confirm database target
+        run: |
+          echo "Database: $(grep -m1 database_name wrangler.toml | cut -d'"' -f2)"
+          echo "Database id: $(grep -m1 database_id wrangler.toml | cut -d'"' -f2)"
+          npx wrangler whoami || true
+
+      - name: List pending migrations
+        if: inputs.task == 'list' || inputs.task == 'migrate'
+        run: npx wrangler d1 migrations list opuszim-content --remote | tee migrations-list.txt
+
+      # Backups run before migrate as well, so a migrate always has a restore point.
+      - name: Back up database (SQL export)
+        if: inputs.task == 'backup' || inputs.task == 'migrate'
+        run: |
+          mkdir -p backups
+          stamp="$(date -u +%Y%m%dT%H%M%SZ)"
+          npx wrangler d1 export opuszim-content \
+            --remote \
+            --output "backups/opuszim-content-${stamp}.sql" \
+            --skip-confirmation
+          ls -lh backups
+
+      - name: Apply pending migrations
+        if: inputs.task == 'migrate'
+        run: npx wrangler d1 migrations apply opuszim-content --remote | tee migrations-apply.txt
+
+      - name: Verify database contents
+        if: inputs.task == 'verify' || inputs.task == 'migrate'
+        run: npx wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql | tee verify.txt
+
+      - name: Write job summary
+        if: always()
+        run: |
+          {
+            echo "## D1 remote · \`${{ inputs.task }}\`"
+            echo ""
+            for f in migrations-list.txt migrations-apply.txt verify.txt; do
+              if [ -f "$f" ]; then
+                echo "### ${f%.txt}"
+                echo '```'
+                cat "$f"
+                echo '```'
+                echo ""
+              fi
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload SQL backup
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: d1-backup-${{ github.run_number }}
+          path: backups/
+          if-no-files-found: ignore
+          retention-days: 30

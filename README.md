@@ -29,11 +29,14 @@ npm run checks              # typecheck + build + local D1 migrations + db check
 npm run pages:local         # serve site + API locally on :8788
 node scripts/smoke-api.mjs  # end-to-end API/auth/upload tests
 
-# Remote D1 (requires `npx wrangler login`)
+# Remote D1 — from a terminal …
 npm run db:backup:remote    # export a SQL backup to backups/
 npm run db:migrations:list  # list pending migrations
 npm run db:migrate:remote   # apply pending migrations (currently 0006–0011)
 npm run db:verify:remote    # read-only checks after migrating
+
+# … or with no terminal at all: GitHub → Actions → "D1 (remote)" → Run workflow
+# (tasks: verify | list | backup | migrate; see docs/ADMIN.md §2)
 ```
 
 Deployment, remote migrations and Cloudflare Access setup: see

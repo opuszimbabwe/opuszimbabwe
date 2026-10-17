@@ -100,6 +100,51 @@ Verify the ID took effect with `npx wrangler d1 list` (it should match the
 
 ### 2. Apply migrations remotely (0006 → 0011)
 
+Two ways to do this. **Option A needs no terminal** — GitHub runs the commands
+for you and shows the output in the browser.
+
+#### Option A — from the GitHub website (no local terminal)
+
+One-time setup:
+
+1. **Cloudflare API token** — dash.cloudflare.com → *My Profile* →
+   *API Tokens* → *Create Token* → *Custom token*:
+   - `Account` → `D1` → **Edit**
+   - `Account` → `Account Settings` → **Read**
+   - Account resources: the account that owns `opuszim-content`
+2. **Account ID** — Cloudflare dashboard → *Workers & Pages*; the ID is in the
+   right-hand sidebar (also shown on the D1 database page).
+3. **GitHub secrets** — repo → *Settings* → *Secrets and variables* →
+   *Actions* → *New repository secret*:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+
+Then run **Actions** → **D1 (remote)** → *Run workflow*:
+
+| Task | What it does |
+| --- | --- |
+| `verify` | Read-only checks — run any time, changes nothing |
+| `list` | Shows which migrations are still pending |
+| `backup` | Exports the database; the `.sql` file is attached to the run |
+| `migrate` | Backs up, applies every pending migration, then verifies |
+
+`migrate` only runs when the **confirm** field contains exactly `MIGRATE`.
+Every backup is uploaded as a `d1-backup-<run>` artifact (kept 30 days), and
+the migration list, apply log and verification table are written to the run's
+**Summary** page.
+
+Recommended sequence after merging a release:
+
+1. Merge → wait for the Cloudflare Pages deployment to go green.
+2. Actions → **D1 (remote)** → task `verify` → run. Expect `MISSING` rows for
+   the new columns, which confirms the target database before you change it.
+3. Run again with task `migrate` and `confirm` = `MIGRATE`.
+4. Open the Summary: `d1_migrations` should list `0001` … `0011`, the three
+   columns read `OK`, `pricing_cards` shows six price-range rows, and
+   `navbar_logo` is `/images/logo-full.png`.
+
+#### Option B — from a terminal
+
 ```bash
 npx wrangler login                 # once per machine — use the account that owns the D1 database
 npx wrangler d1 list               # confirm opuszim-content matches database_id in wrangler.toml
