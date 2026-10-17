@@ -5,6 +5,10 @@
     "start": "npx serve out -l 3000",
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply opuszim-content --local",
+    "db:migrations:list": "wrangler d1 migrations list opuszim-content --remote",
+    "db:migrate:remote": "wrangler d1 migrations apply opuszim-content --remote",
+    "db:backup:remote": "wrangler d1 export opuszim-content --remote --output=backups/opuszim-content.sql",
+    "db:verify:remote": "wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql",
     "db:check": "node scripts/db-check.mjs",
     "pages:local": "wrangler pages dev --port 8788 --ip 0.0.0.0",
     "checks": "npm run typecheck && npm run build && npm run db:migrate:local && npm run db:check"

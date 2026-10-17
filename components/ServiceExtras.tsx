@@ -33,7 +33,6 @@ export default function ServiceExtras({
           <div className="mt-8">
             {why.map((item, index) => (
               <div key={`${item.title}-${index}`} className="flex items-start gap-6 border-b border-[#e7e9e8] py-6">
-                <span className="pt-1 text-[.75rem] font-bold tracking-[.14em] text-primary">{String(index + 1).padStart(2, '0')}</span>
                 <div>
                   <p className="text-lg font-semibold text-dark">{item.title}</p>
                   {item.body && <p className="mt-1 max-w-2xl leading-7 text-muted-fg">{item.body}</p>}
@@ -48,10 +47,10 @@ export default function ServiceExtras({
         <div className="mt-20">
           <h2 className="text-3xl font-bold tracking-tight text-dark md:text-4xl">Related services</h2>
           <div className="mt-8">
-            {related.map((item, index) => item.href ? (
-              <Link key={`${item.label}-${item.href}`} href={item.href} className="flex items-center justify-between border-b border-[#e7e9e8] py-5 text-lg font-semibold text-dark transition-colors hover:text-primary">
-                <span><span className="mr-5 text-[.75rem] tracking-[.14em] text-primary">{String(index + 1).padStart(2, '0')}</span>{item.label}</span>
-                <ArrowRight size={18} className="text-primary" />
+            {related.map((item) => item.href ? (
+              <Link key={`${item.label}-${item.href}`} href={item.href} className="flex items-center justify-between border-b border-[#e7e9e8] py-5 text-lg font-semibold text-dark transition-colors hover:text-[#E85D2A]">
+                <span>{item.label}</span>
+                <ArrowRight size={18} className="text-[#0d0d0d]/40" />
               </Link>
             ) : (
               <div key={item.label} className="border-b border-[#e7e9e8] py-5 text-lg font-semibold text-muted-fg">{item.label}</div>

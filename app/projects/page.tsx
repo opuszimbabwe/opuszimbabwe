@@ -5,7 +5,7 @@ export default function Projects() {
   return (
     <main>
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-20">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">Our work</p>
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">Our work</p>
         <h1 className="mt-3 text-4xl font-bold text-dark md:text-5xl">Live Work</h1>
         <p className="mt-4 max-w-2xl leading-7 text-fg">
           Every project listed here is live, real and built by Opus Zimbabwe. More work is delivered regularly.

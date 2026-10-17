@@ -5,6 +5,7 @@
 // badge with no link.
 
 import { json, requireAdmin } from '../../_lib/auth';
+import { isUrlPath } from '../../_lib/db';
 import { PagesHandler } from '../../_lib/types';
 
 const MAX_PROJECTS = 50;
@@ -42,6 +43,7 @@ export const onRequestPut: PagesHandler = async (context) => {
     tag: string;
     location: string;
     description: string;
+    screenshot: string;
     status: string;
     visible: number;
   }[] = [];
@@ -53,6 +55,10 @@ export const onRequestPut: PagesHandler = async (context) => {
     if (!validUrl(url)) return json({ error: 'invalid_project_url', name }, 400);
     const status = project?.status === 'coming_soon' ? 'coming_soon' : 'active';
     if (status === 'active' && !url) return json({ error: 'active_project_needs_url', name }, 400);
+    const screenshot = str(project?.screenshot, 500).trim();
+    if (screenshot && !isUrlPath(screenshot)) {
+      return json({ error: 'invalid_project_screenshot', name }, 400);
+    }
     cleaned.push({
       id: str(project?.id, 80).trim() || `pr_${crypto.randomUUID().slice(0, 8)}`,
       name,
@@ -60,6 +66,7 @@ export const onRequestPut: PagesHandler = async (context) => {
       tag: str(project?.tag, 200).trim(),
       location: str(project?.location, 200).trim(),
       description: str(project?.description, 3000).trim(),
+      screenshot,
       status,
       visible: project?.visible === false || project?.visible === 0 ? 0 : 1,
     });
@@ -72,7 +79,7 @@ export const onRequestPut: PagesHandler = async (context) => {
       statements.push(
         db
           .prepare(
-            'INSERT INTO projects (id, name, url, tag, location, description, status, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))'
+            'INSERT INTO projects (id, name, url, tag, location, description, screenshot, status, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))'
           )
           .bind(
             project.id,
@@ -81,6 +88,7 @@ export const onRequestPut: PagesHandler = async (context) => {
             project.tag,
             project.location,
             project.description,
+            project.screenshot,
             project.status,
             index,
             project.visible

@@ -19,7 +19,7 @@ export default function Domains() {
   return (
     <main>
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-20">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">
           Domains, Hosting & Business Email
         </p>
         <h1 className="mt-3 max-w-2xl text-4xl font-bold leading-tight text-dark md:text-5xl">
@@ -35,7 +35,7 @@ export default function Domains() {
       </section>
 
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-20">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">Zimbabwe Domains</p>
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">Zimbabwe Domains</p>
         <h2 className="mt-2 text-2xl font-bold text-dark">
           Establish your Zimbabwean presence with a local domain.
         </h2>
@@ -47,10 +47,10 @@ export default function Domains() {
           {localDomains.map(([ext, price, note]) => (
             <div
               key={ext}
-              className="rounded-[20px] border border-[#e8e8e8] bg-white p-6 transition-all hover:border-primary/40"
+              className="rounded-[20px] border border-[#e8e8e8] bg-white p-6 transition-all hover:border-[#0d0d0d]/30"
             >
               <h3 className="text-2xl font-bold text-dark">{ext}</h3>
-              <p className="mt-1 text-lg font-bold text-primary">{price}</p>
+              <p className="mt-1 text-lg font-bold text-[#0d0d0d]">{price}</p>
               <p className="mt-2 text-[.85rem] leading-5 text-muted-fg">{note}</p>
               <Link
                 href={contactHref(SERVICE, ext)}
@@ -64,13 +64,13 @@ export default function Domains() {
       </section>
 
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-16">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">International Domains</p>
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">International Domains</p>
         <h2 className="mt-2 text-2xl font-bold text-dark">International extensions also available.</h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {intlDomains.map(([ext, price, note]) => (
             <div key={ext} className="rounded-[20px] border border-[#e8e8e8] bg-[#f8f7fb] p-6">
               <h3 className="text-2xl font-bold text-dark">{ext}</h3>
-              <p className="mt-1 text-lg font-bold text-primary">{price}</p>
+              <p className="mt-1 text-lg font-bold text-[#0d0d0d]">{price}</p>
               <p className="mt-2 text-[.85rem] leading-5 text-muted-fg">{note}</p>
               <Link
                 href={contactHref(SERVICE, ext)}
@@ -84,7 +84,7 @@ export default function Domains() {
       </section>
 
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-20">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">Hosting & Email</p>
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">Hosting & Email</p>
         <h2 className="mt-2 text-2xl font-bold text-dark">
           Everything else your digital presence needs to run.
         </h2>
@@ -104,7 +104,7 @@ export default function Domains() {
             ],
           ].map(([title, price, features, cta]) => (
             <div key={title as string} className="rounded-[24px] border border-[#e8e8e8] bg-white p-7">
-              <p className="mb-3 text-[.72rem] font-semibold uppercase tracking-widest text-primary">{title}</p>
+              <p className="mb-3 text-[.72rem] font-semibold uppercase tracking-widest text-[#0d0d0d]/55">{title}</p>
               <h3 className="text-2xl font-bold text-dark">{price}</h3>
               <p className="mt-3 text-[.95rem] leading-7 text-fg">
                 Professional infrastructure configured and supported by Opus Zimbabwe.

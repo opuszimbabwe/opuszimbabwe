@@ -54,6 +54,7 @@ async function main() {
     const { res, text } = await req('/');
     check('GET / responds 200 HTML', res.status === 200 && (res.headers.get('content-type') || '').includes('text/html'));
     check('home renders static fallback service card', text.includes('Website Design &amp; Development') && text.includes('/images/service-web-design.png'));
+    check('navbar uses the transparent Opus logo', text.includes('/images/logo-full.png'));
   }
   {
     const { res, text } = await req('/admin/');
@@ -73,8 +74,69 @@ async function main() {
     check('GET /api/content responds 200 JSON', res.status === 200 && !!json);
     content = json;
     check('6 services from D1', Array.isArray(content?.services) && content.services.length === 6, `got ${content?.services?.length}`);
-    check('3 pricing cards from D1', Array.isArray(content?.pricing) && content.pricing.length === 3, `got ${content?.pricing?.length}`);
+    check('6 pricing cards from D1', Array.isArray(content?.pricing) && content.pricing.length === 6, `got ${content?.pricing?.length}`);
+    check(
+      'pricing cards carry price ranges',
+      content?.pricing?.[0]?.monthly_price === '$30 – $59.99' && content?.pricing?.[5]?.monthly_price === 'Custom quote',
+      content?.pricing?.[0]?.monthly_price
+    );
+    check('pricing cards carry "what it covers" copy', typeof content?.pricing?.[0]?.yearly_price === 'string' && content.pricing[0].yearly_price.length > 5);
     check('hero background setting', content?.settings?.hero_background === '/images/hero-bg.jpg', content?.settings?.hero_background);
+    check(
+      'service_pages content served for all 6 services',
+      Object.keys(content?.settings?.service_pages || {}).length === 6,
+      Object.keys(content?.settings?.service_pages || {}).join(', ')
+    );
+    check(
+      'web-design price range in service page content',
+      content?.settings?.service_pages?.['web-design']?.price_range === '$30 – $1,000+',
+      content?.settings?.service_pages?.['web-design']?.price_range
+    );
+    check(
+      'home section headings avoid over-emphasised "real"',
+      !/real/i.test(content?.settings?.home_sections?.projects_heading || '') &&
+        !/real/i.test(content?.settings?.home_sections?.partners_heading || '')
+    );
+    check(
+      'trusted-by subheading served',
+      String(content?.settings?.home_sections?.partners_subheading || '').includes('Trusted by businesses')
+    );
+    check(
+      'projects expose a screenshot field',
+      Array.isArray(content?.projects) && content.projects.every((p) => typeof p.screenshot === 'string')
+    );
+    check(
+      'browser title + favicon settings served',
+      !!content?.settings?.browser_title && String(content?.settings?.favicon_icon || '').startsWith('/images/')
+    );
+  }
+  {
+    const { res, text } = await req('/services/web-design/');
+    check('GET /services/web-design/ responds 200', res.status === 200);
+    check(
+      'web design page renders brief headline',
+      text.includes('A website that represents your business the way it deserves to be represented.')
+    );
+    check('web design page renders problem section', text.includes('Most Zimbabwean businesses are invisible online.'));
+    check('web design page renders tools strip', text.includes('/images/tools/nextjs.svg'));
+    check(
+      'service page renders the six brief sections only',
+      text.includes('The problem') &&
+        text.includes('What we build') &&
+        text.includes('Tools we use') &&
+        !text.includes('Why Opus Zimbabwe?') &&
+        !text.includes('01 — Introduction')
+    );
+  }
+  {
+    const { res, text } = await req('/services/domains-hosting/');
+    check('GET /services/domains-hosting/ responds 200', res.status === 200);
+    check('domains page renders domain pricing table', text.includes('.co.zw') && text.includes('Within 24 hours'));
+    check('domains page renders WhatsApp CTA link', text.includes('https://wa.me/263710740387'));
+  }
+  {
+    const { res } = await req('/images/tools/nextjs.svg');
+    check('tool logo asset served', res.status === 200);
   }
 
   console.log('\nAccess control (simulated Cloudflare Access):');
@@ -116,23 +178,23 @@ async function main() {
     const { res, json } = await req('/api/admin/services', {
       method: 'PATCH',
       headers: ACCESS_HEADERS,
-      body: JSON.stringify({ id: 'web-design', tagline: 'SMOKE TEST TAGLINE' }),
+      body: JSON.stringify({ id: 'web-design', tagline: 'SMOKE TEST TAGLINE', card_bg_color: '#fff4ec' }),
     });
     check('PATCH service succeeds', res.status === 200 && json?.ok === true);
     const after = await req('/api/content');
     const changed = after.json?.services?.find((s) => s.id === 'web-design');
-    check('change visible via /api/content', changed?.tagline === 'SMOKE TEST TAGLINE');
+    check('change visible via /api/content', changed?.tagline === 'SMOKE TEST TAGLINE' && changed?.card_bg_color === '#fff4ec');
     check('other fields untouched by partial PATCH', changed?.image === original?.image && changed?.description === original?.description && (changed?.items || []).length === (original?.items || []).length);
 
     // restore
     await req('/api/admin/services', {
       method: 'PATCH',
       headers: ACCESS_HEADERS,
-      body: JSON.stringify({ id: 'web-design', tagline: 'Online Presence' }),
+      body: JSON.stringify({ id: 'web-design', tagline: 'Online Presence', card_bg_color: '#ffffff' }),
     });
     const restored = await req('/api/content');
     const back = restored.json?.services?.find((s) => s.id === 'web-design');
-    check('service restored', back?.tagline === 'Online Presence' && back?.image === '/images/service-web-design.png');
+    check('service restored', back?.tagline === 'Online Presence' && back?.card_bg_color === '#ffffff' && back?.image === '/images/service-web-design.png');
   }
   {
     const { res } = await req('/api/admin/services', {
@@ -150,8 +212,8 @@ async function main() {
       headers: ACCESS_HEADERS,
       body: JSON.stringify({
         cards: [
-          { id: 'starter', name: 'Starter', monthly_price: '$35', yearly_price: '$30/mo', features: ['Edited feature'], visible: true },
-          { id: '', name: 'Smoke Plan', monthly_price: '$9', yearly_price: '$9/mo', features: ['Test only'], visible: true },
+          { id: 'starter', name: 'Starter', monthly_price: '$35 – $39', yearly_price: 'Edited coverage', features: ['Edited feature'], visible: true },
+          { id: '', name: 'Smoke Plan', monthly_price: '$9', yearly_price: 'Test coverage', features: ['Test only'], visible: true },
         ],
       }),
     });
@@ -159,7 +221,8 @@ async function main() {
     const after = await req('/api/content');
     const cards = after.json?.pricing || [];
     check('now 2 cards', cards.length === 2, `got ${cards.length}`);
-    check('edited price applied', cards.find((c) => c.id === 'starter')?.monthly_price === '$35');
+    check('edited price range applied', cards.find((c) => c.id === 'starter')?.monthly_price === '$35 – $39');
+    check('edited coverage applied', cards.find((c) => c.id === 'starter')?.yearly_price === 'Edited coverage');
     check('new card present', cards.some((c) => c.name === 'Smoke Plan'));
 
     // restore the seeded 3 cards
@@ -168,14 +231,21 @@ async function main() {
       headers: ACCESS_HEADERS,
       body: JSON.stringify({
         cards: [
-          { id: 'starter', name: 'Starter', monthly_price: '$30', yearly_price: '$25/mo', features: ['Up to 5 pages', 'Mobile responsive', 'Contact form', 'Basic SEO setup', 'SSL certificate', '3-7 day delivery'], visible: true },
-          { id: 'professional', name: 'Professional', monthly_price: '$60', yearly_price: '$50/mo', features: ['Up to 10 pages', 'Mobile responsive', 'Contact & enquiry forms', 'Full SEO optimisation', 'SSL certificate', 'WhatsApp integration', '1-2 week delivery'], visible: true },
-          { id: 'custom', name: 'Custom', monthly_price: "Let's talk", yearly_price: "Let's talk", features: ['Unlimited pages', 'Custom functionality', 'E-commerce or booking', 'API integrations', 'Ongoing support included', 'Custom timeline'], visible: true },
+          { id: 'starter', name: 'Starter', monthly_price: '$30 – $59.99', yearly_price: 'Entry website with hosting from $10/month', features: ['Up to 5 pages & mobile responsive', 'Contact form & basic SEO setup', 'SSL certificate included', '3–7 day delivery'], visible: true },
+          { id: 'standard', name: 'Standard', monthly_price: '$60 – $99.99', yearly_price: 'Standard website package', features: ['Up to 8 pages & mobile responsive', 'Contact & enquiry forms', 'Enhanced SEO & WhatsApp integration', 'SSL certificate included'], visible: true },
+          { id: 'business', name: 'Business', monthly_price: '$100 – $199.99', yearly_price: 'Growing organisations — includes free first-year .co.zw / .org.zw / .ac.zw domain', features: ['Built for growing organisations', 'CMS / content management & portfolio sections', 'Full SEO optimisation & WhatsApp integration', 'SSL certificate included'], visible: true },
+          { id: 'professional', name: 'Professional', monthly_price: '$200 – $499.99', yearly_price: 'Larger or more advanced requirements — .com / .net / .org available', features: ['.com / .net / .org domain extensions available', 'Booking systems, portals or e-commerce ready', 'Local payment integration (EcoCash, InnBucks, Paynow)', 'Priority support & custom workflows'], visible: true },
+          { id: 'premium', name: 'Premium', monthly_price: '$500 – $1,000', yearly_price: 'Advanced website requirements', features: ['Advanced website & platform requirements', 'Custom integrations & multi-system workflows', 'High-volume e-commerce or institutional portals', 'Performance & security architecture', 'Dedicated post-launch support'], visible: true },
+          { id: 'custom', name: 'Custom', monthly_price: 'Custom quote', yearly_price: 'Standalone custom scope — contact us for a quote', features: ['Standalone custom scope tailored to your organisation', 'Unlimited pages & bespoke functionality', 'Custom software, AI & API integrations', 'Dedicated project architecture & timeline', 'Ongoing support included'], visible: true },
         ],
       }),
     });
     const restored = await req('/api/content');
-    check('pricing restored to 3 seeded cards', restored.json?.pricing?.length === 3 && restored.json?.pricing?.[0]?.monthly_price === '$30');
+    check('pricing restored to 6 seeded cards', restored.json?.pricing?.length === 6 && restored.json?.pricing?.[0]?.monthly_price === '$30 – $59.99');
+    check(
+      'custom pricing card restored',
+      restored.json?.pricing?.[5]?.name === 'Custom' && restored.json?.pricing?.[5]?.monthly_price === 'Custom quote'
+    );
   }
 
   console.log('\nHero background setting:');
@@ -199,6 +269,64 @@ async function main() {
       body: JSON.stringify({ hero_background: 'javascript:alert(1)' }),
     });
     check('unsafe URL rejected (400)', res.status === 400);
+  }
+
+  console.log('\nService page content editing:');
+  {
+    const before = await req('/api/content');
+    const pages = before.json?.settings?.service_pages || {};
+    const seeded = pages['ai-automation'];
+    const edited = { ...seeded, price_range: 'Starting from $75', problem_text: 'Smoke-test problem paragraph.' };
+    const { res } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ service_pages: { ...pages, 'ai-automation': edited } }),
+    });
+    check('PUT service_pages succeeds', res.status === 200, `HTTP ${res.status}`);
+    const after = await req('/api/content');
+    check('edited price range saved', after.json?.settings?.service_pages?.['ai-automation']?.price_range === 'Starting from $75');
+    check('edited problem text saved', after.json?.settings?.service_pages?.['ai-automation']?.problem_text === 'Smoke-test problem paragraph.');
+    check(
+      'other service pages untouched',
+      after.json?.settings?.service_pages?.['web-design']?.price_range === '$30 – $1,000+'
+    );
+
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ service_pages: pages }),
+    });
+    const restored = await req('/api/content');
+    check(
+      'service page restored',
+      restored.json?.settings?.service_pages?.['ai-automation']?.price_range === 'Starting from $50'
+    );
+  }
+  {
+    const { res } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        browser_title: 'Opus Zimbabwe — Test Title',
+        favicon_icon: '/images/favicon-96x96.png',
+      }),
+    });
+    check('PUT browser title + favicon succeeds', res.status === 200);
+    const after = await req('/api/content');
+    check('browser title updated', after.json?.settings?.browser_title === 'Opus Zimbabwe — Test Title');
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ browser_title: 'Opus Zimbabwe — Digital Services for Zimbabwe' }),
+    });
+  }
+  {
+    const { res } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ favicon_icon: 'javascript:alert(1)' }),
+    });
+    check('unsafe favicon URL rejected (400)', res.status === 400);
   }
 
   console.log('\nR2 image upload:');
@@ -327,18 +455,16 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
-  // Projects (migration 0003): active = link, coming_soon = badge
+  // Projects: 2 active live projects only
   // -------------------------------------------------------------------------
   console.log('\nProjects:');
   {
     const before = await req('/api/content');
     const seeded = before.json?.projects || [];
     check(
-      '4 projects from D1 (2 active, 2 coming_soon, badge rows unlinked)',
-      seeded.length === 4 &&
-        seeded.filter((p) => p.status === 'active').length === 2 &&
-        seeded.filter((p) => p.status === 'coming_soon').length === 2 &&
-        seeded.filter((p) => p.status === 'coming_soon').every((p) => p.url === '')
+      '2 live projects from D1 (Great Couples + Prime PIDG)',
+      seeded.length === 2 &&
+        seeded.every((p) => p.status === 'active' && /^https:\/\//.test(p.url))
     );
 
     const unauth = await req('/api/admin/projects', {
@@ -362,13 +488,22 @@ async function main() {
     });
     check('active project without URL rejected (400)', noUrl.res.status === 400);
 
+    const badShot = await req('/api/admin/projects', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        projects: [{ id: 'x', name: 'Bad shot', url: 'https://example.com', screenshot: 'javascript:alert(1)', status: 'active' }],
+      }),
+    });
+    check('unsafe project screenshot rejected (400)', badShot.res.status === 400);
+
     const { res, json } = await req('/api/admin/projects', {
       method: 'PUT',
       headers: ACCESS_HEADERS,
       body: JSON.stringify({
         projects: [
-          { ...seeded[0], description: 'SMOKE EDIT' },
-          { id: '', name: 'Smoke Project', url: 'https://example.com', tag: 'Smoke', location: 'Harare', description: 'Test only', status: 'active', visible: true },
+          { ...seeded[0], description: 'SMOKE EDIT', screenshot: '/images/hero-website-design.png' },
+          { id: '', name: 'Smoke Project', url: 'https://example.com', tag: 'Smoke', location: 'Harare', description: 'Test only', screenshot: '/images/service-software.jpg', status: 'active', visible: true },
         ],
       }),
     });
@@ -382,6 +517,11 @@ async function main() {
         projects.find((p) => p.id === seeded[0].id)?.description === 'SMOKE EDIT' &&
         projects.some((p) => p.name === 'Smoke Project' && p.status === 'active')
     );
+    check(
+      'project screenshots saved + served',
+      projects.find((p) => p.id === seeded[0].id)?.screenshot === '/images/hero-website-design.png' &&
+        projects.find((p) => p.name === 'Smoke Project')?.screenshot === '/images/service-software.jpg'
+    );
 
     await req('/api/admin/projects', {
       method: 'PUT',
@@ -390,8 +530,8 @@ async function main() {
     });
     const restored = await req('/api/content');
     check(
-      'projects restored to 4 seeded rows',
-      restored.json?.projects?.length === 4 &&
+      'projects restored to 2 seeded rows',
+      restored.json?.projects?.length === 2 &&
         restored.json?.projects?.[0]?.description === seeded[0].description
     );
   }
@@ -578,18 +718,40 @@ async function main() {
   {
     const before = await req('/api/content');
     const original = {
+      heroCycles: before.json?.settings?.hero_cycles,
       approach: before.json?.settings?.approach_items,
       built: before.json?.settings?.built_for_zimbabwe,
       faqHome: before.json?.settings?.faq_home,
       faqPage: before.json?.settings?.faq_page,
     };
     check(
-      'home sections seeded (5 approach steps, 3 home FAQs, 8 page FAQs, Built heading)',
-      original.approach?.length === 5 &&
+      'home sections seeded (6 hero cycles, 5 approach steps, 3 home FAQs, 8 page FAQs)',
+      original.heroCycles?.length === 6 &&
+        original.approach?.length === 5 &&
         original.faqHome?.length === 3 &&
-        original.faqPage?.length === 8 &&
-        Boolean(original.built?.heading)
+        original.faqPage?.length === 8
     );
+
+    const { res: cycleRes } = await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({
+        hero_cycles: original.heroCycles.map((c, idx) =>
+          idx === 0 ? { ...c, question: 'SMOKE HERO QUESTION?' } : c
+        ),
+      }),
+    });
+    const afterCycle = await req('/api/content');
+    check(
+      'PUT hero_cycles succeeds and updates cycle 1',
+      cycleRes.status === 200 &&
+        afterCycle.json?.settings?.hero_cycles?.[0]?.question === 'SMOKE HERO QUESTION?'
+    );
+    await req('/api/admin/settings', {
+      method: 'PUT',
+      headers: ACCESS_HEADERS,
+      body: JSON.stringify({ hero_cycles: original.heroCycles }),
+    });
 
     const { res } = await req('/api/admin/settings', {
       method: 'PUT',
@@ -672,10 +834,11 @@ async function main() {
 
     const projects = await req('/projects/');
     check(
-      'projects page renders seeded projects (active link + coming soon badge)',
+      'projects page renders live projects (without ZimTrade or Agricom)',
       projects.res.status === 200 &&
         projects.text.includes('Great Couples International Trust') &&
-        projects.text.includes('Coming soon')
+        !projects.text.includes('ZimTrade') &&
+        !projects.text.includes('Agricom')
     );
 
     const contact = await req('/contact/?service=Website%20Design%20%26%20Development&domain=example.co.zw');
@@ -683,10 +846,14 @@ async function main() {
 
     const home = await req('/');
     check(
-      'home renders the trusted partner logos + why-choose-us headings',
-      home.text.includes('/images/partner-great-couples.png') &&
-        home.text.includes('Fast, affordable, and built to last') &&
-        home.text.includes('Local Payments')
+      'home renders the static hero headline, payment strip, "Partners who trust us", and why-choose-us cards',
+      home.text.includes('Your business is working hard.') &&
+        home.text.includes('The results should show it.') &&
+        home.text.includes('We accept local payments') &&
+        home.text.includes('Partners who trust us') &&
+        home.text.includes('/images/partner-great-couples.png') &&
+        home.text.includes('Why choose us.') &&
+        home.text.includes('Fast Turnaround')
     );
   }
 

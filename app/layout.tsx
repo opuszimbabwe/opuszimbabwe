@@ -1,10 +1,7 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
-// Use system font stack to avoid Google Fonts network fetch during build
-// Poppins is still referenced via CSS variable for styling
-const poppins = { variable: '--font-poppins' } as any;
+import BrandHeadSync from '@/components/BrandHeadSync';
 
 export const metadata = {
   title: 'Opus Zimbabwe — Digital Services for Zimbabwe',
@@ -15,7 +12,7 @@ export const metadata = {
       { url: '/images/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/images/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: '/images/logo.png',
+    apple: '/images/logo-full.png',
     shortcut: '/images/favicon-96x96.png',
   },
   // Served by the Pages Function /api/manifest so the admin-set icon applies
@@ -23,14 +20,15 @@ export const metadata = {
   manifest: '/api/manifest',
 };
 
-export default function Layout({children}:{children:React.ReactNode}){
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={poppins.variable}>
-      <body className="font-poppins">
-        <Navbar/>
+    <html lang="en">
+      <body className="font-poppins bg-[#f8f8f6] text-[#0d0d0d]">
+        <BrandHeadSync />
+        <Navbar />
         {children}
-        <Footer/>
+        <Footer />
       </body>
     </html>
-  )
+  );
 }

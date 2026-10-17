@@ -9,3 +9,6 @@ out
 .DS_Store
 npm-debug.log*
 .env
+
+# D1 exports (npm run db:backup:remote)
+backups/

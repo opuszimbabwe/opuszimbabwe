@@ -98,19 +98,122 @@ npx wrangler r2 bucket create opuszim-uploads
 Verify the ID took effect with `npx wrangler d1 list` (it should match the
 `database_id` in `wrangler.toml`).
 
-### 2. Apply migrations remotely
+### 2. Apply migrations remotely (0006 → 0011)
+
+Two ways to do this. **Option A needs no terminal** — GitHub runs the commands
+for you and shows the output in the browser.
+
+#### Option A — from the GitHub website (no local terminal)
+
+One-time setup:
+
+1. **Cloudflare API token** — dash.cloudflare.com → *My Profile* →
+   *API Tokens* → *Create Token* → *Custom token*:
+   - `Account` → `D1` → **Edit**
+   - `Account` → `Account Settings` → **Read**
+   - Account resources: the account that owns `opuszim-content`
+2. **Account ID** — Cloudflare dashboard → *Workers & Pages*; the ID is in the
+   right-hand sidebar (also shown on the D1 database page).
+3. **GitHub secrets** — repo → *Settings* → *Secrets and variables* →
+   *Actions* → *New repository secret*:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+
+Then run **Actions** → **D1 (remote)** → *Run workflow*:
+
+| Task | What it does |
+| --- | --- |
+| `verify` | Read-only checks — run any time, changes nothing |
+| `list` | Shows which migrations are still pending |
+| `backup` | Exports the database; the `.sql` file is attached to the run |
+| `migrate` | Backs up, applies every pending migration, then verifies |
+
+`migrate` only runs when the **confirm** field contains exactly `MIGRATE`.
+Every backup is uploaded as a `d1-backup-<run>` artifact (kept 30 days), and
+the migration list, apply log and verification table are written to the run's
+**Summary** page.
+
+Recommended sequence after merging a release:
+
+1. Merge → wait for the Cloudflare Pages deployment to go green.
+2. Actions → **D1 (remote)** → task `verify` → run. Expect `MISSING` rows for
+   the new columns, which confirms the target database before you change it.
+3. Run again with task `migrate` and `confirm` = `MIGRATE`.
+4. Open the Summary: `d1_migrations` should list `0001` … `0011`, the three
+   columns read `OK`, `pricing_cards` shows six price-range rows, and
+   `navbar_logo` is `/images/logo-full.png`.
+
+#### Option B — from a terminal
 
 ```bash
-npx wrangler d1 migrations apply opuszim-content --remote
+npx wrangler login                 # once per machine — use the account that owns the D1 database
+npx wrangler d1 list               # confirm opuszim-content matches database_id in wrangler.toml
+
+npm run db:backup:remote           # writes backups/opuszim-content.sql
+npm run db:migrations:list         # shows exactly which migrations are pending
+npm run db:migrate:remote          # applies every pending migration, in order
+npm run db:verify:remote           # read-only checks for 0006–0011
 ```
 
-This applies all migrations through `0005_service_visuals.sql` (schema + seed
-content identical to the static site, service heroes/Why Opus/related links,
-projects, partners, and the admin-managed visual/example image for every service
-page). Migration 0005 is additive and seeds the existing service images, so it
-is safe on top of the current production data. Apply it before or together with
-deploying the new code: the public site keeps rendering its built-in fallback
-content, but `/api/content` needs the new column.
+Equivalent raw commands (identical behaviour):
+
+```bash
+npx wrangler d1 export opuszim-content --remote --output=backups/opuszim-content.sql
+npx wrangler d1 migrations list opuszim-content --remote
+npx wrangler d1 migrations apply opuszim-content --remote
+npx wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql
+```
+
+**Order matters:** deploy the new code first (step 3), then apply the
+migrations. The new code tolerates the old schema (it falls back when
+`card_bg_color`, `bg_color` or `screenshot` is absent), so there is no error
+window, and the public site never renders half-migrated pricing.
+
+What each migration does:
+
+| File | Change | Data impact |
+| --- | --- | --- |
+| `0006_homepage_redesign.sql` | `services.card_bg_color`; seeds `hero_cycles`, `approach_items` | Deletes `zimtrade`/`agricom` and any `coming_soon` projects |
+| `0007_admin_privileges_and_home_updates.sql` | `partners.bg_color`; seeds `payment_methods`, `why_choose_us`, `home_sections` | Overwrites those three settings keys |
+| `0008_service_pages_full_content.sql` | seeds `service_pages`, `favicon_icon`, `browser_title`; replaces `pricing_cards`; refreshes `service_extras` heroes | **`DELETE FROM pricing_cards`**, then inserts the six price-range packages; overwrites `service_pages` and the six hero rows |
+| `0009_transparent_navbar_logo.sql` | `navbar_logo` → `/images/logo-full.png` | Only when the value is still the old `/images/logo.png` |
+| `0010_project_screenshots.sql` | `projects.screenshot` column | Additive, no data loss |
+| `0011_confidence_copy_fixes.sql` | Trusted-By subheading, Projects/How It Works headings | Only rewrites the seeded/empty values |
+
+If pricing, service heroes, hero cycles, How It Works copy, Local Payments,
+Why Choose Us or partner details have already been edited in production, take
+the export first and re-enter those edits in `/admin` afterwards — or copy
+`backups/opuszim-content.sql` somewhere safe and restore individual rows from
+it (`INSERT … ON CONFLICT DO UPDATE`) if you need the old values back.
+
+If the database has drifted (a migration was pasted into the D1 dashboard SQL
+console instead of being applied by Wrangler), `d1_migrations` will not record
+it and the next `migrations apply` will fail with `duplicate column name`. Fix
+that by recording the file as applied before re-running:
+
+```bash
+npx wrangler d1 execute opuszim-content --remote \
+  --command "INSERT INTO d1_migrations (name) VALUES ('0006_homepage_redesign.sql');"
+```
+
+(Repeat for each file already applied by hand.) Always prefer the Wrangler
+path so the ledger stays accurate.
+
+### 2b. Alternative: apply from CI
+
+If deployments run from GitHub Actions rather than a laptop, add a
+`CLOUDFLARE_API_TOKEN` (scoped to **D1:Edit**) and `CLOUDFLARE_ACCOUNT_ID`
+secret, then run:
+
+```yaml
+- run: npx wrangler d1 migrations apply opuszim-content --remote
+  env:
+    CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+```
+
+Trigger it manually (`workflow_dispatch`) for deploys like this one rather
+than on every push, so production data changes stay deliberate.
 
 ### 3. Deploy
 

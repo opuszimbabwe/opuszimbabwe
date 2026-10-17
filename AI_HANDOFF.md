@@ -1,124 +1,164 @@
 # AI handoff — Opus Zimbabwe
 
-_Last checked: 2026-09-26 (UTC)_
+_Last checked: 2026-10-17 (UTC)_
 
 ## What is currently in the repository
 
-The public site is a static Next.js export (`output: 'export'`) with the visual
-system and route structure already in place. Service content is defined in
-`lib/content.ts` as the built-in fallback. The six service cards currently use
-admin/D1 data when available and fall back to the static copy and images:
+The public site is a static Next.js export (`output: 'export'`) served by
+Cloudflare Pages with Pages Functions for the API. Content lives in the D1
+database and is mirrored as static fallbacks in `lib/content.ts` so the site
+still renders if `/api/content` is unreachable.
 
-- Website Design & Development — `/images/service-web-design.png`
-- Software & Systems — `/images/service-software.jpg`
-- AI & Automation — `/images/service-ai.jpg`
-- Graphic Design & Branding — `/images/service-graphic.png`
-- Domain & Hosting — `/images/service-hosting.png`
-- API & Integrations — `/images/service-api.jpg`
+### Design system
 
-The home “What We Do” design is implemented in `components/ServicesShowcase.tsx`
-as a horizontal split carousel matching the provided reference: a large soft
-mint copy panel on the left, the service's own image on the right, a partially
-visible neighbouring card, centered arrow/dot controls underneath, rounded
-corners on the inner image/card, and the Opus orange-to-gold gradient CTA. It
-uses the service's own `name`, `tagline`, `description`, `image`, and slug, so it
-remains compatible with D1/admin content. On mobile the split card stacks copy
-above image. The `/services` list is separate (`components/ServicesList.tsx`).
-The reusable older card component is `components/ServiceCard.tsx`; do not
-assume it is the home carousel design.
+- **Fonts:** Inter 800–900 for the static homepage hero headline only;
+  Poppins for everything else.
+- **Backgrounds:** alternating `#f8f8f6` and `#ffffff` homepage sections.
+  Primary text `#0d0d0d`.
+- **Orange `#E85D2A`:** buttons, hover states and the active CTA only
+  (plus the subtle orange left border on service card hover). Never on
+  eyebrows, section numbers, decorative elements or static borders.
+- **Red:** only the phrase “The results should show it.” in the homepage hero.
+- No eyebrow labels or section numbers on homepage lists/grids.
 
-The service page heroes in `components/ServiceHero.tsx` now sit inside rounded,
-max-width containers with the same gradient CTA. Their image/gradient selection,
-background image upload/path, gradient builder, and hero copy are already
-editable per service in the Services tab.
-Service page hero/Why Opus/related content is in `staticExtras` and the D1
-`service_extras` table.
+### Homepage
 
-## Issue investigated: “Content API unreachable …”
+Section order (all headings/backgrounds editable in `/admin` → Hero & Sections):
 
-The warning is produced by `components/admin/AdminDashboard.tsx` when
-`useSiteContent()` cannot fetch `/api/content`. It is not a service-card content
-error. The API is implemented as a Cloudflare Pages Function in
-`functions/api/content.ts`, backed by the D1 binding `DB` in `wrangler.toml`.
+1. `components/HomeHero.tsx` — 55/45 hero, six synced rotating cycles with
+   transparent images placed directly on the body (no container box).
+2. `components/PaymentTrustStrip.tsx` — local payment logos from
+   `settings.payment_methods`, greyscale until hover.
+3. `components/HomeServicesGrid.tsx` + `components/ServiceCard.tsx` — 3×2
+   vertical cards, 80 ms stagger, 6 px lift, orange left border on hover,
+   per-card bottom background colour (`services.card_bg_color`).
+4. `components/TrustedPartners.tsx` — “Partners who trust us” with per-partner
+   tile background (`partners.bg_color`; Killing Giants is `#000000`).
+5. `components/OpusApproach.tsx` — the five How It Works steps.
+6. `components/HomeProjects.tsx` — all active live-work projects, each with an
+   admin-uploaded screenshot (`projects.screenshot`). Until a screenshot is
+   uploaded the card shows a neutral browser-frame placeholder with the
+   project's domain (never a fabricated screenshot).
+7. `components/WhyChooseUs.tsx` — six inverted-corner cards.
+8. `components/FaqAccordion.tsx` — three homepage FAQs.
+9. Final CTA — “Ready to get your business going?” → `/contact/`.
+10. `components/Footer.tsx` — unchanged structure.
 
-### Root cause in local development
+### Individual service pages
 
-Running `npm run dev` starts only the Next.js static frontend. Next does not
-serve the Pages Functions or the D1 binding, so `/api/content` is expected to
-fail and the admin correctly switches to fallback content. Saving from that
-Next-only server cannot work.
+`components/ServicePageTemplate.tsx` renders the full content spec for each of
+the six pages in this order:
 
-For a working local API, use the Pages dev server instead:
+1. Hero (`components/ServiceHero.tsx`) — headline, intro and CTA from
+   `service_extras` (admin-editable); CTA anchors to `#pricing` for
+   “View Packages” / “View Pricing”, goes to `/projects/` for “See Our Work”
+   and to `/contact` otherwise.
+2. **The problem** — `service_pages[id].problem_text`.
+3. **What we build / design / provide / integrate** — `what_heading`,
+   `what_intro`, `what_items[]`, plus the admin-managed supporting image
+   (`service_extras.visual_background`).
+4. **Pricing** — `price_range`, `price_summary`, `price_note`:
+   - `/services/web-design/` renders the six website packages using the
+     original `components/PricingCard.tsx` card design. `monthly_price` is the
+     plan **price range** (e.g. `$30 – $59.99`) and `yearly_price` is
+     **what it covers**.
+   - `/services/domains-hosting/` renders the domain table
+     (`domain_prices[]`), the hosting price card and the three email plans
+     (`email_plans[]`) in the same card style.
+   - Every other service renders one price-range card.
+5. **Process** — `process_steps[]`.
+6. **Tools we use** — `tools_items[]` logos (uploadable) + `tools_note`.
+   Logo assets live in `public/images/tools/`.
+7. **WhatsApp CTA** — `cta_heading`, `cta_body`, `cta_button`, `cta_url`
+   (defaults to `https://wa.me/263710740387`).
+
+All of this is stored in the `settings.service_pages` JSON key. Admin edits it
+in `/admin` → **Service Page Content** (one tab per service, price ranges,
+tables, tools logos, CTA). Migration
+`0008_service_pages_full_content.sql` seeds it and refreshes the six
+`service_extras` hero rows.
+
+Duplicate legacy URLs (`/services/web-design-development/`,
+`/services/software-systems/`, `/services/graphic-design-branding/`,
+`/services/domain-hosting/`) simply re-export the canonical pages.
+
+### Admin dashboard (`components/admin/AdminDashboard.tsx`)
+
+Sidebar groups:
+
+- **Homepage & Design** — Hero & Sections (headline, hero cycles + image
+  upload, every section heading and `#ffffff` / `#f8f8f6` background), Local
+  Payments (label, methods, logo upload), Trusted Partners (logos, tile
+  background, URLs, add/remove), How It Works & Why Us (copy + icons).
+- **Services & Work** — Services (6 cards: copy, images, icon upload, card
+  background, hero copy/background), Service Page Content (all six pages),
+  Live Work (add/edit/remove unlimited projects, upload a screenshot per
+  project), Pricing & Price Ranges, FAQs (home + page).
+- **Identity & Contact** — navbar logo (transparent), browser tab icon
+  (favicon upload: SVG/ICO/PNG/WebP/JPG/GIF/AVIF), browser title, manifest
+  icon, footer socials, contact cards.
+
+`components/BrandHeadSync.tsx` applies the admin `browser_title` and
+`favicon_icon` to the live document (re-applied on navigation).
+`/api/manifest` reads `manifest_icon` and `browser_title`.
+
+### Database and API
+
+- Migrations `0001`–`0011` in `migrations/`; all applied locally.
+  `0010` adds `projects.screenshot`; `0011` corrects home-page copy
+  (Trusted By subheading, Projects/How It Works headings).
+- `functions/_lib/db.ts` — `readAllContent`, `sanitizeSetting`, validators.
+- `functions/api/content.ts` — public read.
+- `functions/api/admin/{services,pricing,projects,partners,settings,upload}.ts`
+  — Access-protected writes.
+- `functions/api/media/[key].ts` — public R2 reads.
+- `functions/api/manifest.ts` — dynamic manifest.
+
+`service_pages` is validated server-side: text lengths, safe `cta_url`,
+`what_items`/`process_steps` arrays, `tools_items` logos restricted to site
+paths or `https://`, and domain/email tables for the domains page.
+
+## Local verification
 
 ```bash
 npm install
 npm run build
 npm run db:migrate:local
-npm run pages:local       # serves out/ + functions + local D1/R2 on :8788
+npm run db:check
+node scripts/smoke-api.mjs http://127.0.0.1:8788
 ```
 
-The API was verified during this handoff:
+The smoke suite covers static HTML, `/api/content`, Access control, service
+card editing, price-range editing/restore, `service_pages` editing, brand
+title/favicon, R2 uploads, service heroes, projects, partners, FAQs and the
+individual service-page HTML. It currently passes 112/112 locally.
 
-- `GET http://127.0.0.1:8788/api/content` returned `200` with all six services,
-  extras, pricing, projects, partners and settings.
-- `GET /api/admin/session` returned the expected `401` without Access headers.
-  Local admin mutations require the simulated Access headers documented in
-  `docs/ADMIN.md`.
+## Preview server notes
 
-Admin icon fields now accept either a Lucide icon name or an uploaded/static
-image URL. `lib/icons.ts` renders uploaded image URLs as icons. Upload controls
-are available for service icons, Opus Approach icons, footer social icons and
-contact-card icons; trusted-partner logos already have an upload control. This
-removes the previous restriction to the embedded icon dropdown.
+`wrangler pages dev` must be started without CLI `--d1`/`--r2` flags so it uses
+`wrangler.toml`:
 
-The homepage services story keeps all six services together in one Services
-section; the redundant Digital Presence and Digital Systems group headings were
-removed. The service page template is a vertical editorial sequence with
-numbered Introduction, What We Do, How It Works, Visual/Example, Who It Is For,
-Related Services and CTA sections. The homepage has a rounded “Ready to get
-your business going?” CTA. Homepage pricing was removed at the user's request.
-The original pricing card design in `components/PricingCard.tsx` must not be
-changed. Rounded pills were restored for the navbar active item and primary
-buttons; do not replace them with rectangular buttons without an explicit
-request.
+```bash
+npx wrangler pages dev --port 8788 --ip 127.0.0.1
+```
 
-Every service page's section 04 Visual / Example image is now admin-managed
-through `service_extras.visual_background`. It has a seeded fallback for all six
-services, an admin image/path/upload control, API validation, and the page reads
-D1 content instead of relying only on the static page data. Migration
-`0005_service_visuals.sql` adds and seeds the column; apply all five migrations
-remotely before deploying this change.
+To expose it on `0.0.0.0:35211` (Arena preview), run a small reverse proxy on
+`35211` and keep Wrangler bound to loopback. Binding Wrangler itself to
+`0.0.0.0` makes Miniflare claim port `35211` for an internal socket.
 
-In production, `/api/content` will remain unavailable until the Cloudflare
-Pages project has the D1 binding named `DB`, R2 binding named `MEDIA`, and all
-five migrations have been applied remotely. Migration 0005 was applied to local
-D1 and verified. Remote application still needs to be run from an authenticated
-Cloudflare environment; this checkout does not have a Cloudflare API token. Access must cover `/admin*` and
-`/api/admin*`, but must **not** cover public `/api/content`.
+## Production checklist
 
-### Verification already run
-
-All passed after installing dependencies:
-
-- `npm run typecheck`
-- `npm run build`
-- `npm run db:migrate:local`
-- `npm run db:check`
-- `curl http://127.0.0.1:8788/api/content`
-
-No source changes were needed to fix the warning: it accurately identifies the
-Next-only dev-server limitation. Do not remove the fallback; it is intentional
-so the public static site remains usable if D1/API is down.
-
-## If the service-card design still needs adjustment
-
-Start with `components/ServicesShowcase.tsx` for the home-page card design and
-`lib/content.ts` for fallback content/images. Check the live D1 data first: the
-client upgrades from fallback to D1 after `/api/content` responds, so a visual
-mismatch on the deployed site may be stale/incorrect D1 content rather than
-React/CSS. Use the Services tab in `/admin` to edit card copy, image, gradient,
-hero and visibility, then save against the Pages/Cloudflare-hosted site.
-
-Keep image URLs as site paths (`/images/...`) or uploaded R2 paths
-(`/api/media/...`); do not invent `/images` assets that are not present in
-`public/` or configured in R2.
+- Apply all eleven migrations (0001–0011) to the remote D1 database before deploying.
+  No terminal is required: **Actions → D1 (remote) → Run workflow** (`.github/workflows/d1-remote.yml`)
+  runs `verify` / `list` / `backup` / `migrate` against the remote database. `migrate`
+  needs the `confirm` input set to `MIGRATE`, exports a SQL backup first (uploaded as a
+  `d1-backup-<run>` artifact), then applies pending files and runs
+  `scripts/remote-verify.sql`, printing everything to the run summary. It requires the
+  `CLOUDFLARE_API_TOKEN` (Account → D1 → Edit, Account Settings → Read) and
+  `CLOUDFLARE_ACCOUNT_ID` repo secrets. The workflow only becomes dispatchable once
+  the file is on `main`, so merge before running it.
+- D1 binding `DB` and R2 binding `MEDIA` must exist on the Pages project.
+- Cloudflare Access must protect `/admin*` and `/api/admin*` but **not**
+  `/api/content` or `/api/manifest`.
+- The admin UI sends `Cf-Access-*` headers only because Access is expected to
+  inject them in production; local testing simulates them.

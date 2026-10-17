@@ -1,3 +1,15 @@
-import ServicePageTemplate,{ServicePageData} from '@/components/ServicePageTemplate';
-const data:ServicePageData={eyebrow:'AI Solutions & Automation',headline:'Your business should not be paying people to do what a system can do automatically.',intro:'We build practical AI tools and automated workflows that reduce repetitive work, improve how you respond to customers, and free your team to focus on what actually requires human attention.',cta:'Explore AI Solutions',sectionTitle:'Practical AI — not AI for the sake of AI.',body:'AI is only useful when it solves a real problem. We do not sell AI concepts — we build working solutions around your actual business processes. From WhatsApp chatbots that handle customer enquiries around the clock, to automated document processing and full business workflow automation, every solution we build is grounded in what your organisation needs to operate more efficiently.',items:['AI Chatbots', 'WhatsApp Chatbots', 'AI Customer Support Assistants', 'Workflow Automation', 'Lead Capture Automation', 'AI Document Processing', 'Automated Reporting', 'Full Business AI Automation'],price:'From $50',process:'Understand → Design → Automate → Test → Deploy → Improve',who:'Businesses and organisations spending significant time on repetitive tasks — customer enquiries, data entry, follow-ups, reporting — that could be handled automatically.',image:'/images/hero-ai-automation.png',serviceId:'ai-automation'}
-export default function Page(){return <ServicePageTemplate data={data}/>}
+import ServicePageTemplate, { ServicePageData } from '@/components/ServicePageTemplate';
+
+const data: ServicePageData = {
+  eyebrow: 'AI Solutions & Automation',
+  headline: 'Stop doing manually what technology can do for you.',
+  intro:
+    'We build practical AI tools and automated workflows that reduce repetitive work and help your organisation operate more efficiently — grounded in what your business actually needs, not technology for the sake of it.',
+  cta: 'Discuss Your Project',
+  image: '/images/hero-ai-automation.png',
+  serviceId: 'ai-automation',
+};
+
+export default function Page() {
+  return <ServicePageTemplate data={data} />;
+}
