@@ -149,6 +149,14 @@ To expose it on `0.0.0.0:35211` (Arena preview), run a small reverse proxy on
 ## Production checklist
 
 - Apply all eleven migrations (0001–0011) to the remote D1 database before deploying.
+  No terminal is required: **Actions → D1 (remote) → Run workflow** (`.github/workflows/d1-remote.yml`)
+  runs `verify` / `list` / `backup` / `migrate` against the remote database. `migrate`
+  needs the `confirm` input set to `MIGRATE`, exports a SQL backup first (uploaded as a
+  `d1-backup-<run>` artifact), then applies pending files and runs
+  `scripts/remote-verify.sql`, printing everything to the run summary. It requires the
+  `CLOUDFLARE_API_TOKEN` (Account → D1 → Edit, Account Settings → Read) and
+  `CLOUDFLARE_ACCOUNT_ID` repo secrets. The workflow only becomes dispatchable once
+  the file is on `main`, so merge before running it.
 - D1 binding `DB` and R2 binding `MEDIA` must exist on the Pages project.
 - Cloudflare Access must protect `/admin*` and `/api/admin*` but **not**
   `/api/content` or `/api/manifest`.
