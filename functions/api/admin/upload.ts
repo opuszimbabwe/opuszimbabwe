@@ -1,4 +1,4 @@
-// POST /api/admin/upload — store an uploaded image in R2 and return its URL
+// POST /api/admin/upload — store an uploaded image or icon in R2 and return its URL
 // (Cloudflare Access protected).
 
 import { json, requireAdmin } from '../../_lib/auth';
@@ -12,6 +12,9 @@ const EXT_BY_TYPE: Record<string, string> = {
   'image/webp': 'webp',
   'image/gif': 'gif',
   'image/avif': 'avif',
+  'image/svg+xml': 'svg',
+  'image/x-icon': 'ico',
+  'image/vnd.microsoft.icon': 'ico',
 };
 
 export const onRequestPost: PagesHandler = async (context) => {

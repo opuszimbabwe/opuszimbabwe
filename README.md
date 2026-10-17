@@ -25,11 +25,18 @@ with images uploaded to R2. The public site keeps rendering the built-in
 static fallback content when the API is unavailable.
 
 ```bash
-npm run checks            # typecheck + build + local D1 migrations + db checks
-npm run pages:local       # serve site + API locally on :8788
+npm run checks              # typecheck + build + local D1 migrations + db checks
+npm run pages:local         # serve site + API locally on :8788
 node scripts/smoke-api.mjs  # end-to-end API/auth/upload tests
+
+# Remote D1 (requires `npx wrangler login`)
+npm run db:backup:remote    # export a SQL backup to backups/
+npm run db:migrations:list  # list pending migrations
+npm run db:migrate:remote   # apply pending migrations (currently 0006–0011)
+npm run db:verify:remote    # read-only checks after migrating
 ```
 
-Deployment and Cloudflare Access setup: see **[docs/ADMIN.md](docs/ADMIN.md)**.
+Deployment, remote migrations and Cloudflare Access setup: see
+**[docs/ADMIN.md](docs/ADMIN.md)**.
 
 Public routes include Home, Services, Domains, FAQ, Contact, and the six service landing pages. Payments and third-party API integrations are not connected.

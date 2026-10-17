@@ -14,18 +14,22 @@ const DESCRIPTION =
 
 export const onRequestGet: PagesHandler = async (context) => {
   let icon = FALLBACK_ICON;
+  const titles: Record<string, string> = {};
   try {
-    const row = await context.env.DB.prepare('SELECT value FROM settings WHERE key = ?')
-      .bind('manifest_icon')
-      .first<{ value: string }>();
-    if (row?.value && isUrlPath(row.value)) icon = row.value;
+    const rows = await context.env.DB.prepare(
+      "SELECT key, value FROM settings WHERE key IN ('manifest_icon','browser_title')"
+    ).all<{ key: string; value: string }>();
+    for (const row of rows.results || []) titles[row.key] = row.value;
+    if (titles.manifest_icon && isUrlPath(titles.manifest_icon)) icon = titles.manifest_icon;
   } catch {
     // Missing table/key (migration not applied yet) → serve the built-in icon.
   }
 
+  const title = (titles.browser_title || '').trim();
+
   const manifest = {
-    name: NAME,
-    short_name: SHORT_NAME,
+    name: title || NAME,
+    short_name: title ? title.split(/[—|–-]/)[0].trim().slice(0, 20) || SHORT_NAME : SHORT_NAME,
     description: DESCRIPTION,
     start_url: '/',
     display: 'standalone',

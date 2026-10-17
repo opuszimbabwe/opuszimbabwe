@@ -1,5 +1,6 @@
 // PUT /api/admin/pricing — replace the full pricing card list (add/edit/remove)
 // in one transaction (Cloudflare Access protected).
+// Supports price ranges (in `monthly_price`) and "What it covers" descriptions (in `yearly_price`).
 
 import { json, requireAdmin } from '../../_lib/auth';
 import { PagesHandler } from '../../_lib/types';
@@ -36,8 +37,8 @@ export const onRequestPut: PagesHandler = async (context) => {
     cleaned.push({
       id: str(card?.id, 80).trim() || `p_${crypto.randomUUID().slice(0, 8)}`,
       name,
-      monthly: str(card?.monthly_price, 60),
-      yearly: str(card?.yearly_price, 60),
+      monthly: str(card?.monthly_price, 120),
+      yearly: str(card?.yearly_price, 300),
       features: JSON.stringify(features(card?.features)),
       visible: card?.visible === false || card?.visible === 0 ? 0 : 1,
     });

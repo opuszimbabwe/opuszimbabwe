@@ -1,10 +1,4 @@
 'use client';
-// FAQ accordion.
-//
-// `list` pulls one of the two admin-managed FAQ lists (FAQ tab in /admin):
-// 'home' → the short list on the home page, 'page' → the full /faq page.
-// `items` is the built-in copy, used when the content API is unreachable
-// or when no list is requested.
 
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -22,36 +16,57 @@ export default function FaqAccordion({
   const { content } = useSiteContent();
 
   const managed =
-    list === 'home' ? content?.settings?.faq_home : list === 'page' ? content?.settings?.faq_page : null;
-  const resolved: FaqItem[] = managed && managed.length ? managed : items || [];
+    list === 'home'
+      ? content?.settings?.faq_home
+      : list === 'page'
+      ? content?.settings?.faq_page
+      : null;
+  const rawList: FaqItem[] = managed && managed.length ? managed : items || [];
+  const resolved: FaqItem[] = list === 'home' ? rawList.slice(0, 3) : rawList;
 
   if (resolved.length === 0) return null;
 
   return (
     <div className="space-y-3">
-      {resolved.map((x, i) => (
-        <div
-          key={x.q}
-          className={`overflow-hidden rounded-2xl ${
-            open === i ? 'border border-border bg-white shadow-[0_10px_28px_rgba(23,19,31,0.08)]' : 'bg-muted'
-          }`}
-        >
-          <button
-            onClick={() => setOpen(open === i ? null : i)}
-            className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-sm font-semibold text-dark"
-          >
-            {x.q}
-            <Plus className={`text-primary transition-transform ${open === i ? 'rotate-45' : ''}`} />
-          </button>
+      {resolved.map((x, i) => {
+        const isOpen = open === i;
+        return (
           <div
-            className={`px-6 text-sm leading-[1.6] text-muted-fg transition-all duration-300 ${
-              open === i ? 'max-h-96 pb-5' : 'max-h-0 overflow-hidden'
+            key={x.q}
+            className={`overflow-hidden rounded-2xl border transition-colors duration-200 ${
+              isOpen
+                ? 'border-[#e5e7eb] bg-white shadow-[0_10px_28px_rgba(13,13,13,0.06)]'
+                : 'border-transparent bg-white/80 hover:bg-[#fff8f4]'
             }`}
           >
-            {x.a}
+            <button
+              type="button"
+              aria-expanded={isOpen}
+              onClick={() => setOpen(isOpen ? null : i)}
+              className="group flex w-full items-center justify-between gap-4 px-6 py-4 text-left text-[15px] font-semibold text-[#0d0d0d]"
+            >
+              <span>{x.q}</span>
+              <Plus
+                size={18}
+                className={`shrink-0 text-[#0d0d0d] transition-all duration-300 group-hover:text-[#E85D2A] ${
+                  isOpen ? 'rotate-45 text-[#E85D2A]' : ''
+                }`}
+              />
+            </button>
+            <div
+              className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="px-6 pb-5 text-[14.5px] leading-[1.68] text-[#0d0d0d]/75">
+                  {x.a}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -1,12 +1,13 @@
 // PUT /api/admin/partners — replace the full trusted-partner list
 // (add/edit/remove) in one transaction (Cloudflare Access protected).
 //
-// Partners are the logo row under "Organisations We Have Built For" on the
-// home page. `logo` is a site path (/images/…) or an R2 upload
-// (/api/media/…); `url` is optional — without it the logo is not linked.
+// Partners are the logo row under "Partners who trust us" on the home page.
+// `logo` is a site path (/images/…) or an R2 upload (/api/media/…); `url` is
+// optional; `bg_color` controls the partner tile background colour (e.g.
+// `#000000` for Killing Giants, `#ffffff` for light tiles).
 
 import { json, requireAdmin } from '../../_lib/auth';
-import { isUrlPath } from '../../_lib/db';
+import { isHexColor, isUrlPath } from '../../_lib/db';
 import { PagesHandler } from '../../_lib/types';
 
 const MAX_PARTNERS = 60;
@@ -31,7 +32,15 @@ export const onRequestPut: PagesHandler = async (context) => {
   if (!partners) return json({ error: 'missing_partners' }, 400);
   if (partners.length > MAX_PARTNERS) return json({ error: 'too_many_partners' }, 400);
 
-  const cleaned: { id: string; name: string; logo: string; url: string; visible: number }[] = [];
+  const cleaned: {
+    id: string;
+    name: string;
+    logo: string;
+    url: string;
+    bg_color: string;
+    visible: number;
+  }[] = [];
+
   for (const partner of partners) {
     const name = str(partner?.name, 200).trim();
     if (!name) return json({ error: 'partner_missing_name' }, 400);
@@ -42,11 +51,15 @@ export const onRequestPut: PagesHandler = async (context) => {
     const url = str(partner?.url, 500).trim();
     if (url && !/^https:\/\/[^\s]+$/i.test(url)) return json({ error: 'invalid_partner_url', name }, 400);
 
+    const rawBg = str(partner?.bg_color, 20).trim() || '#ffffff';
+    const bg_color = isHexColor(rawBg) ? rawBg : '#ffffff';
+
     cleaned.push({
       id: str(partner?.id, 80).trim() || `pa_${crypto.randomUUID().slice(0, 8)}`,
       name,
       logo,
       url,
+      bg_color,
       visible: partner?.visible === false || partner?.visible === 0 ? 0 : 1,
     });
   }
@@ -58,9 +71,17 @@ export const onRequestPut: PagesHandler = async (context) => {
       statements.push(
         db
           .prepare(
-            'INSERT INTO partners (id, name, logo, url, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, datetime(\'now\'))'
+            "INSERT INTO partners (id, name, logo, url, bg_color, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))"
           )
-          .bind(partner.id, partner.name, partner.logo, partner.url, index, partner.visible)
+          .bind(
+            partner.id,
+            partner.name,
+            partner.logo,
+            partner.url,
+            partner.bg_color,
+            index,
+            partner.visible
+          )
       );
     });
     await db.batch(statements);

@@ -8,3 +8,6 @@ out
 *.tsbuildinfo
 .DS_Store
 npm-debug.log*
+
+# D1 exports (npm run db:backup:remote)
+backups/

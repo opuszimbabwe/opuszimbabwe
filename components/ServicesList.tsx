@@ -19,7 +19,7 @@ export default function ServicesList() {
           <div key={s.id} className="py-16 border-b border-[#eeeeee] grid md:grid-cols-[2fr_1.6fr] gap-12 items-start">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-[#f1f1f1] text-[#0d0d0d] flex items-center justify-center flex-shrink-0">
                   <Icon size={19} strokeWidth={1.8} />
                 </div>
                 <p className="text-[.72rem] font-semibold text-muted-fg uppercase tracking-widest">{s.tagline}</p>

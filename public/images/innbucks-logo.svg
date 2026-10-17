@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 64" fill="none">
+  <circle cx="24" cy="24" r="9" fill="#F59E0B"/>
+  <circle cx="24" cy="44" r="9" fill="#0D9488"/>
+  <circle cx="42" cy="34" r="9" fill="#EF4444"/>
+  <text x="62" y="45" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="34" letter-spacing="-0.8">
+    <tspan fill="#111827">Inn</tspan><tspan fill="#0D9488">Bucks</tspan>
+  </text>
+</svg>

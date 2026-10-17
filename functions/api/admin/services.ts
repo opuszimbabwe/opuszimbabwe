@@ -1,10 +1,11 @@
 // PATCH /api/admin/services — update fields of one service card, including its
-// service-page hero (image or gradient), "Why Opus" cards and related links
-// (Cloudflare Access protected). Only the fields present in the request
-// body are updated; omitted fields are left untouched.
+// bottom text section background colour (`card_bg_color`), service-page hero
+// (image or gradient), "Why Opus" cards and related links (Cloudflare Access
+// protected). Only the fields present in the request body are updated; omitted
+// fields are left untouched.
 
 import { json, requireAdmin } from '../../_lib/auth';
-import { isGradient, isUrlPath } from '../../_lib/db';
+import { isGradient, isHexColor, isUrlPath } from '../../_lib/db';
 import { PagesHandler } from '../../_lib/types';
 
 function str(v: unknown, max: number, fallback = ''): string {
@@ -90,6 +91,12 @@ export const onRequestPatch: PagesHandler = async (context) => {
   if (typeof body.gradient === 'string') {
     sets.push('gradient = ?');
     values.push(str(body.gradient, 120, '160deg,#1a1a1a,#454545'));
+  }
+  if (typeof body.card_bg_color === 'string') {
+    const bgColor = body.card_bg_color.trim();
+    if (!isHexColor(bgColor)) return json({ error: 'invalid_card_bg_color' }, 400);
+    sets.push('card_bg_color = ?');
+    values.push(bgColor);
   }
   if (typeof body.slug === 'string') {
     sets.push('slug = ?');

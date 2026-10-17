@@ -53,7 +53,7 @@ export default function SitemapPage() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-20">
       <header className="text-center">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-primary">Opus Zimbabwe</p>
+        <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-[#0d0d0d]/55">Opus Zimbabwe</p>
         <h1 className="mt-3 text-4xl font-bold text-dark md:text-5xl">Public Website Sitemap</h1>
         <p className="mx-auto mt-4 max-w-2xl leading-7 text-muted-fg">A complete guide to the public Opus Zimbabwe website.</p>
       </header>

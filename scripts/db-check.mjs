@@ -50,13 +50,17 @@ check(
 
 // 2. Seed counts
 console.log('\nSeed content:');
-const services = query('SELECT id, name, slug, icon, image, order_index, visible, items FROM services ORDER BY order_index');
+const services = query('SELECT id, name, slug, icon, image, card_bg_color, order_index, visible, items FROM services ORDER BY order_index');
 check('6 service rows', services.length === 6, `found ${services.length}`);
 const expectedIds = ['web-design', 'software-development', 'ai-automation', 'graphic-design', 'domains-hosting', 'api-integrations'];
 check('service ids match static fallback', JSON.stringify(services.map((s) => s.id)) === JSON.stringify(expectedIds));
 check(
   'service images are static paths',
   services.every((s) => typeof s.image === 'string' && s.image.startsWith('/images/'))
+);
+check(
+  'service card_bg_color is a hex colour for every row',
+  services.every((s) => typeof s.card_bg_color === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(s.card_bg_color))
 );
 let itemsOk = true;
 for (const s of services) {
@@ -70,8 +74,23 @@ for (const s of services) {
 check('service items JSON parses for every row', itemsOk);
 
 const pricing = query('SELECT id, name, monthly_price, yearly_price, features, order_index FROM pricing_cards ORDER BY order_index');
-check('3 pricing cards', pricing.length === 3, `found ${pricing.length}`);
-check('pricing names (Starter, Professional, Custom)', JSON.stringify(pricing.map((p) => p.name)) === JSON.stringify(['Starter', 'Professional', 'Custom']));
+check('6 pricing cards', pricing.length === 6, `found ${pricing.length}`);
+check(
+  'pricing names (Starter, Standard, Business, Professional, Premium, Custom)',
+  JSON.stringify(pricing.map((p) => p.name)) ===
+    JSON.stringify(['Starter', 'Standard', 'Business', 'Professional', 'Premium', 'Custom'])
+);
+check(
+  'pricing cards use price ranges',
+  pricing.every((p) => /\$|custom/i.test(p.monthly_price)) &&
+    pricing[0].monthly_price === '$30 – $59.99' &&
+    pricing[5].monthly_price === 'Custom quote',
+  pricing.map((p) => p.monthly_price).join(' | ')
+);
+check(
+  'pricing cards describe what they cover',
+  pricing.every((p) => typeof p.yearly_price === 'string' && p.yearly_price.length > 5)
+);
 let featuresOk = true;
 for (const p of pricing) {
   try {
@@ -86,6 +105,58 @@ check('pricing features JSON parses for every row', featuresOk);
 const hero = query("SELECT value FROM settings WHERE key='hero_background'");
 check('hero_background setting present', hero.length === 1 && hero[0].value === '/images/hero-bg.jpg', hero[0]?.value);
 
+// 2b. Individual service page content (migration 0008)
+console.log('\nIndividual service pages:');
+const servicePagesRow = query("SELECT value FROM settings WHERE key='service_pages'");
+check('service_pages setting present', servicePagesRow.length === 1, `${servicePagesRow.length} rows`);
+let servicePages = {};
+try {
+  servicePages = JSON.parse(servicePagesRow[0]?.value || '{}');
+} catch {
+  servicePages = {};
+}
+check(
+  'service_pages has all 6 services',
+  JSON.stringify(Object.keys(servicePages).sort()) === JSON.stringify([...expectedIds].sort()),
+  Object.keys(servicePages).join(', ')
+);
+check(
+  'every service page has problem, what, price and process content',
+  Object.values(servicePages).every(
+    (p) =>
+      p.problem_text &&
+      p.what_heading &&
+      Array.isArray(p.what_items) &&
+      p.what_items.length > 0 &&
+      p.price_range &&
+      p.price_summary &&
+      Array.isArray(p.process_steps) &&
+      p.process_steps.length > 0 &&
+      p.cta_heading &&
+      p.cta_url === 'https://wa.me/263710740387'
+  )
+);
+check(
+  'web design price range seeded',
+  servicePages['web-design']?.price_range === '$30 – $1,000+',
+  servicePages['web-design']?.price_range
+);
+check(
+  'domains page has domain table + email plans',
+  (servicePages['domains-hosting']?.domain_prices || []).length === 6 &&
+    (servicePages['domains-hosting']?.email_plans || []).length === 3
+);
+check(
+  'tools logos are site paths for every page',
+  Object.values(servicePages).every((p) =>
+    (p.tools_items || []).every((t) => typeof t.logo === 'string' && t.logo.startsWith('/images/'))
+  )
+);
+const brandTitle = query("SELECT value FROM settings WHERE key='browser_title'");
+check('browser_title setting present', brandTitle.length === 1 && brandTitle[0].value.length > 5, brandTitle[0]?.value);
+const favicon = query("SELECT value FROM settings WHERE key='favicon_icon'");
+check('favicon_icon setting present', favicon.length === 1 && favicon[0].value.startsWith('/images/'), favicon[0]?.value);
+
 // 3. Service page heroes, Why Opus cards and related links (migration 0003)
 console.log('\nService heroes / Why Opus / related:');
 const extras = query('SELECT service_id, hero_eyebrow, hero_headline, hero_intro, hero_cta, hero_background, visual_background, hero_background_kind, hero_gradient, why_items, related_items FROM service_extras ORDER BY service_id');
@@ -97,6 +168,23 @@ check(
 check(
   'hero headline + intro + cta set for every row',
   extras.every((e) => e.hero_headline && e.hero_intro && e.hero_cta)
+);
+const headlineFor = (id) => extras.find((e) => e.service_id === id)?.hero_headline;
+check(
+  'web design hero headline matches brief',
+  headlineFor('web-design') === 'A website that represents your business the way it deserves to be represented.'
+);
+check(
+  'software hero headline matches brief',
+  headlineFor('software-development') === 'Software built around the way your organisation actually works.'
+);
+check(
+  'graphic design hero headline matches brief',
+  headlineFor('graphic-design') === 'Your brand is the first impression. Make it the right one.'
+);
+check(
+  'api integrations hero headline matches brief',
+  headlineFor('api-integrations') === 'Your systems should work together. We make sure they do.'
 );
 check(
   'hero background is a site path for every row',
@@ -125,28 +213,32 @@ for (const e of extras) {
 check('why_items: every row has titled cards', whyOk);
 check('related_items: every row has labelled links', relatedOk);
 
-// 4. Projects (migration 0003)
+// 4. Projects (live projects only — ZimTrade & Agricom removed)
 console.log('\nProjects:');
-const projects = query('SELECT id, name, url, tag, location, description, status, order_index, visible FROM projects ORDER BY order_index');
-check('4 project rows', projects.length === 4, `found ${projects.length}`);
+const projects = query('SELECT id, name, url, tag, location, description, screenshot, status, order_index, visible FROM projects ORDER BY order_index');
+check('2 live project rows', projects.length === 2, `found ${projects.length}`);
 check(
-  'project names (Great Couples, Prime PIDG, ZimTrade, Agricom)',
-  ['Great Couples International Trust', 'Prime Property Investment & Development Group', 'ZimTrade Export Platform', 'Agricom Commodity Marketplace'].every(
+  'project names (Great Couples, Prime PIDG)',
+  ['Great Couples International Trust', 'Prime Property Investment & Development Group'].every(
     (name) => projects.some((p) => p.name === name)
   )
 );
 check(
-  'statuses are active or coming_soon',
-  projects.every((p) => p.status === 'active' || p.status === 'coming_soon')
+  'ZimTrade and Agricom removed permanently',
+  !projects.some((p) => p.id === 'zimtrade' || p.id === 'agricom')
 );
 check(
-  'active projects have an https link, coming_soon projects have none',
-  projects.every((p) => (p.status === 'active' ? /^https:\/\//.test(p.url) : p.url === ''))
+  'all projects are active with an https link',
+  projects.every((p) => p.status === 'active' && /^https:\/\//.test(p.url))
+);
+check(
+  'projects have a screenshot column (empty until admin uploads)',
+  projects.every((p) => typeof p.screenshot === 'string' && (p.screenshot === '' || p.screenshot.startsWith('/') || p.screenshot.startsWith('https://')))
 );
 
-// 5. Trusted partners (migration 0004)
+// 5. Trusted partners (migration 0004 + 0007 bg_color)
 console.log('\nTrusted partners:');
-const partners = query('SELECT id, name, logo, url, order_index, visible FROM partners ORDER BY order_index');
+const partners = query('SELECT id, name, logo, url, bg_color, order_index, visible FROM partners ORDER BY order_index');
 check('4 partner rows', partners.length === 4, `found ${partners.length}`);
 check(
   'partner names (Great Couples, ForgePoint, Rays of Hope, Killing Giants)',
@@ -159,6 +251,10 @@ check(
   partners.every((p) => typeof p.logo === 'string' && p.logo.startsWith('/images/'))
 );
 check(
+  'Killing Giants has black background (#000000)',
+  partners.find((p) => p.id === 'killing-giants')?.bg_color === '#000000'
+);
+check(
   'partner URLs are empty or https',
   partners.every((p) => p.url === '' || /^https:\/\//.test(p.url))
 );
@@ -167,7 +263,7 @@ check(
 console.log('\nBranding, home & FAQ settings:');
 const settingsRows = query('SELECT key, value FROM settings');
 const settingsMap = Object.fromEntries(settingsRows.map((r) => [r.key, r.value]));
-check('navbar_logo setting present', settingsMap.navbar_logo === '/images/logo.png', settingsMap.navbar_logo);
+check('navbar_logo uses the transparent logo', settingsMap.navbar_logo === '/images/logo-full.png', settingsMap.navbar_logo);
 check('manifest_icon setting present', settingsMap.manifest_icon === '/images/icon-512.png', settingsMap.manifest_icon);
 
 const socials = parseJson('footer_socials JSON parses', settingsMap.footer_socials);
@@ -185,10 +281,49 @@ check('faq_page has question/answer pairs', Array.isArray(faqPage) && faqPage.le
 const approach = parseJson('approach_items JSON parses', settingsMap.approach_items);
 check('approach_items has 5 steps with icons', Array.isArray(approach) && approach.length === 5 && approach.every((a) => a && a.title && a.body && a.icon));
 
-const built = parseJson('built_for_zimbabwe JSON parses', settingsMap.built_for_zimbabwe);
+const heroCycles = parseJson('hero_cycles JSON parses', settingsMap.hero_cycles);
 check(
-  'built_for_zimbabwe has heading, body and image',
-  built && typeof built === 'object' && !Array.isArray(built) && Boolean(built.eyebrow && built.heading && built.body && built.image)
+  'hero_cycles has 6 cycles with question, solution, image and href',
+  Array.isArray(heroCycles) &&
+    heroCycles.length === 6 &&
+    heroCycles.every((c) => c && c.question && c.solution && c.image && c.href)
+);
+
+const paymentMethods = parseJson('payment_methods JSON parses', settingsMap.payment_methods);
+check(
+  'payment_methods has 5 methods with logos',
+  Array.isArray(paymentMethods) &&
+    paymentMethods.length === 5 &&
+    paymentMethods.every((m) => m && m.name && m.logo)
+);
+
+const whyChooseUs = parseJson('why_choose_us JSON parses', settingsMap.why_choose_us);
+check(
+  'why_choose_us has 6 reason cards',
+  Array.isArray(whyChooseUs) &&
+    whyChooseUs.length === 6 &&
+    whyChooseUs.every((w) => w && w.title && w.body)
+);
+
+const homeSections = parseJson('home_sections JSON parses', settingsMap.home_sections);
+check(
+  'home headings do not over-emphasise "real"',
+  homeSections &&
+    !/real/i.test(homeSections.projects_heading || '') &&
+    !/real/i.test(homeSections.partners_heading || '')
+);
+check(
+  'Trusted By subheading seeded',
+  (homeSections?.partners_subheading || '').includes(
+    'Trusted by businesses, NGOs, and institutions across Zimbabwe.'
+  )
+);
+check(
+  'home_sections has "Partners who trust us" and white/warm backgrounds',
+  homeSections &&
+    homeSections.partners_heading === 'Partners who trust us' &&
+    homeSections.services_bg === '#ffffff' &&
+    homeSections.partners_bg === '#f8f8f6'
 );
 
 // 7. Write round-trip (update + restore) to prove the database is writable
