@@ -32,6 +32,8 @@ on:
         required: false
         default: ''
 
+run-name: D1 ${{ inputs.task }} (${{ github.actor }})
+
 permissions:
   contents: read
 
@@ -103,7 +105,15 @@ jobs:
 
       - name: Apply pending migrations
         if: inputs.task == 'migrate'
-        run: npx wrangler d1 migrations apply opuszim-content --remote | tee migrations-apply.txt
+        run: |
+          set -o pipefail
+          if ! npx wrangler d1 migrations apply opuszim-content --remote 2>&1 | tee migrations-apply.txt; then
+            echo "::error::Migration failed — nothing after the failing file was applied (each migration rolls back individually)."
+            if grep -qi "duplicate column\|already exists" migrations-apply.txt; then
+              echo "::error::This looks like ledger drift: SQL was applied by hand through the D1 console, so d1_migrations is out of sync. Download the backup artifact from this run first, then follow docs/ADMIN.md §2 → 'Ledger drift' to register the hand-applied files."
+            fi
+            exit 1
+          fi
 
       - name: Verify database contents
         if: inputs.task == 'verify' || inputs.task == 'migrate'
