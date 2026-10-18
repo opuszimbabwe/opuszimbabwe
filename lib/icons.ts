@@ -3,15 +3,17 @@
 
 import React, { type ComponentType } from 'react';
 import {
-  ArrowRight, Bot, Facebook, Globe, Instagram, LayoutDashboard, Link2,
-  Linkedin, Mail, MessageCircle, Palette, Phone, Plug, Server, Settings,
-  Sparkles, TrendingUp, Twitter,
+  ArrowRight, Bot, ClipboardCheck, Facebook, Globe, Headphones, Instagram,
+  LayoutDashboard, Link2, Linkedin, Mail, MessageCircle, Palette, PenTool,
+  Phone, Plug, Rocket, Search, Server, Settings, Sparkles, TrendingUp,
+  Twitter, Wrench,
 } from 'lucide-react';
 
 export const iconMap: Record<string, ComponentType<any>> = {
-  ArrowRight, Bot, Facebook, Globe, Instagram, LayoutDashboard, Link2,
-  Linkedin, Mail, MessageCircle, Palette, Phone, Plug, Server, Settings,
-  Sparkles, TrendingUp, Twitter,
+  ArrowRight, Bot, ClipboardCheck, Facebook, Globe, Headphones, Instagram,
+  LayoutDashboard, Link2, Linkedin, Mail, MessageCircle, Palette, PenTool,
+  Phone, Plug, Rocket, Search, Server, Settings, Sparkles, TrendingUp,
+  Twitter, Wrench,
 };
 
 export const ICON_NAMES: string[] = Object.keys(iconMap).sort();

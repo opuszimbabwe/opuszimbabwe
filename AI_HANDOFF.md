@@ -13,6 +13,12 @@ still renders if `/api/content` is unreachable.
 
 - **Fonts:** Inter 800–900 for the static homepage hero headline only;
   Poppins for everything else.
+- **Page container:** one `.shell` class in `app/globals.css` (`max-width: 88rem`,
+  `padding-inline: clamp(1.5rem, 4vw, 4.5rem)`) is the gutter for the navbar, every
+  full-width homepage section and the footer — wider side margins than the old
+  `max-w-7xl px-6` pairing. Do not add per-section `max-w-7xl`/`px-6` containers back.
+  Narrow centred columns (Why Us `max-w-5xl`, FAQ `max-w-3xl`) and inner grids keep
+  their own max widths inside `.shell`.
 - **Backgrounds:** alternating `#f8f8f6` and `#ffffff` homepage sections.
   Primary text `#0d0d0d`.
 - **Orange `#E85D2A`:** buttons, hover states and the active CTA only
@@ -28,13 +34,19 @@ Section order (all headings/backgrounds editable in `/admin` → Hero & Sections
 1. `components/HomeHero.tsx` — 55/45 hero, six synced rotating cycles with
    transparent images placed directly on the body (no container box).
 2. `components/PaymentTrustStrip.tsx` — local payment logos from
-   `settings.payment_methods`, greyscale until hover.
+   `settings.payment_methods`, shown in **full brand colour** (no `grayscale` filter;
+   they only lift from 90% to 100% opacity on hover).
 3. `components/HomeServicesGrid.tsx` + `components/ServiceCard.tsx` — 3×2
    vertical cards, 80 ms stagger, 6 px lift, orange left border on hover,
    per-card bottom background colour (`services.card_bg_color`).
 4. `components/TrustedPartners.tsx` — “Partners who trust us” with per-partner
    tile background (`partners.bg_color`; Killing Giants is `#000000`).
-5. `components/OpusApproach.tsx` — the five How It Works steps.
+5. `components/OpusApproach.tsx` — “How we take your project from idea to launch.” as a
+   numbered process rail: white circular icon badges joined by a hairline, `01.`-style
+   step numbers in the title and centred muted copy. `RAIL_LAYOUT` maps the step count to
+   the grid columns, and the connector is switched on at the same breakpoint the steps
+   collapse into one row (5 steps = one row at `xl`), so a hairline never points at empty
+   space. Icons come from `approach_items[].icon` (Lucide name or uploaded image).
 6. `components/HomeProjects.tsx` — all active live-work projects, each with an
    admin-uploaded screenshot (`projects.screenshot`). Until a screenshot is
    uploaded the card shows a neutral browser-frame placeholder with the
@@ -42,7 +54,10 @@ Section order (all headings/backgrounds editable in `/admin` → Hero & Sections
 7. `components/WhyChooseUs.tsx` — six inverted-corner cards.
 8. `components/FaqAccordion.tsx` — three homepage FAQs.
 9. Final CTA — “Ready to get your business going?” → `/contact/`.
-10. `components/Footer.tsx` — unchanged structure.
+10. `components/Footer.tsx` — unchanged structure. Get In Touch lists
+    `support@opuszim.co.zw` (primary, emphasised) then `opuszimbabwe@outlook.com`
+    (secondary). The `info.opuszim@gmail.com` address is only the Cloudflare Access
+    admin account — it must stay in `functions/_lib/auth.ts` and the test scripts.
 
 ### Individual service pages
 
@@ -104,7 +119,10 @@ Sidebar groups:
 
 ### Database and API
 
-- Migrations `0001`–`0011` in `migrations/`; all applied locally.
+- Migrations `0001`–`0012` in `migrations/`; all applied locally. `0012` re-points the
+  How It Works step icons at line icons that suit the badge (`Search`, `PenTool`,
+  `Wrench`, `ClipboardCheck`, `Rocket`) and only touches steps still holding the seeded
+  value, so admin-uploaded icons and renamed steps survive.
   `0010` adds `projects.screenshot`; `0011` corrects home-page copy
   (Trusted By subheading, Projects/How It Works headings).
 - `functions/_lib/db.ts` — `readAllContent`, `sanitizeSetting`, validators.
@@ -148,7 +166,7 @@ To expose it on `0.0.0.0:35211` (Arena preview), run a small reverse proxy on
 
 ## Production checklist
 
-- Apply all eleven migrations (0001–0011) to the remote D1 database before deploying.
+- Apply all twelve migrations (0001–0012) to the remote D1 database before deploying.
   No terminal is required: **Actions → D1 (remote) → Run workflow** (`.github/workflows/d1-remote.yml`)
   runs `verify` / `list` / `backup` / `migrate` against the remote database. `migrate`
   needs the `confirm` input set to `MIGRATE`, exports a SQL backup first (uploaded as a

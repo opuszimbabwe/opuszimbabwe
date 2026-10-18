@@ -46,7 +46,7 @@ export default function Home() {
         style={{ backgroundColor: s.services_bg || '#ffffff' }}
         className="py-20 text-center"
       >
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="shell">
           <h2 className="mx-auto max-w-3xl font-poppins text-[1.85rem] font-bold leading-tight text-[#0d0d0d] md:text-[2.3rem]">
             {s.services_heading}
           </h2>
@@ -59,7 +59,7 @@ export default function Home() {
         style={{ backgroundColor: s.partners_bg || '#f8f8f6' }}
         className="py-16"
       >
-        <div className="mx-auto max-w-7xl px-6 text-center">
+        <div className="shell text-center">
           <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             {s.partners_heading}
           </h2>
@@ -72,13 +72,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. How it works — five steps (White section by default) */}
+      {/* 5. How it works — numbered process rail (White section by default) */}
       <section
         style={{ backgroundColor: s.how_it_works_bg || '#ffffff' }}
-        className="py-20"
+        className="py-24 md:py-28"
       >
-        <div className="mx-auto max-w-7xl px-6 text-center">
-          <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
+        <div className="shell text-center">
+          <h2 className="mx-auto max-w-3xl text-center font-poppins text-[1.95rem] font-bold leading-tight text-[#0d0d0d] md:text-[2.6rem]">
             {s.how_it_works_heading}
           </h2>
           <OpusApproach />
@@ -90,7 +90,7 @@ export default function Home() {
         style={{ backgroundColor: s.projects_bg || '#f8f8f6' }}
         className="py-20 text-center"
       >
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="shell">
           <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             {s.projects_heading}
           </h2>

@@ -12,7 +12,7 @@ export default function BuiltForZimbabwe() {
 
   return (
     <section className="bg-[#f8f7fb] bg-cover bg-center py-20" style={{ backgroundImage: `url('${built.image}')` }}>
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 md:grid-cols-2">
+      <div className="shell grid items-center gap-10 md:grid-cols-2 md:gap-14">
         <div className="rounded-[28px] bg-white/90 p-8 shadow-[0_12px_32px_rgba(0,0,0,0.08)] backdrop-blur-md">
           <p className="text-[.8rem] font-semibold uppercase tracking-[.12em] text-[#0d0d0d]/55">{built.eyebrow}</p>
           <h2 className="mt-3 text-3xl font-bold text-dark">{built.heading}</h2>

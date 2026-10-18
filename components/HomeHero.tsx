@@ -34,7 +34,7 @@ export default function HomeHero() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-12 lg:gap-14 items-center">
+      <div className="shell grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-12 lg:gap-16 items-center">
         {/* Left column: 55% — Static Inter Headline + Rotating Question + Learn More CTA */}
         <div className="flex flex-col items-start text-left">
           <h1 className="font-inter font-black text-[#0d0d0d] text-[44px] sm:text-[62px] xl:text-[84px] leading-[1.02] tracking-[-0.035em]">

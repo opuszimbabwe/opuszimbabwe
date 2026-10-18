@@ -15,7 +15,7 @@ export default function Footer(){
   return (
     <footer id="footer" className="bg-[#f5f5f5] text-dark">
       <div className="h-[3px] w-full bg-primary" style={{background: 'linear-gradient(90deg, #E85D2A 0%, #F97316 50%, #F4A226 100%)'}}/>
-      <div className="max-w-7xl mx-auto px-6 py-14">
+      <div className="shell py-14">
         <FooterSocials/>
 
         <div className="grid md:grid-cols-3 gap-10">
@@ -34,7 +34,8 @@ export default function Footer(){
             <h3 className="font-bold text-dark text-sm uppercase tracking-wider mb-4">Get In Touch</h3>
             <a href="https://wa.me/263776396530" target="_blank" rel="noreferrer" className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors">WhatsApp: +263 776 396 530</a>
             <a href="tel:+263773979162" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">+263 773 979 162</a>
-            <a href="mailto:info.opuszim@gmail.com" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">info.opuszim@gmail.com</a>
+            {/* Primary contact address first; the Outlook mailbox stays as the secondary. */}
+            <a href="mailto:support@opuszim.co.zw" className="block text-dark text-sm font-semibold mt-3 hover:text-primary transition-colors">support@opuszim.co.zw</a>
             <a href="mailto:opuszimbabwe@outlook.com" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">opuszimbabwe@outlook.com</a>
           </div>
         </div>

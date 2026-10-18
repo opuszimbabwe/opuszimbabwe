@@ -36,12 +36,14 @@ export default function PaymentTrustStrip() {
                 title={method.name}
                 className="group flex items-center justify-center px-2 py-1 overflow-hidden"
               >
+                {/* Full brand colour by default — the logos are the trust signal, so
+                    they should never read as washed-out grey placeholders. */}
                 <img
                   src={method.logo}
                   alt={method.name}
                   className={`${
                     isPaynow ? 'h-12 sm:h-14 scale-150' : 'h-8 sm:h-9'
-                  } w-auto object-contain grayscale opacity-65 transition-all duration-200 ease-out group-hover:grayscale-0 group-hover:opacity-100`}
+                  } w-auto object-contain opacity-90 transition-opacity duration-200 ease-out group-hover:opacity-100`}
                 />
               </div>
             );
