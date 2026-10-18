@@ -768,11 +768,12 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { q: 'Can you build a system specifically for my school, clinic or business?', a: 'Yes. Custom software and management systems are one of our core services. We scope every project individually based on your actual requirements.' },
   ],
   approach_items: [
-    { title: 'Understand', body: 'We take time to learn your business, your customers, and what you actually need before anything is built.', icon: 'Globe' },
-    { title: 'Plan', body: 'We map out exactly what will be built, how long it will take, and what it will cost — no surprises.', icon: 'Settings' },
-    { title: 'Build', body: 'We do the work. You stay updated throughout, not just at the end.', icon: 'LayoutDashboard' },
-    { title: 'Review', body: 'You check everything before it goes live. If something needs changing, we change it.', icon: 'Link2' },
-    { title: 'Launch & Support', body: 'We go live and stay with you. If something breaks or needs updating, we are reachable.', icon: 'TrendingUp' },
+    // Line icons chosen to sit inside the How It Works rail badges.
+    { title: 'Understand', body: 'We take time to learn your business, your customers, and what you actually need before anything is built.', icon: 'Search' },
+    { title: 'Plan', body: 'We map out exactly what will be built, how long it will take, and what it will cost — no surprises.', icon: 'PenTool' },
+    { title: 'Build', body: 'We do the work. You stay updated throughout, not just at the end.', icon: 'Wrench' },
+    { title: 'Review', body: 'You check everything before it goes live. If something needs changing, we change it.', icon: 'ClipboardCheck' },
+    { title: 'Launch & Support', body: 'We go live and stay with you. If something breaks or needs updating, we are reachable.', icon: 'Rocket' },
   ],
   built_for_zimbabwe: {
     eyebrow: 'Built for Zimbabwe',

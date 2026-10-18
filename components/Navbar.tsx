@@ -67,7 +67,7 @@ export default function Navbar() {
           : 'py-4 bg-[#f8f8f6]'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="shell flex items-center justify-between">
         {/* Left: Transparent Opus Logo (visible at top of page, smoothly collapses on scroll) */}
         <div
           className={`flex items-center transition-all duration-300 ease-out ${

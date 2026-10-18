@@ -111,6 +111,18 @@ h3 { font-size: 1.15rem; }
   mask-image: radial-gradient(circle 32px at 100% 0, transparent 31.5px, #000 32px);
 }
 
+/* Page container — one shared gutter for the navbar, full-width homepage sections
+   and the footer. Wider side margins than the previous `max-w-7xl px-6` pairing
+   (1.5rem flat), following the airy Chrome-style marketing layout: the content
+   column can breathe out to 88rem while the side margins stay generous on every
+   viewport. */
+.shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 88rem;
+  padding-inline: clamp(1.5rem, 4vw, 4.5rem);
+}
+
 /* Centre section headings globally */
 .section-heading { text-align: center; }
 .section-eyebrow { text-align: center; }
