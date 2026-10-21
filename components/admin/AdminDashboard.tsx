@@ -1536,7 +1536,7 @@ export default function AdminDashboard() {
 
                           <div className="space-y-4">
                             <ImageField
-                              label="Card Image"
+                              label="Service Page Fallback Image"
                               value={s.image}
                               onChange={(v) => patchService(s.id, { image: v })}
                               onUpload={() => pickFile(`card:${s.id}`)}
@@ -1548,11 +1548,11 @@ export default function AdminDashboard() {
                               onUpload={() => pickFile(`serviceicon:${s.id}`)}
                             />
                             <ColorSwatchField
-                              label="Card Bottom Text Section Background Colour"
+                              label="Card Inset Panel Background Colour"
                               value={s.card_bg_color || '#ffffff'}
                               onChange={(v) => patchService(s.id, { card_bg_color: v })}
                               presets={CARD_BG_PRESETS}
-                              hint="Independently controls the bottom text section background of this homepage card."
+                              hint="A custom colour tints the inset panel on the homepage card. The default white value uses the reference design's soft grey."
                             />
                           </div>
                         </div>

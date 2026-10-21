@@ -1,11 +1,11 @@
 -- Read-only verification for the remote D1 database after applying
--- migrations 0006–0011. Run with:
+-- migrations 0006–0013. Run with:
 --
 --   npx wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql
 --
 -- Every row should read OK / show the expected value. Nothing here writes data.
 
--- 1. Migration ledger — should list 0001 … 0011.
+-- 1. Migration ledger — should list 0001 … 0013.
 SELECT 'd1_migrations' AS check_name,
        COUNT(*) AS rows_found,
        GROUP_CONCAT(name, ' | ') AS detail
@@ -61,11 +61,17 @@ SELECT 'pricing_cards' AS check_name,
        GROUP_CONCAT(name || ' = ' || monthly_price, ' | ') AS detail
 FROM pricing_cards;
 
--- 6. Home-page copy fixes from 0011 (no "real" over-emphasis).
+-- 6. Home-page copy and section backgrounds from 0011–0013.
 SELECT 'home_sections copy' AS check_name,
        json_extract(value, '$.partners_heading') AS partners_heading,
        json_extract(value, '$.projects_heading') AS projects_heading,
        json_extract(value, '$.partners_subheading') AS partners_subheading
+FROM settings
+WHERE key = 'home_sections';
+
+SELECT 'home section backgrounds' AS check_name,
+       json_extract(value, '$.services_bg') AS service_cards_background,
+       json_extract(value, '$.how_it_works_bg') AS approach_background
 FROM settings
 WHERE key = 'home_sections';
 

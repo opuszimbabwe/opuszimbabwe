@@ -12,7 +12,7 @@ export type ServiceRecord = {
   items: string[];
   icon: string;
   gradient: string;
-  card_bg_color: string; // admin-controlled bottom text section background colour
+  card_bg_color: string; // admin-controlled inset panel colour on the homepage service card
   slug: string;
   image: string;
   order_index: number;
@@ -184,47 +184,48 @@ export type SiteContent = {
   settings: SiteSettings;
 };
 
-// Default 6 rotating hero cycles from the Homepage Redesign Brief.
+// Default 6 rotating hero cycles — synced with the live D1 content so the
+// static export paints exactly what /api/content returns (no load-time snap).
 export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
   {
-    question: 'Still losing customers who search for you online and find nothing?',
+    question: 'Are you invisible online?',
     solution:
-      'We build fast, credible websites for Zimbabwean businesses, NGOs, schools and churches — ready from day one.',
+      'A professional website puts your business where your customers are already looking.',
     image: '/images/hero-website-design.png',
     href: '/services/web-design/',
   },
   {
-    question: 'Still running your business on spreadsheets and WhatsApp groups?',
+    question: 'Are manual processes slowing you down?',
     solution:
-      'We build custom systems — school management, inventory, POS, CRM, booking and HR — around how you actually work.',
+      'We build systems that run your operations so your team focuses on what matters.',
     image: '/images/hero-software-systems.png',
     href: '/services/software-development/',
   },
   {
-    question: 'Still paying staff to do work a system could handle automatically?',
+    question: 'Are you doing the same tasks every single day?',
     solution:
-      'We build WhatsApp chatbots, customer support AI and automated workflows that run quietly in the background.',
+      'We automate repetitive work so your business keeps moving without everything depending on you.',
     image: '/images/hero-ai-automation.png',
     href: '/services/ai-automation/',
   },
   {
-    question: 'Does your brand look as serious as the work you actually do?',
+    question: 'Does your business look as professional as the service you provide?',
     solution:
-      'We design logos, flyers, brochures, business cards and social graphics that make your business look the part.',
+      'We design brands that make customers trust you before they even speak to you.',
     image: '/images/hero-graphic-design.png',
     href: '/services/graphic-design/',
   },
   {
-    question: 'Still sending business emails from a Gmail address?',
+    question: 'Is your business still using a Gmail address?',
     solution:
-      'We register your .co.zw domain, set up reliable hosting and give your team professional email addresses.',
+      'A professional domain and business email tells customers you are serious about what you do.',
     image: '/images/hero-domains-hosting.png',
     href: '/services/domains-hosting/',
   },
   {
-    question: 'Are your payment system, website and WhatsApp still not talking to each other?',
+    question: 'Are your systems talking to each other or are you the one passing information between them?',
     solution:
-      'We connect EcoCash, Paynow, your CRM, WhatsApp and Google into one joined-up system with no manual copying.',
+      'We connect your platforms so data flows automatically and nothing falls through the gaps.',
     image: '/images/hero-api-integrations.png',
     href: '/services/api-integrations/',
   },
@@ -277,12 +278,12 @@ export const DEFAULT_HOME_SECTIONS: HomeSectionsConfig = {
   hero_bg: '#f8f8f6',
   payment_label: 'We accept local payments',
   services_heading: 'One team. Every digital capability your organisation needs.',
-  services_bg: '#ffffff',
+  services_bg: '#f4f4f4',
   partners_heading: 'Partners who trust us',
   partners_subheading: 'Trusted by businesses, NGOs, and institutions across Zimbabwe.',
   partners_bg: '#f8f8f6',
   how_it_works_heading: 'How we take your project from idea to launch.',
-  how_it_works_bg: '#ffffff',
+  how_it_works_bg: '#f8fafc',
   projects_heading: 'Live work we have delivered.',
   projects_bg: '#f8f8f6',
   why_heading: 'Why choose us.',
@@ -336,6 +337,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
     price_range: '$30 – $1,000+',
     price_summary: 'Packages from $30 up to custom enterprise scope.',
     price_note: 'Hosting from $10/month. Every package includes mobile responsiveness, SSL security and local support.',
+    hosting_price: 'from $10/month',
     process_steps: [
       { title: 'Brief', body: 'You tell us what you need. We ask the right questions.' },
       { title: 'Design', body: 'We design your site and show you before we build anything.' },
@@ -394,6 +396,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
     price_range: 'Starting from $100',
     price_summary: 'Quoted by scope after a brief consultation.',
     price_note: 'Every project gets a fixed quote before we start. No surprises mid-build.',
+    hosting_price: 'from $10/month',
     process_steps: [
       {
         title: 'Understand',
@@ -462,6 +465,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
     price_range: 'Starting from $50',
     price_summary: 'Quoted by scope after a brief consultation.',
     price_note: 'Every automation project is scoped individually. We tell you exactly what it will cost before we start.',
+    hosting_price: 'from $10/month',
     process_steps: [
       {
         title: 'Understand',
@@ -536,6 +540,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
     price_range: 'Starting from $5 per job',
     price_summary: 'Quoted based on the scope and volume of work required.',
     price_note: 'We give you a clear price before we start. No surprises.',
+    hosting_price: 'from $10/month',
     process_steps: [
       {
         title: 'Brief',
@@ -689,6 +694,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
     price_summary: 'Quoted by scope after a brief consultation.',
     price_note:
       'Recurring third-party or API costs from external providers are separate where applicable. We tell you about these upfront before we start.',
+    hosting_price: 'from $10/month',
     process_steps: [
       {
         title: 'Understand',
@@ -741,16 +747,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   browser_title: 'Opus Zimbabwe — Digital Services for Zimbabwe',
   manifest_icon: '/images/icon-512.png',
   footer_socials: [
-    { label: 'Facebook', href: 'https://www.facebook.com/share/17Pf93s1pA/?mibextid=wwXIfr', icon: 'Facebook' },
-    { label: 'Instagram', href: 'https://www.instagram.com/opuszimbabwe?igsh=MWltZXp1NXh0MGZ0bQ%3D%3D&utm_source=qr', icon: 'Instagram' },
-    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/opus-zimbabwe-3150723b9', icon: 'Linkedin' },
-    { label: 'X / Twitter', href: 'https://x.com/opuszimbabwe?s=21', icon: 'Twitter' },
-    { label: 'WhatsApp', href: 'https://wa.me/263776396530', icon: 'MessageCircle' },
+    { label: 'Facebook', href: 'https://www.facebook.com/opuszim', icon: 'Facebook' },
+    { label: 'Instagram', href: 'https://www.instagram.com/opuszimbabwe', icon: 'Instagram' },
+    { label: 'LinkedIn', href: 'https://www.linkedin.com/in/opuszimbabwe', icon: 'Linkedin' },
+    { label: 'X', href: 'https://x.com/OpusZimbabwe', icon: 'Twitter' },
+    { label: 'WhatsApp', href: 'https://wa.me/263773979162', icon: 'MessageCircle' },
   ],
   contact_cards: [
-    { title: 'Email', line: 'info.opuszim@gmail.com', note: 'We respond within 24 hours', href: 'mailto:info.opuszim@gmail.com', icon: 'Mail' },
-    { title: 'Phone / WhatsApp', line: '0776 396 530 | 0710 740 387', note: 'Mon–Fri, 8am–6pm CAT', href: 'https://wa.me/263776396530', icon: 'Phone' },
-    { title: 'Start a WhatsApp Chat', line: 'Chat with our team now', note: 'Fastest way to reach us', href: 'https://wa.me/263776396530', icon: 'MessageCircle' },
+    { title: 'WhatsApp', line: '+263 776 396 530', note: 'Usually within the hour', href: 'https://wa.me/263776396530', icon: 'MessageCircle' },
+    { title: 'Email', line: 'info.opuszim@gmail.com', note: 'Within 1 business day', href: 'mailto:info.opuszim@gmail.com', icon: 'Mail' },
+    { title: 'Call Us', line: '0776 396 530', note: '0773 979 162', href: 'tel:+263776396530', icon: 'Phone' },
   ],
   faq_home: [
     { q: 'How do I pay for a project?', a: 'You can use EcoCash, OneMoney, InnBucks, Zimswitch and other supported Zimbabwean payment methods.' },
@@ -758,27 +764,27 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { q: 'Do you provide domains, hosting and business email?', a: 'Yes. Domain registration, hosting and professional business email are available through Opus Zimbabwe.' },
   ],
   faq_page: [
-    { q: 'How long does it take to build a website?', a: 'A standard business website takes 3–7 working days. Larger or more complex projects take 1–4 weeks depending on scope. We give you a clear timeline before we start.' },
-    { q: 'How do I pay?', a: 'We accept EcoCash, OneMoney, InnBucks, Zimswitch, ZIPIT and USD cash or bank transfer. A deposit is required before work begins, with the balance due on completion.' },
-    { q: 'Do I own my website and domain after you build it?', a: 'Yes, completely. Your domain is registered in your name and your website files belong to you. We do not hold your assets hostage.' },
-    { q: 'What if I need changes after the website launches?', a: 'All packages include a post-launch support window. Ongoing maintenance packages are available from $10/month.' },
-    { q: 'Can you redesign my existing website?', a: 'Yes. We can rebuild your current site from scratch or modernise what you already have while keeping your domain and content.' },
-    { q: 'Do you work with clients outside Harare?', a: 'Yes. We work with clients across Zimbabwe and internationally. Everything can be managed remotely via WhatsApp, email and video calls.' },
-    { q: 'What do you need from me to get started?', a: 'A brief description of your business, any existing branding (logo, colours) and an idea of what you want the website or system to do. We guide you through the rest.' },
-    { q: 'Can you build a system specifically for my school, clinic or business?', a: 'Yes. Custom software and management systems are one of our core services. We scope every project individually based on your actual requirements.' },
+    { q: 'How much does a website cost?', a: 'Starter websites begin at $30. Standard packages start at $60. Business packages start at $100. Pricing depends on the number of pages, features and complexity required. Custom projects are quoted after a brief consultation — no obligation to proceed.' },
+    { q: 'How long does a project take?', a: 'Starter websites are typically delivered in 3 to 7 working days. Standard builds take 1 to 2 weeks. Business and Professional packages take 2 to 4 weeks. Software systems and custom projects are scoped individually. We confirm a timeline before any work begins.' },
+    { q: 'Do you handle domains, hosting and business email?', a: 'Yes. We register domains across all major extensions including .co.zw, .com, .org and others. We also set up web hosting, SSL certificates and professional business email. Everything is configured correctly from the start.' },
+    { q: 'What happens after my project is delivered?', a: 'Every project includes a handover and a period of post-launch support. Ongoing maintenance, updates and technical support are available from $10 per month. You will never be left managing a website or system alone.' },
+    { q: 'My project does not fit a package — can you still help?', a: 'Yes. If your requirements are more specific or complex than our packages cover, contact us and we will scope and quote a custom solution for you directly.' },
+    { q: 'How do I pay for a project?', a: 'We accept EcoCash, OneMoney, InnBucks, Zimswitch and ZIPIT. No foreign currency is required. Payment schedules for larger projects are agreed upfront.' },
+    { q: 'Do you work with small businesses and startups?', a: 'Yes — this is exactly who we are built for. We work with individuals, small businesses, NGOs, schools and churches that need professional digital work at a price that makes sense for where they are right now.' },
+    { q: 'What is OpusEdu?', a: 'OpusEdu is our dedicated school management platform, purpose-built for Zimbabwean schools. It covers admissions, fees, timetables, results and communication in one system.' },
   ],
   approach_items: [
     { title: 'Understand', body: 'We take time to learn your business, your customers, and what you actually need before anything is built.', icon: 'Globe' },
     { title: 'Plan', body: 'We map out exactly what will be built, how long it will take, and what it will cost — no surprises.', icon: 'Settings' },
-    { title: 'Build', body: 'We do the work. You stay updated throughout, not just at the end.', icon: 'LayoutDashboard' },
+    { title: 'Build', body: 'We do the work. You stay updated throughout, not just at the end.', icon: 'Bot' },
     { title: 'Review', body: 'You check everything before it goes live. If something needs changing, we change it.', icon: 'Link2' },
     { title: 'Launch & Support', body: 'We go live and stay with you. If something breaks or needs updating, we are reachable.', icon: 'TrendingUp' },
   ],
   built_for_zimbabwe: {
     eyebrow: 'Built for Zimbabwe',
-    heading: 'World-class execution. Local understanding.',
-    body: 'We understand how business works here. We accept EcoCash, OneMoney, InnBucks, Zimswitch and ZIPIT. We price in USD at rates that make sense locally. We communicate on WhatsApp because that is where you are. And we build to an international standard because your business deserves nothing less.',
-    image: '/images/gold-wave-bg.jpg',
+    heading: 'Professional digital services that understand your market, your clients, and your budget.',
+    body: 'Most digital agencies in Zimbabwe either overcharge or underdeliver. Opus Zimbabwe was built to close that gap — corporate quality, local understanding, and a team that is reachable when you need them.',
+    image: '/images/hero-digital-solutions.png',
   },
 };
 
@@ -1207,7 +1213,11 @@ export function servicePageFor(
   if (!serviceId) return null;
   const fromContent = content?.settings?.service_pages?.[serviceId];
   if (fromContent) return fromContent;
-  return DEFAULT_SERVICE_PAGES[serviceId] || null;
+  const base = DEFAULT_SERVICE_PAGES[serviceId];
+  if (!base) return null;
+  // Normalize the static fallback exactly like the /api/content response
+  // so the no-API render matches the D1-backed render field-for-field.
+  return normalizeServicePages({ [serviceId]: base }, DEFAULT_SERVICE_PAGES)[serviceId] || base;
 }
 
 export function contactHref(serviceName?: string, domain?: string): string {

@@ -40,7 +40,7 @@ export default function HomeServicesGrid() {
   return (
     <div
       ref={gridRef}
-      className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
+      className="mt-12 grid grid-cols-1 items-stretch gap-8 md:grid-cols-2 lg:grid-cols-3"
     >
       {services.map((s, index) => {
         const Icon = resolveIcon(s.icon);
@@ -48,19 +48,18 @@ export default function HomeServicesGrid() {
           <div
             key={s.id}
             style={{ transitionDelay: `${index * 80}ms` }}
-            className={`transition-all duration-500 ease-out ${
+            className={`h-full transition-all duration-500 ease-out ${
               inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
             }`}
           >
             <ServiceCard
-              gradient={s.gradient}
               title={s.tagline}
               icon={Icon}
               heading={s.name}
               description={s.description}
+              items={s.items}
               ctaText="Explore"
               ctaHref={`/services/${s.slug}/`}
-              image={s.image}
               cardBgColor={s.card_bg_color || '#ffffff'}
             />
           </div>

@@ -1,70 +1,85 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import React from 'react';
 
 type ServiceCardProps = {
-  gradient: string;
   title: string;
-  icon: any;
+  icon: React.ComponentType<any>;
   heading: string;
   description: string;
+  items: string[];
   ctaText: string;
   ctaHref: string;
-  image: string;
   cardBgColor?: string;
 };
 
+const FEATURE_COUNT = 3;
+
 export default function ServiceCard({
   title,
-  icon,
+  icon: Icon,
   heading,
   description,
+  items,
   ctaText,
   ctaHref,
-  image,
   cardBgColor = '#ffffff',
 }: ServiceCardProps) {
-  const Icon = icon;
+  // The reference design uses a light-grey inset panel. Keep the old
+  // admin-controlled card colour useful when a non-white colour is set.
+  const panelColor =
+    cardBgColor && !['#fff', '#ffffff'].includes(cardBgColor.trim().toLowerCase())
+      ? cardBgColor
+      : '#eeeeee';
+  const featuredItems = items.slice(0, FEATURE_COUNT);
+  const remainingCount = Math.max(0, items.length - featuredItems.length);
 
   return (
-    <article
-      style={{ '--card-text-bg': cardBgColor || '#ffffff' } as React.CSSProperties}
-      className="svc-card group relative isolate overflow-hidden rounded-[40px] border-l-[3px] border-l-transparent bg-white text-left shadow-[0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-200 ease-out hover:-translate-y-[6px] hover:border-l-[#E85D2A] hover:bg-[#fff8f4] hover:shadow-[0_18px_44px_rgba(0,0,0,0.12)]"
-    >
-      <div className="absolute inset-x-0 top-0 h-[350px] overflow-hidden rounded-t-[40px] bg-[#e9e9e9]">
-        <img
-          src={image}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.02]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/55" />
-        <span className="absolute left-6 top-6 rounded-full border border-white/60 bg-white/90 px-3.5 py-1.5 text-[.65rem] font-bold uppercase tracking-[.12em] text-[#0d0d0d] shadow-sm backdrop-blur-sm">
-          {title}
-        </span>
-      </div>
-
-      <div className="svc-text-section relative mt-[290px] min-h-[260px] rounded-tr-[55px] px-6 pb-7 pt-[76px] sm:px-7">
-        <div className="svc-avatar-ring" aria-hidden="true">
-          <span className="flex h-[110px] w-[110px] items-center justify-center rounded-full bg-[#0d0d0d] text-white shadow-inner">
-            <Icon size={34} strokeWidth={1.7} />
+    <article className="group flex h-full flex-col rounded-[26px] border border-black/[0.04] bg-white p-2 shadow-[0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.11)] sm:p-2.5">
+      <div
+        style={{ backgroundColor: panelColor }}
+        className="flex min-h-[280px] flex-col rounded-[19px] p-4 sm:p-5"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <span className="inline-flex max-w-[calc(100%-3rem)] items-center rounded-full bg-white px-3.5 py-1.5 text-[.65rem] font-bold uppercase leading-none tracking-[.12em] text-[#0d0d0d]">
+            {title}
+          </span>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-[#0d0d0d]">
+            <Icon size={19} strokeWidth={1.8} aria-hidden="true" />
           </span>
         </div>
 
-        <h3 className="text-[1.3rem] font-bold leading-tight tracking-tight text-[#0d0d0d]">
+        <h3 className="mt-4 line-clamp-2 min-h-[3.2rem] text-[1.28rem] font-bold leading-[1.22] tracking-tight text-[#0d0d0d] sm:text-[1.38rem]">
           {heading}
         </h3>
-        <p className="mt-3 min-h-[7.5rem] text-[.9rem] leading-[1.7] text-[#0d0d0d]/75">
+        <p className="mt-2 line-clamp-3 min-h-[4rem] max-w-none text-[.84rem] leading-[1.58] text-[#0d0d0d]/70">
           {description}
         </p>
 
         <Link
           href={ctaHref}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#E85D2A] px-5 py-2.5 text-[.85rem] font-semibold text-white shadow-[0_4px_12px_rgba(232,93,42,0.25)] transition-all duration-200 ease-out group-hover:translate-x-1.5 hover:brightness-110"
+          className="mt-auto inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#0d0d0d] px-5 py-2.5 text-[.86rem] font-semibold text-white shadow-[0_4px_10px_rgba(0,0,0,0.14)] transition-colors duration-200 hover:bg-[#292929] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E85D2A]"
         >
           {ctaText}
-          <ArrowRight size={15} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
         </Link>
       </div>
+
+      <ul className="space-y-2.5 px-3.5 py-4 sm:px-4 sm:py-[18px]">
+        {featuredItems.map((item) => (
+          <li key={item} className="flex items-start gap-2.5 text-left text-[.84rem] leading-5 text-[#0d0d0d]">
+            <Check size={14} strokeWidth={2.4} className="mt-[3px] shrink-0 text-[#c8c8c8]" aria-hidden="true" />
+            <span>{item}</span>
+          </li>
+        ))}
+        {remainingCount > 0 && (
+          <li className="flex items-start gap-2.5 text-left text-[.84rem] leading-5 text-[#525252]">
+            <span className="mt-[1px] inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[#f1f1f1] text-[.65rem] font-semibold leading-none">
+              +
+            </span>
+            <span>{remainingCount} more capabilities</span>
+          </li>
+        )}
+      </ul>
     </article>
   );
 }

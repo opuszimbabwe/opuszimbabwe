@@ -34,14 +34,14 @@ export default function PaymentTrustStrip() {
               <div
                 key={method.id}
                 title={method.name}
-                className="group flex items-center justify-center px-2 py-1 overflow-hidden"
+                className="flex items-center justify-center px-2 py-1 overflow-hidden"
               >
                 <img
                   src={method.logo}
                   alt={method.name}
                   className={`${
                     isPaynow ? 'h-12 sm:h-14 scale-150' : 'h-8 sm:h-9'
-                  } w-auto object-contain grayscale opacity-65 transition-all duration-200 ease-out group-hover:grayscale-0 group-hover:opacity-100`}
+                  } w-auto object-contain`}
                 />
               </div>
             );

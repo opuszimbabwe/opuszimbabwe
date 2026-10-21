@@ -40,10 +40,10 @@ export default function Home() {
       {/* 2. Payment trust strip — immediately below the hero */}
       <PaymentTrustStrip />
 
-      {/* 3. Services — six cards in a 3x2 grid (White section by default) */}
+      {/* 3. Services — six raised cards on the light neutral section */}
       <section
         id="services"
-        style={{ backgroundColor: s.services_bg || '#ffffff' }}
+        style={{ backgroundColor: s.services_bg || '#f4f4f4' }}
         className="py-20 text-center"
       >
         <div className="mx-auto max-w-7xl px-6">

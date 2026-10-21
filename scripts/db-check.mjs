@@ -319,11 +319,12 @@ check(
   )
 );
 check(
-  'home_sections has "Partners who trust us" and white/warm backgrounds',
+  'home_sections has the service-card, partners, and How It Works backgrounds',
   homeSections &&
     homeSections.partners_heading === 'Partners who trust us' &&
-    homeSections.services_bg === '#ffffff' &&
-    homeSections.partners_bg === '#f8f8f6'
+    homeSections.services_bg === '#f4f4f4' &&
+    homeSections.partners_bg === '#f8f8f6' &&
+    homeSections.how_it_works_bg === '#f8fafc'
 );
 
 // 7. Write round-trip (update + restore) to prove the database is writable

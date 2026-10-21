@@ -30,13 +30,15 @@ export default function HomeHero() {
   return (
     <section
       style={{ backgroundColor: homeSections.hero_bg || '#f8f8f6' }}
-      className="pt-8 pb-12 md:pt-14 md:pb-16"
+      className="pb-12 md:pb-16"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-12 lg:gap-14 items-center">
+      {/* Grid parent: 40px edge-to-text on the sides */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[55fr_45fr] gap-12 lg:gap-14 items-center" style={{ padding: '0 40px' }}>
         {/* Left column: 55% — Static Inter Headline + Rotating Question + Learn More CTA */}
-        <div className="flex flex-col items-start text-left">
+        {/* Text container: navbar-to-text gap ~88px (24px gap + 64px navbar height) */}
+        <div className="flex flex-col items-start text-left" style={{ paddingTop: 'calc(24px + 64px)' }}>
           <h1 className="font-inter font-black text-[#0d0d0d] text-[44px] sm:text-[62px] xl:text-[84px] leading-[1.02] tracking-[-0.035em]">
             {homeSections.hero_headline_main}{' '}
             <span className="text-[#DC2626]">{homeSections.hero_headline_accent}</span>

@@ -1,5 +1,5 @@
 // PATCH /api/admin/services — update fields of one service card, including its
-// bottom text section background colour (`card_bg_color`), service-page hero
+// homepage service-card inset panel colour (`card_bg_color`), service-page hero
 // (image or gradient), "Why Opus" cards and related links (Cloudflare Access
 // protected). Only the fields present in the request body are updated; omitted
 // fields are left untouched.

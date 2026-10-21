@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X } from 'lucide-react';
+import {
+  Menu, X, Home, LayoutGrid, Globe, Briefcase, HelpCircle, Mail,
+  type LucideIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { DEFAULT_SETTINGS } from '@/lib/content';
@@ -20,16 +23,17 @@ const services = [
 type NavItem = {
   label: string;
   href: string;
+  icon: LucideIcon;
   match?: (p: string) => boolean;
 };
 
 const navItems: NavItem[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services/', match: (p: string) => p.startsWith('/services') },
-  { label: 'Domains', href: '/domains/' },
-  { label: 'Projects', href: '/projects/' },
-  { label: 'FAQ', href: '/faq/' },
-  { label: 'Contact', href: '/contact/' },
+  { label: 'Home', href: '/', icon: Home },
+  { label: 'Services', href: '/services/', icon: LayoutGrid, match: (p: string) => p.startsWith('/services') },
+  { label: 'Domains', href: '/domains/', icon: Globe },
+  { label: 'Projects', href: '/projects/', icon: Briefcase },
+  { label: 'FAQ', href: '/faq/', icon: HelpCircle },
+  { label: 'Contact', href: '/contact/', icon: Mail },
 ];
 
 function cleanPath(path: string) {
@@ -100,10 +104,12 @@ export default function Navbar() {
           >
             {navItems.map((item, idx) => {
               const active = isActive(item);
-              const linkCls = `px-2.5 py-1 text-[14px] transition-colors duration-200 ${
+              const Icon = item.icon;
+              // White pill marks the page currently being viewed
+              const linkCls = `inline-flex items-center gap-2 text-[14px] transition-all duration-200 ${
                 active
-                  ? 'font-semibold text-[#0d0d0d]'
-                  : 'font-normal text-[#0d0d0d]/70 hover:text-[#E85D2A]'
+                  ? 'font-semibold text-[#0d0d0d] rounded-full bg-white border border-black/[0.05] shadow-[0_2px_10px_rgba(13,13,13,0.10)] px-3.5 py-1.5'
+                  : 'font-normal text-[#0d0d0d]/70 hover:text-[#E85D2A] px-2.5 py-1'
               }`;
 
               return (
@@ -121,6 +127,8 @@ export default function Navbar() {
                   {item.label === 'Services' ? (
                     <div className="relative group">
                       <Link className={linkCls} href={item.href}>
+                        {/* Icon: visible only on the currently viewed page */}
+                        <Icon size={16} strokeWidth={2} className={active ? 'text-[#E85D2A]' : 'opacity-0'} />
                         {item.label}
                       </Link>
                       <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block pt-3 w-72 z-50">
@@ -139,6 +147,8 @@ export default function Navbar() {
                     </div>
                   ) : (
                     <Link className={linkCls} href={item.href}>
+                      {/* Icon: visible only on the currently viewed page */}
+                      <Icon size={16} strokeWidth={2} className={active ? 'text-[#E85D2A]' : 'opacity-0'} />
                       {item.label}
                     </Link>
                   )}
@@ -183,6 +193,7 @@ export default function Navbar() {
           <nav className="flex flex-col gap-0 px-8 py-6 text-[1.05rem] font-semibold text-[#0d0d0d]">
             {navItems.map((item) => {
               const active = isActive(item);
+              const Icon = item.icon;
               if (item.label === 'Services') {
                 return (
                   <div key={item.href} className="border-b border-[#e5e7eb]">
@@ -190,7 +201,10 @@ export default function Navbar() {
                       onClick={() => setServicesOpen(!servicesOpen)}
                       className="w-full flex justify-between items-center py-4"
                     >
-                      <span>Services</span>
+                      <span className="flex items-center gap-2">
+                        <Icon size={20} className={active ? 'text-[#E85D2A]' : 'opacity-0'} />
+                        <span>Services</span>
+                      </span>
                       <span className="text-[#E85D2A] text-xl leading-none">{servicesOpen ? '−' : '+'}</span>
                     </button>
                     {servicesOpen && (
@@ -214,6 +228,7 @@ export default function Navbar() {
                     active ? 'text-[#0d0d0d] font-bold' : 'text-[#0d0d0d]/80'
                   }`}
                 >
+                  <Icon size={20} className={active ? 'text-[#E85D2A]' : 'opacity-0'} />
                   {item.label}
                 </Link>
               );

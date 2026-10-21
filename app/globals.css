@@ -54,56 +54,6 @@ h3 { font-size: 1.15rem; }
   .reveal, .reveal.animated { animation: none; opacity: 1; }
 }
 
-/* ServiceCard avatar ring + concave fillets — synced with card bottom background */
-.svc-card {
-  --card-active-bg: var(--card-text-bg, #ffffff);
-}
-.svc-card:hover {
-  --card-active-bg: #fff8f4;
-}
-
-.svc-text-section {
-  background-color: var(--card-active-bg, #ffffff);
-  transition: background-color 200ms ease;
-}
-
-.svc-avatar-ring {
-  position: absolute;
-  z-index: 2;
-  top: -65px;
-  left: 24px;
-  display: grid;
-  width: 130px;
-  height: 130px;
-  place-items: center;
-  border-radius: 50%;
-  background-color: var(--card-active-bg, #ffffff);
-  transition: background-color 200ms ease;
-}
-
-.svc-avatar-ring::before,
-.svc-avatar-ring::after {
-  position: absolute;
-  top: 65px;
-  width: 35px;
-  height: 35px;
-  background-color: var(--card-active-bg, #ffffff);
-  transition: background-color 200ms ease;
-  content: '';
-}
-
-.svc-avatar-ring::before {
-  left: -30px;
-  -webkit-mask: radial-gradient(circle at 0 0, transparent 30px, #000 30.5px);
-  mask: radial-gradient(circle at 0 0, transparent 30px, #000 30.5px);
-}
-
-.svc-avatar-ring::after {
-  right: -30px;
-  -webkit-mask: radial-gradient(circle at 100% 0, transparent 30px, #000 30.5px);
-  mask: radial-gradient(circle at 100% 0, transparent 30px, #000 30.5px);
-}
-
 /* Signature shape: inverted corner radius on Why Choose Us reason cards */
 .why-inverted-card {
   border-radius: 24px;

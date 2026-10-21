@@ -13,12 +13,16 @@ still renders if `/api/content` is unreachable.
 
 - **Fonts:** Inter 800–900 for the static homepage hero headline only;
   Poppins for everything else.
-- **Backgrounds:** alternating `#f8f8f6` and `#ffffff` homepage sections.
+- **Backgrounds:** alternating `#f8f8f6`, `#ffffff` and the light-grey
+  service-card section (`#f4f4f4`); How It Works uses `#f8fafc`.
   Primary text `#0d0d0d`.
-- **Orange `#E85D2A`:** buttons, hover states and the active CTA only
-  (plus the subtle orange left border on service card hover). Never on
-  eyebrows, section numbers, decorative elements or static borders.
+- **Orange `#E85D2A`:** primary buttons, hover accents and the active
+  navbar item's icon. The homepage service-card CTA is black to match its
+  reference design. Never use orange on eyebrows, section numbers,
+  decorative elements or static borders.
 - **Red:** only the phrase “The results should show it.” in the homepage hero.
+- **Navy `#0a2540`:** How It Works step icons, hub outlines and the
+  connector line's `#e2e8f0` (timeline styling only).
 - No eyebrow labels or section numbers on homepage lists/grids.
 
 ### Homepage
@@ -27,14 +31,25 @@ Section order (all headings/backgrounds editable in `/admin` → Hero & Sections
 
 1. `components/HomeHero.tsx` — 55/45 hero, six synced rotating cycles with
    transparent images placed directly on the body (no container box).
+   Grid parent has `padding: 0 40px` (40 px edge-to-text) and the text
+   container `padding-top: calc(24px + 64px)` (≈88 px navbar-to-headline).
 2. `components/PaymentTrustStrip.tsx` — local payment logos from
-   `settings.payment_methods`, greyscale until hover.
-3. `components/HomeServicesGrid.tsx` + `components/ServiceCard.tsx` — 3×2
-   vertical cards, 80 ms stagger, 6 px lift, orange left border on hover,
-   per-card bottom background colour (`services.card_bg_color`).
+   `settings.payment_methods`, always in full colour (no greyscale).
+3. `components/HomeServicesGrid.tsx` + `components/ServiceCard.tsx` — a
+   responsive 3×2 grid based on the `uploads/Pricing Plan Section.jpg`
+   reference: rounded white outer cards, a soft-grey inset header panel,
+   category pill, service icon/title/description, full-width black pill CTA,
+   and a compact checked capability list. Outer radius 26 px, inset radius
+   19 px, 80 ms reveal stagger. A non-white `services.card_bg_color` still
+   customizes the inset panel; migration `0013` changes the seeded section
+   background to `#f4f4f4` without replacing admin-edited colours.
 4. `components/TrustedPartners.tsx` — “Partners who trust us” with per-partner
    tile background (`partners.bg_color`; Killing Giants is `#000000`).
-5. `components/OpusApproach.tsx` — the five How It Works steps.
+5. `components/OpusApproach.tsx` — the five How It Works steps as a
+   horizontal timeline: white circular hubs (96 px) with navy line icons,
+   a `#e2e8f0` connector line behind the hubs, numbered titles
+   (`01.`, `02.` …) and a navy-outlined white diamond hub on the middle
+   step. Migration `0012` re-seeds the section background to `#f8fafc`.
 6. `components/HomeProjects.tsx` — all active live-work projects, each with an
    admin-uploaded screenshot (`projects.screenshot`). Until a screenshot is
    uploaded the card shows a neutral browser-frame placeholder with the
@@ -43,6 +58,15 @@ Section order (all headings/backgrounds editable in `/admin` → Hero & Sections
 8. `components/FaqAccordion.tsx` — three homepage FAQs.
 9. Final CTA — “Ready to get your business going?” → `/contact/`.
 10. `components/Footer.tsx` — unchanged structure.
+
+### Navbar
+
+`components/Navbar.tsx` renders every link as `{icon} Label` with the
+icon left of the text. The page currently being viewed gets a white
+pill (`bg-white rounded-full` + border/shadow) and its icon is visible
+(orange); all other items render their icon invisible (`opacity-0`) so
+the row keeps a steady width. “Services” stays active for every
+`/services/*` page via its `match` rule.
 
 ### Individual service pages
 
