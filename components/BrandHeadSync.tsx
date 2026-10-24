@@ -26,15 +26,16 @@ export default function BrandHeadSync() {
     if (favicon) {
       const rels = ['icon', 'shortcut icon', 'apple-touch-icon'];
       rels.forEach((rel) => {
-        let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement | null;
-        if (!link) {
-          link = document.createElement('link');
-          link.rel = rel;
-          document.head.appendChild(link);
+        const links = [...document.querySelectorAll<HTMLLinkElement>(`link[rel="${rel}"]`)];
+        if (!links.length) {
+          const link = document.createElement('link'); link.rel = rel;
+          document.head.appendChild(link); links.push(link);
         }
-        if (link.getAttribute('href') !== favicon) {
-          link.href = favicon;
-        }
+        links.forEach(link => {
+          // Old size/type hints must not make a browser prefer an obsolete icon.
+          link.removeAttribute('sizes'); link.removeAttribute('type');
+          if (link.getAttribute('href') !== favicon) link.href = favicon;
+        });
       });
     }
   }, [favicon, browserTitle, pathname, status]);

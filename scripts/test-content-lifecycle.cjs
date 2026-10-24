@@ -13,6 +13,7 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8788';
    assert.equal(r.headers()['cloudflare-cdn-cache-control'],'no-store');
   }
   let fixture = await response.json();
+  fixture.settings.favicon_icon = '/images/opus-favicon-transparent.png';
   const page = await context.newPage(); const errors=[]; page.on('pageerror',e=>errors.push(e.message));
   let release, begin, hold=true; let started=new Promise(r=>begin=r);
   await page.route('**/api/content',async route=>{
@@ -21,8 +22,11 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8788';
   });
   await page.goto(base,{waitUntil:'domcontentloaded'}); await started;
   assert.equal(await page.locator('.site-content').isVisible(),false);
+  assert.equal(await page.getByText('Loading Opus Zimbabwe…', { exact:true }).count(), 0);
+  assert.equal(await page.getByText('Checking the latest site content…', { exact:true }).count(), 0);
   release(); await page.locator('.site-content[data-loading="false"]').waitFor();
-  console.log('PASS: HTML/API are no-store and first paint waits for fresh content');
+  assert.deepEqual(await page.locator('link[rel="icon"],link[rel="shortcut icon"]').evaluateAll(links => [...new Set(links.map(link => link.getAttribute('href')))]), ['/images/opus-favicon-transparent.png']);
+  console.log('PASS: no visible preloader, one transparent favicon source; HTML/API are no-store and first paint waits for fresh content');
   fixture=structuredClone(fixture); fixture.settings.navbar_logo='/images/icon-192.png';
   hold=true; started=new Promise(r=>begin=r);
   await page.locator('nav[aria-label="Primary"]').getByRole('link',{name:'Services',exact:true}).click();

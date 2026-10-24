@@ -23,13 +23,9 @@ export const metadata = {
   title: 'Opus Zimbabwe — Digital Services for Zimbabwe',
   description: 'Websites, software systems, AI automation, branding, domains, hosting and integrations for Zimbabwean organisations',
   icons: {
-    icon: [
-      { url: '/images/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
-      { url: '/images/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/images/icon-512.png', sizes: '512x512', type: 'image/png' },
-    ],
+    icon: '/api/favicon',
     apple: '/images/logo-full.png',
-    shortcut: '/images/favicon-96x96.png',
+    shortcut: '/api/favicon',
   },
   // Served by the Pages Function /api/manifest so the admin-set icon applies
   // without a rebuild (falls back to the built-in icon if it is unreachable).

@@ -758,7 +758,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   why_choose_us: DEFAULT_WHY_CHOOSE_US,
   service_pages: DEFAULT_SERVICE_PAGES,
   navbar_logo: '/images/logo-full.png',
-  favicon_icon: '/images/favicon-96x96.png',
+  favicon_icon: '/images/opus-favicon-transparent.png',
   browser_title: 'Opus Zimbabwe — Digital Services for Zimbabwe',
   manifest_icon: '/images/icon-512.png',
   footer_socials: [

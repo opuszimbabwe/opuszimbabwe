@@ -91,3 +91,9 @@ Word entry/exit uses a 500ms vertical spring transition, clears the previous wor
 Contact fields strip textarea-only props, provide connected labels and reserve separate label/text space for typed, autofilled and prefilled content. Phone fields use tel; service selection has an accessible name. Test with `scripts/test-rotating-hero.cjs` against local Pages; it restores settings.
 
 Preview proxy overlays only the proposed hero design on public GET content. It has no production database bindings or admin-write proxy. Visual changes await approval; security commit 6bc343b was authorised and deployed separately.
+
+## Approved hero release, loader removal and transparent tab icon
+
+The owner approved the service-word hero/contact release. The visible Loading Opus Zimbabwe and history-return loading messages are removed; the fresh-content gate, retry-on-error and admin authentication remain. The original transparent `uploads/favicon-96x96.png` is copied unchanged to `public/images/opus-favicon-transparent.png`. The prior built-in and selected uploaded favicons were fully opaque white squares. Static metadata now resolves the current admin icon through no-store `/api/favicon`, and BrandHeadSync updates every competing icon link and clears obsolete size/type hints. Future administrator favicon uploads remain supported.
+
+Validation: typecheck/build, `scripts/test-favicon.ts` and `scripts/test-content-lifecycle.cjs` (no visible loader, fresh first load/history/navigation, retry and favicon consistency). Production icon selection is updated conditionally from the inspected opaque asset; the original R2 asset is preserved.
