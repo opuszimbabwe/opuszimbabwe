@@ -6,5 +6,5 @@ export const onRequestGet: PagesHandler = async context => {
   const currency = new URL(context.request.url).searchParams.get('currency') || 'USD';
   const [activeCurrencies, methods] = await Promise.all([currencies(), localMethods(currency)]);
   return json({ configured: configured(context.env), currencies: activeCurrencies, methods }, 200, { 'cache-control': 'no-store' });
- } catch (error) { console.error('Payment configuration failed', error instanceof Error ? error.name : 'unknown'); return fail(error); }
+ } catch (error) { return fail(error); }
 };

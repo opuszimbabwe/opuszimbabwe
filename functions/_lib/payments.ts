@@ -59,7 +59,8 @@ export function paymentInput(raw: Record<string, unknown>) {
 const transport: Transport = async request => {
  const url = new URL(request.url);
  if (url.origin !== new URL(API).origin || !url.pathname.startsWith('/api/payments-engine/')) throw new CheckoutError(502, 'Unexpected payment gateway address.');
- const response = await fetch(url, { method: request.method, headers: request.headers, body: request.body, redirect: 'error', signal: AbortSignal.timeout(request.timeoutMs) });
+ const response = await fetch(url, { method: request.method, headers: request.headers, body: request.body, redirect: 'manual', signal: AbortSignal.timeout(request.timeoutMs) });
+ if (response.status >= 300 && response.status < 400) throw new CheckoutError(502, 'Unexpected payment gateway redirect.');
  return { status: response.status, headers: Object.fromEntries(response.headers), body: await response.text(), usedInsecureHttpParser: false };
 };
 export function gateway(env: Env, callbacks?: { resultUrl: string; returnUrl: string }) {
@@ -68,7 +69,7 @@ export function gateway(env: Env, callbacks?: { resultUrl: string; returnUrl: st
 }
 async function publicGateway(path: string) {
  let response: Response;
- try { response = await fetch(API + path, { headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(8000) }); }
+ try { response = await fetch(API + path, { headers: { accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(8000) }); }
  catch (error) {
   // Public unauthenticated lookup only: no key, payer data or payment payload
   // is involved. Keep a bounded network diagnostic for operational support.
