@@ -13,6 +13,7 @@ let status: ContentStatus = 'loading';
 let inflight: Promise<SiteContent | null> | null = null;
 let refreshQueued = false;
 let freshRequired = false;
+let publication = 0;
 const listeners = new Set<() => void>();
 
 function notify() {
@@ -23,18 +24,20 @@ export function loadSiteContent(force = false, requireFresh = false): Promise<Si
   if (requireFresh) { freshRequired = true; status = 'loading'; notify(); }
   if (inflight) { if (force) refreshQueued = true; return inflight; }
   if (!force && status !== 'loading') return Promise.resolve(cache);
+  const requestPublication = publication;
   inflight = fetch('/api/content', { cache: 'no-store', signal: AbortSignal.timeout(8000) })
     .then((res) => (res.ok ? res.json().catch(() => null) : null))
     .then((raw) => normalizeContent(raw))
     .then((value) => {
       if (refreshQueued) return cache;
+      if (requestPublication !== publication || (value && cache && value.revision < cache.revision)) { refreshQueued = true; return cache; }
       if (value) { cache = value; freshRequired = false; }
       status = value ? 'ready' : freshRequired ? 'failed' : cache ? 'ready' : 'failed';
       notify();
       return cache;
     })
     .catch(() => {
-      if (refreshQueued) return cache;
+      if (refreshQueued || requestPublication !== publication) return cache;
       status = freshRequired ? 'failed' : cache ? 'ready' : 'failed';
       notify();
       return cache;
@@ -80,11 +83,21 @@ function subscribe(listener: () => void) {
     if (!listeners.size) { stopRefreshing?.(); stopRefreshing = null; }
   };
 }
-export async function announceSiteContentChange() {
+export async function announceSiteContentChange(committedContent?: unknown) {
+  const committed = normalizeContent(committedContent);
+  if (committed && (!cache || committed.revision >= cache.revision)) {
+    publication++;
+    // Only settings were changed by this endpoint; preserve any newer service,
+    // project or pricing data already in this tab. Settings/revision share a
+    // single D1 read so delayed saves cannot restore an older hero design.
+    cache = cache ? { ...cache, revision: committed.revision, settings: committed.settings } : committed;
+    status = 'ready';
+    freshRequired = false;
+    notify();
+  }
   try { window.localStorage.setItem('opus-content-updated', String(Date.now())); } catch { /* Storage may be disabled. */ }
-  await loadSiteContent(true);
-  // A read already in flight before the save must finish, then its queued
-  // post-save read must finish before the editor reports success.
+  if (committed) return;
+  await loadSiteContent(true, true);
   while (inflight) await inflight;
 }
 

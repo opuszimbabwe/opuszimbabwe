@@ -237,6 +237,7 @@ export async function readAllContent(db: D1Database) {
   }
 
   return {
+    revision: Number(settingsMap.content_revision || 0),
     services,
     pricing,
     projects,

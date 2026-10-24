@@ -149,7 +149,7 @@ async function api(path: string, init?: RequestInit): Promise<any> {
     const message = data?.error === 'invalid_value_for_payment_methods' ? 'Payment methods were not saved. Every row needs a name and a valid /images/…, /api/media/… or HTTPS logo URL. No entries were removed.' : (data && (data.error || data.hint)) || `Request failed (HTTP ${res.status})`;
     throw new Error(message);
   }
-  if (init?.method && init.method !== 'GET') await announceSiteContentChange();
+  if (init?.method && init.method !== 'GET') await announceSiteContentChange(data?.content);
   return data;
 }
 

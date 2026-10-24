@@ -182,6 +182,7 @@ export type SiteSettings = {
 };
 
 export type SiteContent = {
+  revision: number;
   services: ServiceRecord[];
   pricing: PricingRecord[];
   projects: ProjectRecord[];
@@ -1188,6 +1189,7 @@ export const staticPartners: PartnerRecord[] = [
 ];
 
 export const staticContent: SiteContent = {
+  revision: 0,
   services: staticServices,
   pricing: staticPricing,
   projects: staticProjects,
@@ -1571,5 +1573,6 @@ export function normalizeContent(raw: any): SiteContent | null {
     built_for_zimbabwe: normalizeBuilt((rawSettings as any).built_for_zimbabwe),
   };
 
-  return { services, pricing, projects, partners, extras, settings };
+  const revision = Number.isSafeInteger(raw.revision) && raw.revision >= 0 ? raw.revision : 0;
+  return { revision, services, pricing, projects, partners, extras, settings };
 }

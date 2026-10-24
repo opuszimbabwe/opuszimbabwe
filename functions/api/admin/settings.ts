@@ -4,7 +4,7 @@
 // (Cloudflare Access protected).
 
 import { json, requireAdmin } from '../../_lib/auth';
-import { ALL_SETTINGS, sanitizeSetting } from '../../_lib/db';
+import { ALL_SETTINGS, sanitizeSetting, readContent } from '../../_lib/db';
 import { PagesHandler } from '../../_lib/types';
 
 export const onRequestPut: PagesHandler = async (context) => {
@@ -37,8 +37,13 @@ export const onRequestPut: PagesHandler = async (context) => {
         )
         .bind(u.key, u.value)
     );
+    statements.push(db.prepare("INSERT INTO settings (key, value, updated_at) VALUES ('content_revision', '1', datetime('now')) ON CONFLICT(key) DO UPDATE SET value = CAST(settings.value AS INTEGER) + 1, updated_at = datetime('now')"));
     await db.batch(statements);
-    return json({ ok: true, updated: updates.map((u) => u.key) });
+    // Return the committed public snapshot so live hero/design changes apply
+    // directly, without a second browser request or an old in-flight read.
+    let content: Awaited<ReturnType<typeof readContent>> | null = null;
+    try { content = await readContent(context.env); } catch { /* The write succeeded; the client can retry a fresh read. */ }
+    return json({ ok: true, updated: updates.map((u) => u.key), content });
   } catch (err) {
     return json({ error: 'database_error' }, 500);
   }
