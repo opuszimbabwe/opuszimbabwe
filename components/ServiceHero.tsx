@@ -57,11 +57,11 @@ export default function ServiceHero({
       : contactHref(serviceName || eyebrow, domainCta ? '' : undefined);
 
   return (
-    <section className="relative isolate mx-4 mt-6 overflow-hidden rounded-[36px] bg-dark shadow-[0_16px_45px_rgba(0,0,0,0.14)] sm:mx-6 lg:mx-auto lg:max-w-[1400px]">
+    <div className="inner-hero-frame"><section className="relative isolate overflow-hidden rounded-[36px] bg-dark shadow-[0_16px_45px_rgba(0,0,0,0.14)]">
       <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={backgroundStyle} />
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/72 to-black/85" />
 
-      <div className="relative mx-auto max-w-4xl px-6 py-20 text-center md:py-28">
+      <div className="relative mx-auto max-w-4xl px-6 py-20 sm:px-10 text-center md:py-28">
         <p className="text-[.78rem] font-semibold uppercase tracking-[.16em] text-white/70">{eyebrow}</p>
         <h1 className="mt-4 text-4xl font-bold leading-tight text-white md:text-5xl">{headline}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-[1.05rem] leading-7 text-white/80">{intro}</p>
@@ -72,6 +72,6 @@ export default function ServiceHero({
           {cta}
         </Link>
       </div>
-    </section>
+    </section></div>
   );
 }

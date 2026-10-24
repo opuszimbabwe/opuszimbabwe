@@ -11,9 +11,9 @@ export default function AdminAccessBoundary({ children }: { children: ReactNode 
   const generation = useRef(0);
   useEffect(() => {
     let alive = true;
-    const check = async () => {
+    const check = async (mask = true) => {
       if (document.visibilityState !== 'visible') return;
-      const request = ++generation.current; setChecking(true);
+      const request = ++generation.current; if (mask) setChecking(true);
       const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
       try {
         const response = await fetch('/api/admin/session', { cache: 'no-store', credentials: 'same-origin', signal: AbortSignal.timeout(8000), headers: local ? { 'Cf-Access-Authenticated-User-Email': 'info.opuszim@gmail.com', 'Cf-Access-Jwt-Assertion': 'local-admin-check' } : {} });
@@ -25,9 +25,10 @@ export default function AdminAccessBoundary({ children }: { children: ReactNode 
     const visibility = () => { if (document.visibilityState === 'hidden') { generation.current++; setChecking(true); } else void check(); };
     const hide = () => { generation.current++; setChecking(true); };
     const show = (event: PageTransitionEvent) => { if (event.persisted) void check(); };
-    void check(); window.addEventListener('focus', check); document.addEventListener('visibilitychange', visibility);
+    const focus = () => { void check(false); };
+    void check(); window.addEventListener('focus', focus); document.addEventListener('visibilitychange', visibility);
     window.addEventListener('pagehide', hide); window.addEventListener('pageshow', show);
-    return () => { alive = false; generation.current++; window.removeEventListener('focus', check); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('pagehide', hide); window.removeEventListener('pageshow', show); };
+    return () => { alive = false; generation.current++; window.removeEventListener('focus', focus); document.removeEventListener('visibilitychange', visibility); window.removeEventListener('pagehide', hide); window.removeEventListener('pageshow', show); };
   }, []);
   return <>
     {checking && <div className="min-h-[50vh] grid place-items-center" role="status">Checking secure admin access…</div>}

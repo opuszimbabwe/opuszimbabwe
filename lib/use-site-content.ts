@@ -54,10 +54,14 @@ function subscribe(listener: () => void) {
   if (!stopRefreshing && typeof window !== 'undefined') {
     const refresh = () => {
       if (document.visibilityState !== 'visible') return;
-      void loadSiteContent(true, true).finally(() => document.documentElement.removeAttribute('data-content-returning'));
+      const admin = /^\/sysadmin(?:\/|$)/.test(window.location.pathname);
+      const mask = !admin || document.documentElement.hasAttribute('data-content-returning');
+      void loadSiteContent(true, mask).finally(() => document.documentElement.removeAttribute('data-content-returning'));
     };
     const onVisibility = () => {
-      if (document.visibilityState === 'hidden') document.documentElement.setAttribute('data-content-returning', 'true');
+      if (document.visibilityState === 'hidden') {
+        if (!/^\/sysadmin(?:\/|$)/.test(window.location.pathname)) document.documentElement.setAttribute('data-content-returning', 'true');
+      }
       else refresh();
     };
     const onPageHide = () => document.documentElement.setAttribute('data-content-returning', 'true');

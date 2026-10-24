@@ -16,6 +16,7 @@ export default function FloatingInput(props: Props) {
       const { label, textarea, className, ...attributes } = props;
       return <input {...attributes} id={id} type={props.type || 'text'} placeholder=" " className={`${fieldClass} ${className || ''}`} />;
     })()}
+    <fieldset aria-hidden="true" className="contact-field-outline"><legend><span>{props.label}</span></legend></fieldset>
     <label htmlFor={id}>{props.label}</label>
   </div>;
 }

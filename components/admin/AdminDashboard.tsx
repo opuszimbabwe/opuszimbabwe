@@ -578,6 +578,7 @@ export default function AdminDashboard() {
   const [message, setMessage] = useState<{ kind: 'ok' | 'err' | 'info'; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const uploadTarget = useRef<string | null>(null);
+  const uploadInFlight = useRef(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
 
@@ -720,6 +721,7 @@ export default function AdminDashboard() {
   };
 
   const pickFile = (target: string) => {
+    if (busy || uploadInFlight.current) return;
     uploadTarget.current = target;
     fileInput.current?.click();
   };
@@ -727,7 +729,8 @@ export default function AdminDashboard() {
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (!file) return;
+    if (!file || uploadInFlight.current) return;
+    uploadInFlight.current = true;
     const target = uploadTarget.current;
     setBusy(true);
     setMessage(null);
@@ -886,6 +889,7 @@ export default function AdminDashboard() {
     } catch (err: any) {
       setMessage({ kind: 'err', text: err.message });
     } finally {
+      uploadInFlight.current = false;
       setBusy(false);
     }
   };
