@@ -67,7 +67,14 @@ export function gateway(env: Env, callbacks?: { resultUrl: string; returnUrl: st
  return new Pesepay({ integrationKey: env.PESEPAY_INTEGRATION_KEY!, encryptionKey: env.PESEPAY_ENCRYPTION_KEY!, transport, timeoutMs: 20000, ...callbacks });
 }
 async function publicGateway(path: string) {
- const response = await fetch(API + path, { headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(8000) });
+ let response: Response;
+ try { response = await fetch(API + path, { headers: { accept: 'application/json' }, redirect: 'error', signal: AbortSignal.timeout(8000) }); }
+ catch (error) {
+  // Public unauthenticated lookup only: no key, payer data or payment payload
+  // is involved. Keep a bounded network diagnostic for operational support.
+  console.error('Public Pesepay lookup failed', error instanceof Error ? { kind: error.name, message: error.message.slice(0, 180) } : { kind: 'unknown' });
+  throw error;
+ }
  if (!response.ok) throw new CheckoutError(503, 'Payment methods could not be loaded. Please try again or contact support@opuszim.co.zw.');
  const body: unknown = await response.json(); if (!Array.isArray(body)) throw new CheckoutError(503, 'Payment methods are temporarily unavailable.'); return body as Record<string, unknown>[];
 }
