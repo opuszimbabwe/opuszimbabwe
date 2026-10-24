@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { PricingSection } from '@/components/PricingCard';
-import ServiceEditorialHero from '@/components/ServiceEditorialHero';
+import ServiceHero from '@/components/ServiceHero';
+import ServiceShowcase from '@/components/ServiceShowcase';
+import OpusApproach from '@/components/OpusApproach';
 import ServiceVisual from '@/components/ServiceVisual';
 import {
   DEFAULT_SERVICE_PAGES,
@@ -46,7 +48,8 @@ export default function ServicePageTemplate({
 
   return (
     <main className="bg-[#ffffff] text-[#0d0d0d]">
-      <ServiceEditorialHero data={data} />
+      <ServiceHero serviceId={data.serviceId} serviceName={data.eyebrow} domainCta={data.domainCta} fallback={{ eyebrow: data.eyebrow, headline: data.headline, intro: data.intro, cta: data.cta, background: data.image }} />
+      <ServiceShowcase data={data} />
 
       {/* Section 1 — The problem */}
       {!isWebDesign && <section className="site-frame service-context">
@@ -241,27 +244,9 @@ export default function ServicePageTemplate({
 
       {/* Section 4 — Process (White section) */}
       <section className="bg-white py-20 sm:py-24 service-delivery">
-        <div className="mx-auto max-w-4xl px-6">
-          <h2 className="font-poppins text-3xl font-bold tracking-tight text-[#0d0d0d] md:text-4xl">
-            {isWebDesign ? <>Landing pages.<br /><span className="textured-accent">From design to development and testing.</span></> : 'Process'}
-          </h2>
-          <div className="mt-10 divide-y divide-[#e7e9e8]">
-            {page.process_steps.map((step, index) => (
-              <div key={`${step.title}-${index}`} className="flex items-start gap-5 py-6">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#ffffff] border border-[#e5e7eb] text-sm font-bold text-[#0d0d0d]">
-                  {index + 1}
-                </span>
-                <div>
-                  <h3 className="font-poppins text-lg font-bold text-[#0d0d0d]">{step.title}</h3>
-                  {step.body && (
-                    <p className="mt-1 font-poppins text-[0.96rem] leading-7 text-[#0d0d0d]/75">
-                      {step.body}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="site-frame">
+          <h2 className="text-center font-poppins text-3xl font-bold tracking-tight text-[#0d0d0d] md:text-4xl">Process</h2>
+          <OpusApproach horizontal steps={page.process_steps.map((step, index) => ({ ...step, icon: ['Search', 'PenTool', 'Code2', 'CheckCircle2', 'Rocket', 'MessageCircle'][index % 6] }))} />
         </div>
       </section>
 
@@ -294,7 +279,7 @@ export default function ServicePageTemplate({
             ))}
           </div>
           {page.tools_note && (
-            <p className="mt-5 font-poppins text-sm text-[#0d0d0d]/70">
+            <p className="service-tools-note mx-auto mt-5 w-full text-center font-poppins text-sm text-[#0d0d0d]/70">
               {page.tools_items.map((t) => t.name).join(' · ')} · {page.tools_note}
             </p>
           )}

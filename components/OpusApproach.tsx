@@ -1,20 +1,18 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { DEFAULT_SETTINGS } from '@/lib/content';
+import { DEFAULT_SETTINGS, type ApproachItem } from '@/lib/content';
 import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
 
-export default function OpusApproach() {
+export default function OpusApproach({ steps: suppliedSteps, horizontal = false }: { steps?: ApproachItem[]; horizontal?: boolean } = {}) {
   const { content } = useSiteContent();
-  const steps = content?.settings?.approach_items
-    ? content.settings.approach_items
-    : DEFAULT_SETTINGS.approach_items;
+  const steps = suppliedSteps ?? content?.settings?.approach_items ?? DEFAULT_SETTINGS.approach_items;
 
   return (
-    <ol className="approach-timeline" style={{ '--step-count': steps.length } as CSSProperties}>
+    <ol tabIndex={horizontal ? 0 : undefined} aria-label={horizontal ? "Project process, scroll to see all steps" : undefined} className={`approach-timeline${horizontal ? ' approach-horizontal' : ''}`} style={{ '--step-count': steps.length } as CSSProperties}>
       {steps.map((step, i) => {
-        const Icon = resolveIcon(step.icon || 'Check');
+        const Icon = resolveIcon(step.icon || 'CheckCircle2');
         return (
           <li key={`${step.title}-${i}`} className="approach-step">
             <div className="approach-icon" aria-hidden="true">

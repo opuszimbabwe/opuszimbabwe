@@ -57,8 +57,8 @@ export default function ServiceHero({
       : contactHref(serviceName || eyebrow, domainCta ? '' : undefined);
 
   return (
-    <div className="inner-hero-frame"><section className="relative isolate overflow-hidden rounded-[36px] bg-dark shadow-[0_16px_45px_rgba(0,0,0,0.14)]">
-      <div aria-hidden="true" className="absolute inset-0 bg-cover bg-center" style={backgroundStyle} />
+    <div className="inner-hero-frame"><section className="service-hero relative isolate overflow-hidden rounded-[36px] bg-dark shadow-[0_16px_45px_rgba(0,0,0,0.14)]">
+      <div aria-hidden="true" className="service-hero-background absolute inset-0 bg-cover bg-center" style={backgroundStyle} />
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/72 to-black/85" />
 
       <div className="relative mx-auto max-w-4xl px-6 py-20 sm:px-10 text-center md:py-28">
