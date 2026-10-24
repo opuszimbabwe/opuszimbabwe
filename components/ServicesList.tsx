@@ -1,45 +1,43 @@
 'use client';
-// /services page list. Renders the baked-in static list first, then
-// upgrades to D1 content when /api/content is available.
-
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { staticServices, ServiceRecord } from '@/lib/content';
+import { ArrowDown, ArrowUpRight } from 'lucide-react';
+import { staticServices, DEFAULT_HOME_SECTIONS, type ServiceRecord } from '@/lib/content';
 import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
+import OpusApproach from '@/components/OpusApproach';
+import SolutionFinder from '@/components/SolutionFinder';
+import AccentHeadingText from '@/components/AccentHeadingText';
+const surfaces = ['#fff0e6', '#f1ede7', '#fff4e6', '#f1e6e3', '#eee9df', '#f3ece5'];
 
+const surfaceFor = (service: ServiceRecord, index: number) => service.card_bg_color && service.card_bg_color.toLowerCase() !== '#ffffff' ? service.card_bg_color : surfaces[index % surfaces.length];
+function inkFor(surface: string) {
+  const hex = surface.slice(1); const full = hex.length === 3 ? [...hex].map(c => c + c).join('') : hex;
+  const [r, g, b] = [0, 2, 4].map(offset => parseInt(full.slice(offset, offset + 2), 16));
+  return (r * 299 + g * 587 + b * 114) / 1000 < 145 ? '#ffffff' : '#0f0928';
+}
 export default function ServicesList() {
   const { content } = useSiteContent();
-  const services: ServiceRecord[] = (content ? content.services : staticServices).filter((s) => s.visible);
-  return (
-    <div className="max-w-5xl mx-auto px-6">
-      {services.map((s) => {
-        const Icon = resolveIcon(s.icon);
-        return (
-          <div key={s.id} className="py-16 border-b border-[#eeeeee] grid md:grid-cols-[2fr_1.6fr] gap-12 items-start">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-full bg-[#f1f1f1] text-[#0d0d0d] flex items-center justify-center flex-shrink-0">
-                  <Icon size={19} strokeWidth={1.8} />
-                </div>
-                <p className="text-[.72rem] font-semibold text-muted-fg uppercase tracking-widest">{s.tagline}</p>
-              </div>
-              <h2 className="text-[1.5rem] font-bold text-dark leading-snug">{s.name}</h2>
-              <p className="mt-3 text-[1rem] text-fg leading-7 max-w-md">{s.page_description}</p>
-              <Link href={`/services/${s.slug}`} className="inline-flex items-center gap-2 mt-6 bg-primary hover:bg-dark text-white rounded-full px-5 py-2.5 text-sm font-semibold transition-colors">
-                Learn more <ArrowRight size={14} />
-              </Link>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {s.items.map((item) => (
-                <span key={item} className="bg-[#f5f5f5] border border-[#e8e8e8] rounded-full px-3.5 py-1.5 text-[.85rem] text-dark">
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  const services = (content ? content.services : staticServices).filter(service => service.visible);
+  const sections = content?.settings.home_sections || DEFAULT_HOME_SECTIONS;
+  return <>
+    <section className="services-index-hero">
+      <div className="site-frame services-index-intro">
+        <div className="services-index-heading"><p className="services-index-eyebrow">Our services</p><h1>What we <span className="textured-accent">build</span><br />for you.</h1></div>
+        <div className="services-index-intro-copy"><p>Websites, software, AI and automation, branding, domains, hosting and integrations. One team in Zimbabwe, building around the way your business works.</p><p>Clear pricing, fast turnaround and support that continues after launch.</p><Link href="/contact/" className="get-started-gradient services-index-action">Discuss your project <ArrowUpRight size={22} aria-hidden="true" /></Link>{services.length > 0 && <a href="#all-services" className="services-index-jump">Explore our services <ArrowDown size={16} aria-hidden="true" /></a>}</div>
+      </div>
+    </section>
+    {services.length > 0 && <>
+      <section id="all-services" className="site-frame services-index-featured" aria-labelledby="services-featured-heading"><h2 id="services-featured-heading" className="services-index-eyebrow">What we do</h2>
+        <div className="services-index-grid">{services.map((service, index) => <Link key={service.id} href={`/services/${service.slug}/`} className={`services-index-card ${index % 3 === 0 ? 'services-index-card-tall' : 'services-index-card-wide'}`} style={{ backgroundColor: surfaceFor(service, index), color: inkFor(surfaceFor(service, index)) }}>
+          <div className="services-index-card-copy"><p>{service.tagline}</p><h3>{service.name}</h3><div className="services-index-card-description">{service.page_description}</div><span className="services-index-card-link">Explore service <ArrowUpRight size={18} aria-hidden="true" /></span></div>
+          <div className="services-index-card-image"><img src={service.image} alt="" loading="lazy" /></div>
+        </Link>)}</div>
+      </section>
+      <section className="site-frame services-capabilities-frame" aria-labelledby="services-capabilities-heading"><div className="services-capabilities"><p className="services-index-eyebrow">All capabilities</p><h2 id="services-capabilities-heading">One team.<br /><span className="textured-accent">Built around you.</span></h2>
+        <div className="services-capability-list">{services.map(service => { const Icon = resolveIcon(service.icon); return <article key={service.id} className="services-capability-row"><div className="services-capability-name"><Icon size={56} aria-hidden="true" /><h3><Link href={`/services/${service.slug}/`}>{service.name}<ArrowUpRight size={22} aria-hidden="true" /></Link></h3></div><ul className="services-capability-tags" aria-label={`${service.name} capabilities`}>{service.items.map((item, i) => <li key={`${i}-${item}`}>{item}</li>)}</ul></article>; })}</div>
+      </div></section>
+    </>}
+    <section className="services-index-process" style={{ backgroundColor: sections.how_it_works_bg }}><div className="site-frame"><p className="services-index-eyebrow">From idea to launch</p><h2 className="editorial-heading"><AccentHeadingText text={sections.how_it_works_heading} /></h2><OpusApproach /></div></section>
+    <section className="site-frame services-index-next"><div><p className="services-index-eyebrow">Let’s work together</p><h2>Not sure<br />where to <span className="textured-accent">start?</span></h2><p>Tell us what your business needs. We will match you to the right service and give you a clear quote.</p><div className="services-index-next-actions"><Link href="/contact/" className="get-started-gradient services-index-action">Talk to us <ArrowUpRight size={22} aria-hidden="true" /></Link><SolutionFinder label="Help me choose" className="services-index-guide" /></div></div></section>
+  </>;
 }

@@ -129,3 +129,11 @@ Selected headings use authored var(--font-poppins), sans-serif with dark navy #0
 Production backup: ignored backups/production-before-project-accordion-release.sql. Apply migrations 0014/0015 before deploying the project-save API; logo seeding only fills empty known client rows. Older admin tabs that omit new media fields preserve them, while explicit empty strings from the current admin clear them.
 
 Validation: typecheck/build, 10 content validation tests, test-main-accordion.cjs, project/payment/media integration including older-client preservation/explicit clearing, 113 API smoke checks, admin visibility and content lifecycle checks. Production publication and live verification are performed after these pass.
+
+## Services overview and warm textured accents
+
+The owner requested the services overview follow the Orizon services structure with Opus content, font and colours, and asked for the shared blue texture to become orange-to-red on the main site. The overview now has a large split editorial hero, two-column image-led service grid, dark capability rows with admin-managed tags/icons, the existing managed project process, and project/Help Me Choose actions. All visible services, their names, overview descriptions, images, colours, slugs, ordering and capabilities come from the existing content API. Hidden services are omitted from both lists; clearing overview copy stays cleared. Custom dark card colours receive light text. Individual service pages and hero controls remain in place.
+
+The shared textured-accent class now uses orange/red with the same Poppins and grain treatment everywhere, including Live Work and Why Choose Us. No blue texture remains in this shared style; navy text and existing client/payment artwork retain their intended colours. No data migration is needed.
+
+Validation: typecheck/build and scripts/test-services-overview.cjs covering content/links, colour/visibility edits, empty states, phone/tablet/desktop widths, guidance, individual service navigation, and global orange/red texture. Publish through the existing main Git integration and verify live HTML/assets/API with TLS validation retained.
