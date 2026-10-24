@@ -1757,7 +1757,7 @@ export default function AdminDashboard() {
                           value={item.url}
                           onChange={(v) => patch({ url: v })}
                         />
-                        <ImageField label="Client Logo (optional)" value={item.logo || ''} onChange={v => patch({ logo: v })} onUpload={() => pickFile(`projectlogo:${item.id}`)} hint="Shown below the screenshot; blank uses the project name." />
+                        <ImageField label="Client Logo (optional)" value={item.logo || ''} onChange={v => patch({ logo: v })} onUpload={() => pickFile(`projectlogo:${item.id}`)} hint="Shown in the marked area between the screenshot and project title. Clear to hide the logo." />
                         <Field label="Hover Video URL (optional)" value={item.preview_video || ''} onChange={v => patch({ preview_video: v })} hint="HTTPS MP4/WebM URL. Plays muted on hover or keyboard focus; reduced-motion users see the screenshot." />
                         <Field label="Service Tag" value={item.tag} onChange={(v) => patch({ tag: v })} />
                         <Field label="Location" value={item.location} onChange={(v) => patch({ location: v })} />
@@ -1769,7 +1769,7 @@ export default function AdminDashboard() {
                             value={item.screenshot || ''}
                             onChange={(v) => patch({ screenshot: v })}
                             onUpload={() => pickFile(`projectscreenshot:${item.id}`)}
-                            hint="The complete screenshot fits inside the rounded square without cropping."
+                            hint="The screenshot fills the rounded frame edge to edge; its edges may crop."
                             previewBg="#f8f8f6"
                           />
                         </div>
@@ -1868,6 +1868,8 @@ export default function AdminDashboard() {
                       >
                         <div className="space-y-3">
                           <Field label="Reason Title" value={item.title} onChange={(v) => patch({ title: v })} />
+                          <Field label="Reason link label" value={item.cta_label ?? 'Discuss your project'} onChange={v => patch({ cta_label: v })} hint="Clear to hide the link." />
+                          <Field label="Reason link URL" value={item.cta_href ?? '/contact/'} onChange={v => patch({ cta_href: v })} hint="Blank uses the contact page." />
                           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={item.show_payments ?? item.title.trim().toLowerCase() === 'local payments'} onChange={e => patch({ show_payments: e.target.checked })} />Show managed payment logos in this card</label>
                           <IconPicker
                             label="Optional Card Icon (Upload or choose)"

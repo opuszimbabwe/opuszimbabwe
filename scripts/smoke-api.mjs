@@ -853,7 +853,7 @@ async function main() {
         home.text.includes('We accept local payments') &&
         home.text.includes('Partners who trust us') &&
         home.text.includes('/images/partner-great-couples.png') &&
-        home.text.includes('Why choose us.') &&
+        home.text.replace(/<[^>]*>/g, '').includes('Why choose us.') &&
         home.text.includes('Fast Turnaround')
     );
   }

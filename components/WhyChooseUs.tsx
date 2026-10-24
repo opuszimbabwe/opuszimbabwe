@@ -1,88 +1,65 @@
 'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_WHY_CHOOSE_US, WhyItem } from '@/lib/content';
+import Link from 'next/link';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { ArrowRight, Pause, Play } from 'lucide-react';
+import { DEFAULT_WHY_CHOOSE_US, type WhyItem } from '@/lib/content';
 import PaymentTrustStrip from '@/components/PaymentTrustStrip';
 import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
-
 export type Reason = WhyItem;
-export const DEFAULT_WHY_REASONS: Reason[] = DEFAULT_WHY_CHOOSE_US;
+export const DEFAULT_WHY_REASONS = DEFAULT_WHY_CHOOSE_US;
+
+function ExpandingRegion({ active, children, className, id, labelledBy }: { active: boolean; children: ReactNode; className: string; id: string; labelledBy?: string }) {
+  const inner = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+  useEffect(() => {
+    const node = inner.current; if (!node) return;
+    const measure = () => setHeight(node.scrollHeight); measure();
+    const observer = new ResizeObserver(measure); observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return <div id={id} className={className} style={{ height: active ? height : 0 }} aria-hidden={!active} aria-labelledby={labelledBy} role={labelledBy ? 'region' : undefined}><div ref={inner}>{children}</div></div>;
+}
 
 export default function WhyChooseUs({ items }: { items?: Reason[] }) {
   const { content } = useSiteContent();
-  const resolvedItems: Reason[] =
-    content?.settings?.why_choose_us
-      ? content.settings.why_choose_us
-      : items || DEFAULT_WHY_CHOOSE_US;
-
-  const [revealed, setRevealed] = useState<boolean[]>(() => resolvedItems.map(() => false));
-  const nodes = useRef<Array<HTMLDivElement | null>>([]);
-
+  const reasons = content?.settings.why_choose_us ?? items ?? DEFAULT_WHY_CHOOSE_US;
+  const [index, setIndex] = useState(0);
+  const [cycle, setCycle] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [inView, setInView] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const buttons = useRef<Array<HTMLButtonElement | null>>([]);
+  const id = useId();
+  const current = reasons.length ? index % reasons.length : 0;
+  const stopped = paused || hovered || focused || !inView || !visible || reducedMotion;
   useEffect(() => {
-    if (typeof IntersectionObserver === 'undefined') {
-      setRevealed(resolvedItems.map(() => true));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const index = Number((entry.target as HTMLElement).dataset.reasonIndex);
-          if (Number.isNaN(index)) return;
-          observer.unobserve(entry.target);
-          setRevealed((prev) =>
-            prev[index] ? prev : resolvedItems.map((_, i) => i === index || Boolean(prev[i]))
-          );
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    nodes.current.forEach((node) => node && observer.observe(node));
-    return () => observer.disconnect();
-  }, [resolvedItems.length]);
-
-  return (
-    <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
-      {resolvedItems.map((item, i) => {
-        const isLeftColumn = i % 2 === 0;
-        const isVisible = revealed[i] ?? false;
-        const Icon = item.icon ? resolveIcon(item.icon) : null;
-
-        return (
-          <div
-            key={`${item.title}-${i}`}
-            ref={(node) => {
-              nodes.current[i] = node;
-            }}
-            data-reason-index={i}
-            className={`filter drop-shadow-[0_8px_24px_rgba(13,13,13,0.06)] transition-all duration-500 ease-out ${
-              isVisible
-                ? 'opacity-100 translate-x-0'
-                : isLeftColumn
-                ? 'opacity-0 -translate-x-8'
-                : 'opacity-0 translate-x-8'
-            }`}
-          >
-            <article className="why-inverted-card h-full bg-[#f8f8f6] border border-[#ebebea] p-8 pr-12 text-left">
-              {Icon && (
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#0d0d0d] shadow-sm">
-                  <Icon size={22} />
-                </div>
-              )}
-              <h3 className="font-poppins text-[1.2rem] font-bold text-[#0d0d0d]">
-                {item.title}
-              </h3>
-              <p className="mt-3 font-poppins text-[0.96rem] leading-[1.7] text-[#0d0d0d]/75 m-0">
-                {item.body}
-              </p>
-              {(item.show_payments ?? item.title.trim().toLowerCase() === 'local payments') && <PaymentTrustStrip compact />}
-            </article>
-          </div>
-        );
-      })}
-    </div>
-  );
+    const media = matchMedia('(prefers-reduced-motion: reduce)'); const update = () => setReducedMotion(media.matches); update(); media.addEventListener('change', update);
+    const visibility = () => setVisible(document.visibilityState === 'visible'); visibility(); document.addEventListener('visibilitychange', visibility);
+    const observer = new IntersectionObserver(entries => setInView(entries.some(entry => entry.isIntersecting)), { threshold: 0.01 }); if (root.current) observer.observe(root.current);
+    return () => { media.removeEventListener('change', update); document.removeEventListener('visibilitychange', visibility); observer.disconnect(); };
+  }, [reasons.length]);
+  const select = (next: number) => { setIndex(next); setCycle(value => value + 1); };
+  if (!reasons.length) return null;
+  return <div className="why-accordion mt-12" ref={root} onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }}>
+    {reasons.map((item, i) => {
+      const active = i === current; const Icon = item.icon ? resolveIcon(item.icon) : null;
+      const headingId = `${id}-heading-${i}`, paragraphId = `${id}-paragraph-${i}`, linkId = `${id}-link-${i}`;
+      const label = item.cta_label ?? 'Discuss your project';
+      return <article key={i} className={`home-product_tab-link w-tab-link${active ? ' w--current' : ''}`} data-active={active}>
+        <h3 className="heading-style-h4"><button ref={node => { buttons.current[i] = node; }} type="button" id={headingId} aria-expanded={active} aria-controls={`${paragraphId} ${linkId}`} onClick={() => select(i)} onKeyDown={event => {
+          const next = event.key === 'ArrowDown' ? (i + 1) % reasons.length : event.key === 'ArrowUp' ? (i + reasons.length - 1) % reasons.length : event.key === 'Home' ? 0 : event.key === 'End' ? reasons.length - 1 : null;
+          if (next === null) return; event.preventDefault(); select(next); buttons.current[next]?.focus();
+        }}>{Icon && <Icon size={22} aria-hidden="true" />}{item.title}</button></h3>
+        <ExpandingRegion active={active} className="home-product_paragraph" id={paragraphId} labelledBy={headingId}><div className="why-paragraph-inner"><p>{item.body}</p>{(item.show_payments ?? item.title.trim().toLowerCase() === 'local payments') && <PaymentTrustStrip compact />}</div></ExpandingRegion>
+        <ExpandingRegion active={active} className="home-product_inner-link" id={linkId}>{label && <Link href={item.cta_href || '/contact/'} tabIndex={active ? 0 : -1}>{label}<ArrowRight size={16} aria-hidden="true" /></Link>}</ExpandingRegion>
+        <div className="home-product_progress-wrapper" aria-hidden="true"><div key={`${i}-${cycle}`} className="home-product_progress-bar" style={{ animationPlayState: stopped ? 'paused' : 'running' }} onAnimationEnd={event => { if (reasons.length > 1 && active && !stopped && event.animationName === 'why-progress-fill') select((current + 1) % reasons.length); }} /></div>
+      </article>;
+    })}
+    {reasons.length > 1 && <button type="button" className="why-cycle-control" onClick={() => setPaused(value => !value)} aria-pressed={paused} aria-label={paused ? 'Play reasons rotation' : 'Pause reasons rotation'}>{paused ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}{paused ? 'Play' : 'Pause'}</button>}
+  </div>;
 }

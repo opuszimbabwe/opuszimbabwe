@@ -63,9 +63,10 @@ export default function Navbar() {
 
   return (
     <header
+      data-scrolled={scrolled}
       className={`sticky top-0 z-50 transition-all duration-300 ease-out ${
         scrolled
-          ? 'py-3 bg-white shadow-[0_2px_6px_rgba(13,13,13,0.06)] pointer-events-none'
+          ? 'py-3 bg-transparent shadow-none pointer-events-none'
           : 'py-4 bg-white shadow-[0_2px_6px_rgba(13,13,13,0.06)]'
       }`}
     >
@@ -74,7 +75,7 @@ export default function Navbar() {
         <div
           className={`flex items-center transition-all duration-300 ease-out ${
             scrolled
-              ? 'lg:w-0 lg:opacity-0 lg:-translate-y-2 lg:overflow-hidden lg:pointer-events-none pointer-events-auto'
+              ? 'w-0 opacity-0 -translate-y-2 overflow-hidden pointer-events-none'
               : 'lg:w-[170px] opacity-100 translate-y-0 pointer-events-auto'
           }`}
         >

@@ -37,7 +37,7 @@ export type PaymentMethod = {
   visible: boolean;
 };
 
-export type WhyItem = { title: string; body: string; icon?: string; show_payments?: boolean };
+export type WhyItem = { title: string; body: string; icon?: string; show_payments?: boolean; cta_label?: string; cta_href?: string };
 export type RelatedItem = { label: string; href: string };
 
 export type ServiceToolItem = {
@@ -1136,6 +1136,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
 export const staticProjects: ProjectRecord[] = [
   {
     id: 'great-couples',
+    logo: '/images/project-great-couples-logo.png',
     name: 'Great Couples International Trust',
     url: 'https://greatcouples.org.zw',
     tag: 'Website Design & Development',
@@ -1149,6 +1150,7 @@ export const staticProjects: ProjectRecord[] = [
   },
   {
     id: 'prime-pidg',
+    logo: '/images/project-prime-logo.png',
     name: 'Prime Property Investment & Development Group',
     url: 'https://primepidg.co.zw',
     tag: 'Website Design & Development',
@@ -1388,6 +1390,8 @@ function normalizeWhyChooseUs(raw: unknown, fallback: WhyItem[]): WhyItem[] {
   const items = objectArray(raw, 20)
     .map((x) => ({
       title: str(x.title, '').slice(0, 200).trim(),
+      cta_label: typeof x.cta_label === 'string' ? x.cta_label.slice(0, 100).trim() : undefined,
+      cta_href: typeof x.cta_href === 'string' ? x.cta_href.slice(0, 500).trim() : undefined,
       body: str(x.body, '').slice(0, 1000).trim(),
       icon: str(x.icon, '').slice(0, 500).trim(),
       show_payments: typeof x.show_payments === 'boolean' ? x.show_payments : str(x.title, '').trim().toLowerCase() === 'local payments',

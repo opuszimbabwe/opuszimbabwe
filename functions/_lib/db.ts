@@ -357,13 +357,15 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           const icon = text(x.icon, 500).trim();
           return {
             title: text(x.title, 200).trim(),
+            cta_label: typeof x.cta_label === 'string' ? text(x.cta_label, 100).trim() : undefined,
+            cta_href: typeof x.cta_href === 'string' ? text(x.cta_href, 500).trim() : undefined,
             show_payments: typeof x.show_payments === 'boolean' ? x.show_payments : text(x.title, 200).trim().toLowerCase() === 'local payments',
             body: text(x.body, 1000).trim(),
             icon: icon && (!icon.includes(':') || isUrlPath(icon)) ? icon : '',
           };
         })
         .filter((x) => x.title && x.body);
-      if (cleaned.length !== value.length) return null;
+      if (cleaned.length !== value.length || value.some(x => (x?.cta_href !== undefined && typeof x.cta_href !== 'string') || (typeof x?.cta_href === 'string' && x.cta_href && !isSafeLink(x.cta_href)))) return null;
       return JSON.stringify(cleaned);
     }
     case 'service_pages': {

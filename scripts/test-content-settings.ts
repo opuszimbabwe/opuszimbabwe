@@ -99,3 +99,13 @@ test('legacy hero layout stays static and new service-word fields survive saves'
   assert.equal(result[0].headline_word, cycles[0].headline_word);
   assert.equal(normalizeContent(raw({ hero_cycles: result }))?.settings.hero_cycles[0].headline_word, cycles[0].headline_word);
 });
+
+test('reason accordion keeps administrator copy, links and payment controls', () => {
+  const reasons = [{ title: 'Our own title', body: 'Our own details.', icon: '', show_payments: true, cta_label: 'Discuss this', cta_href: '/contact/' }];
+  const saved = sanitizeSetting('why_choose_us', reasons); assert.ok(saved);
+  assert.deepEqual(normalizeContent(raw({ why_choose_us: JSON.parse(saved) }))?.settings.why_choose_us, reasons);
+  assert.equal(sanitizeSetting('why_choose_us', [{ ...reasons[0], cta_href: 'javascript:alert(1)' }]), null);
+  assert.equal(sanitizeSetting('why_choose_us', [{ ...reasons[0], cta_href: {} }]), null);
+  const legacy = JSON.parse(sanitizeSetting('why_choose_us', [{ title: 'Local Payments', body: 'Legacy copy' }])!);
+  assert.equal(legacy[0].show_payments, true);
+});

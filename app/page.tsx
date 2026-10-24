@@ -7,6 +7,7 @@ import HomeHero from '@/components/HomeHero';
 import HomeServicesGrid from '@/components/HomeServicesGrid';
 import TrustedPartners from '@/components/TrustedPartners';
 import OpusApproach from '@/components/OpusApproach';
+import AccentHeadingText from '@/components/AccentHeadingText';
 import HomeProjects from '@/components/HomeProjects';
 import WhyChooseUs, { DEFAULT_WHY_REASONS } from '@/components/WhyChooseUs';
 import FaqAccordion from '@/components/FaqAccordion';
@@ -59,7 +60,7 @@ export default function Home() {
         className="py-16"
       >
         <div className="site-frame text-center">
-          <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
+          <h2 className="mx-auto text-center font-poppins text-2xl font-bold editorial-heading md:text-3xl">
             {s.partners_heading}
           </h2>
           {s.partners_subheading && (
@@ -77,7 +78,7 @@ export default function Home() {
         className="py-20"
       >
         <div className="site-frame text-center">
-          <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
+          <h2 className="mx-auto text-center font-poppins text-2xl font-bold editorial-heading md:text-3xl">
             {s.how_it_works_heading}
           </h2>
           <OpusApproach />
@@ -90,8 +91,8 @@ export default function Home() {
         className="py-20 text-center"
       >
         <div className="site-frame">
-          <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
-            {s.projects_heading}
+          <h2 className="mx-auto text-center font-poppins text-2xl font-bold editorial-heading md:text-3xl">
+            <AccentHeadingText text={s.projects_heading} />
           </h2>
           <HomeProjects />
         </div>
@@ -104,8 +105,8 @@ export default function Home() {
         className="py-20"
       >
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="mx-auto text-center font-poppins text-3xl font-bold text-[#0d0d0d] md:text-4xl">
-            {s.why_heading}
+          <h2 className="mx-auto text-center font-poppins text-3xl font-bold editorial-heading md:text-4xl">
+            <AccentHeadingText text={s.why_heading} />
           </h2>
           <WhyChooseUs items={DEFAULT_WHY_REASONS} />
         </div>
@@ -117,7 +118,7 @@ export default function Home() {
         className="py-20 text-center"
       >
         <div className="mx-auto max-w-3xl px-6">
-          <h2 className="text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
+          <h2 className="text-center font-poppins text-2xl font-bold editorial-heading md:text-3xl">
             {s.faq_heading}
           </h2>
           <div className="mt-8 text-left">

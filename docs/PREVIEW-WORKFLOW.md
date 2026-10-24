@@ -117,3 +117,15 @@ Home and Projects share ProjectCard: a rounded square canvas with inset, object-
 Migration 0014_project_presentation adds optional logo/preview_video columns with empty defaults; applied locally only. After main-site approval, back up production and apply this additive migration before deploying the new project-save endpoint. Public reads tolerate pre-migration rows. Do not publish main or apply remote migration before approval.
 
 Checks: typecheck/build, test-projects-payments-navbar.cjs (local API writes/restoration, hidden logos/card toggle/renaming, actual generated WebM hover/focus playback, reduced motion, screenshot containment and mobile layout), and smoke-api.mjs (113 checks). Updated stale smoke expectations for the already-approved secure admin redirect and new service-word hero rather than retaining old public-admin/old-headline assumptions.
+
+## Authorised main-site release: accordion, textures and full-bleed project images
+
+The owner explicitly requested direct publication, including the pending upload/contact and navbar/payments/project changes. Scrolled header removes the full-width surface/shadow and hides branding/actions, leaving the floating navigation pill. At the top the white full-width header/shadow returns. Project screenshots/video now use cover with no frame padding, following the updated crop permission. Client logos sit in the marked space above project titles, remain editable/uploadable/removable in admin, and preserve their original image files. Great Couples reuses the supplied transparent partner logo; PPIDG uses its official site icon. Known transparent margins are cropped only at render time.
+
+The uploaded DevTools component is implemented as expanding rows using its home-product_* class structure, 40% inactive opacity, 1rem/2rem spacing, collapsed paragraph/link regions and six-second vertical progress cycle. Poppins, existing reasons, logos and orange accents remain. Keyboard, pause, hidden-tab/offscreen and reduced-motion behaviour are supported. The administrator can edit row content, icons, payment-logo placement and action labels/URLs. Dynamic heights measure their own content, including payment logos.
+
+Selected headings use authored var(--font-poppins), sans-serif with dark navy #0f0928 and small procedural blue textured accents inspired by the reference, without adopting another site's font/assets.
+
+Production backup: ignored backups/production-before-project-accordion-release.sql. Apply migrations 0014/0015 before deploying the project-save API; logo seeding only fills empty known client rows. Older admin tabs that omit new media fields preserve them, while explicit empty strings from the current admin clear them.
+
+Validation: typecheck/build, 10 content validation tests, test-main-accordion.cjs, project/payment/media integration including older-client preservation/explicit clearing, 113 API smoke checks, admin visibility and content lifecycle checks. Production publication and live verification are performed after these pass.

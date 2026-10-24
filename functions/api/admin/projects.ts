@@ -44,8 +44,8 @@ export const onRequestPut: PagesHandler = async (context) => {
     location: string;
     description: string;
     screenshot: string;
-    logo: string;
-    preview_video: string;
+    logo?: string;
+    preview_video?: string;
     status: string;
     visible: number;
   }[] = [];
@@ -61,8 +61,9 @@ export const onRequestPut: PagesHandler = async (context) => {
     if (screenshot && !isUrlPath(screenshot)) {
       return json({ error: 'invalid_project_screenshot', name }, 400);
     }
-    const logo = str(project?.logo, 500).trim();
-    const preview_video = str(project?.preview_video, 500).trim();
+    if ((project?.logo !== undefined && typeof project.logo !== 'string') || (project?.preview_video !== undefined && typeof project.preview_video !== 'string')) return json({ error: 'invalid_project_media', name }, 400);
+    const logo = project?.logo === undefined ? undefined : str(project.logo, 500).trim();
+    const preview_video = project?.preview_video === undefined ? undefined : str(project.preview_video, 500).trim();
     if ((logo && !isUrlPath(logo)) || (preview_video && !isUrlPath(preview_video))) return json({ error: 'invalid_project_media', name }, 400);
     cleaned.push({
       id: str(project?.id, 80).trim() || `pr_${crypto.randomUUID().slice(0, 8)}`,
@@ -80,6 +81,10 @@ export const onRequestPut: PagesHandler = async (context) => {
 
   try {
     const db = context.env.DB;
+    // Tabs loaded before this release omit the new fields. Preserve them until
+    // a current editor deliberately sends a replacement or an empty string.
+    const rows = await db.prepare('SELECT id, logo, preview_video FROM projects').all<{ id: string; logo: string; preview_video: string }>();
+    const media = new Map(rows.results.map(row => [row.id, row]));
     const statements = [db.prepare('DELETE FROM projects')];
     cleaned.forEach((project, index) => {
       statements.push(
@@ -95,7 +100,7 @@ export const onRequestPut: PagesHandler = async (context) => {
             project.location,
             project.description,
             project.screenshot,
-            project.logo, project.preview_video,
+            project.logo ?? media.get(project.id)?.logo ?? '', project.preview_video ?? media.get(project.id)?.preview_video ?? '',
             project.status,
             index,
             project.visible
