@@ -28,6 +28,8 @@ export interface R2Bucket {
 }
 
 export interface Env {
+  PESEPAY_INTEGRATION_KEY?: string;
+  PESEPAY_ENCRYPTION_KEY?: string;
   DB: D1Database;
   MEDIA: R2Bucket;
   /** Comma-separated admin emails. Default: info.opuszim@gmail.com */
@@ -42,6 +44,7 @@ export interface PagesContext {
   env: Env;
   params: Record<string, string | string[]>;
   data: unknown;
+  waitUntil?: (promise: Promise<unknown>) => void;
 }
 
 export type PagesHandler = (context: PagesContext) => Response | Promise<Response>;

@@ -769,12 +769,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { label: 'Instagram', href: 'https://www.instagram.com/opuszimbabwe?igsh=MWltZXp1NXh0MGZ0bQ%3D%3D&utm_source=qr', icon: 'Instagram' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/opus-zimbabwe-3150723b9', icon: 'Linkedin' },
     { label: 'X / Twitter', href: 'https://x.com/opuszimbabwe?s=21', icon: 'Twitter' },
-    { label: 'WhatsApp', href: 'https://wa.me/263776396530', icon: 'MessageCircle' },
+    { label: 'WhatsApp', href: 'https://wa.me/263710740387', icon: 'MessageCircle' },
   ],
   contact_cards: [
-    { title: 'Email', line: 'info.opuszim@gmail.com', note: 'We respond within 24 hours', href: 'mailto:info.opuszim@gmail.com', icon: 'Mail' },
-    { title: 'Phone / WhatsApp', line: '0776 396 530 | 0710 740 387', note: 'Mon–Fri, 8am–6pm CAT', href: 'https://wa.me/263776396530', icon: 'Phone' },
-    { title: 'Start a WhatsApp Chat', line: 'Chat with our team now', note: 'Fastest way to reach us', href: 'https://wa.me/263776396530', icon: 'MessageCircle' },
+    { title: 'Email', line: 'support@opuszim.co.zw', note: 'Primary email for enquiries and support', href: 'mailto:support@opuszim.co.zw', icon: 'Mail' },
+    { title: 'Secondary email', line: 'opuszimbabwe@outlook.com', note: 'An alternative way to reach us', href: 'mailto:opuszimbabwe@outlook.com', icon: 'Mail' },
+    { title: 'Direct contact', line: '0710 740 387', note: 'Project enquiries and direct contact', href: 'tel:+263710740387', icon: 'Phone' },
+    { title: 'Support only', line: '0773 979 162', note: 'Payment and technical support', href: 'tel:+263773979162', icon: 'Phone' },
   ],
   faq_home: [
     { q: 'How do I pay for a project?', a: 'You can use EcoCash, OneMoney, InnBucks, Zimswitch and other supported Zimbabwean payment methods.' },

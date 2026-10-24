@@ -26,6 +26,11 @@ jobs:
       - name: Typecheck (app + Pages Functions)
         run: npx tsc --noEmit
 
+      - name: Payment gateway and security checks (isolated mocks)
+        run: |
+          node_modules/.bin/esbuild functions/api/payments/create.ts functions/api/payments/status.ts functions/api/payments/webhook.ts functions/api/payments/config.ts --outbase=functions --outdir=/tmp/opus-payments-test --bundle --platform=node --format=cjs
+          node scripts/test-payments.cjs
+
       - name: Build static export
         run: npm run build
 

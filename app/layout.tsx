@@ -1,6 +1,6 @@
 import './globals.css';
 import localFont from 'next/font/local';
-import SiteContentBoundary from '@/components/SiteContentBoundary';
+import SiteShell from '@/components/SiteShell';
 
 const poppins = localFont({
   src: [
@@ -16,9 +16,6 @@ const poppins = localFont({
   display: 'block',
   preload: false,
 });
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import BrandHeadSync from '@/components/BrandHeadSync';
 
 export const metadata = {
   title: 'Opus Zimbabwe — Digital Services for Zimbabwe',
@@ -37,12 +34,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={poppins.variable}>
       <body className="font-poppins bg-[#ffffff] text-[#0d0d0d]">
-        <SiteContentBoundary>
-        <BrandHeadSync />
-        <Navbar />
-        {children}
-        <Footer />
-        </SiteContentBoundary>
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

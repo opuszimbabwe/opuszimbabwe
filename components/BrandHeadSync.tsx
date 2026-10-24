@@ -19,7 +19,8 @@ export default function BrandHeadSync() {
     const isUtilityPage =
       pathname?.startsWith('/admin') ||
       pathname?.startsWith('/sysadmin') ||
-      pathname?.startsWith('/sitemap');
+      pathname?.startsWith('/sitemap') ||
+      pathname?.startsWith('/payments');
 
     if (!isUtilityPage && browserTitle) document.title = browserTitle;
 

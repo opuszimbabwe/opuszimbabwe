@@ -63,6 +63,7 @@ import { ICON_NAMES, resolveIcon } from '@/lib/icons';
 import { useSiteContent, announceSiteContentChange } from '@/lib/use-site-content';
 import { useAdminSession } from '@/components/admin/AdminAccessBoundary';
 import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
+import PaymentLedger from '@/components/admin/PaymentLedger';
 import SectionBackdrop from '@/components/SectionBackdrop';
 import type { SectionDesign } from '@/lib/section-design';
 
@@ -70,6 +71,7 @@ type Tab =
   | 'hero'
   | 'home'
   | 'payments'
+  | 'transactions'
   | 'services'
   | 'partners'
   | 'projects'
@@ -935,6 +937,10 @@ export default function AdminDashboard() {
       ],
     },
     {
+      group: 'Payments',
+      items: [{ id: 'transactions', label: 'Customer Payments', icon: CreditCard }],
+    },
+    {
       group: 'Services & Work',
       items: [
         { id: 'services', label: 'Services (6 Cards)', badge: services?.length || 6, icon: LayoutGrid },
@@ -1056,6 +1062,7 @@ export default function AdminDashboard() {
 
           {/* Main Editor Area */}
           <div className="space-y-6 min-w-0">
+            {tab === 'transactions' && <PaymentLedger />}
             {/* TAB 1: HERO & HOMEPAGE SECTIONS */}
             {tab === 'hero' && settings && <>
               <HeroDesignEditor value={settings.hero_design} onChange={value => patchSettings({ hero_design: value })} onUpload={pickFile} onSave={() => saveSettings(['hero_design'], 'Home hero design saved.')} busy={busy} sections={homeSections} cycles={settings.hero_cycles} />

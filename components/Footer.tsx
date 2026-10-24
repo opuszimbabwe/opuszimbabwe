@@ -35,12 +35,13 @@ export default function Footer(){
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/faq">FAQ</Link>
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/domains">Domain Registration</Link>
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/contact">Contact Us</Link>
+            <a className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/payments/">Make a Payment</a>
           </div>
           <div>
             <h3 className="font-bold text-dark text-sm uppercase tracking-wider mb-4">Get In Touch</h3>
-            <a href="https://wa.me/263776396530" target="_blank" rel="noreferrer" className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors">WhatsApp: +263 776 396 530</a>
-            <a href="tel:+263773979162" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">+263 773 979 162</a>
-            <a href="mailto:info.opuszim@gmail.com" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">info.opuszim@gmail.com</a>
+            <a href="https://wa.me/263710740387" target="_blank" rel="noreferrer" className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors">Direct / WhatsApp: 0710 740 387</a>
+            <a href="tel:+263773979162" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">Support only: 0773 979 162</a>
+            <a href="mailto:support@opuszim.co.zw" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">support@opuszim.co.zw</a>
             <a href="mailto:opuszimbabwe@outlook.com" className="block text-[#6b7280] text-sm mt-2 hover:text-primary transition-colors">opuszimbabwe@outlook.com</a>
           </div>
         </div>

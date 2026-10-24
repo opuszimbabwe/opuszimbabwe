@@ -26,7 +26,16 @@ export const onRequest = async (context: PagesContext & { next: () => Promise<Re
     const auth = await requireAdmin(context);
     if (auth instanceof Response) return noStore(new Response('Authentication required.', { status: 401, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
   }
-  const response = await context.next();
+  if (url.hostname === 'payments.opuszim.co.zw' && path === '/') return noStore(Response.redirect(new URL('/payments/', url).href, 302));
+  let response = await context.next();
+  if (/^\/payments(?:\/|$)/.test(path)) {
+    const headers = new Headers(response.headers);
+    headers.set('referrer-policy', 'no-referrer');
+    headers.set('x-frame-options', 'DENY');
+    headers.set('content-security-policy', "frame-ancestors 'none'");
+    headers.set('x-content-type-options', 'nosniff');
+    response = new Response(response.body, { status: response.status, headers });
+  }
   if (!response.headers.get('content-type')?.includes('text/html') && !(path.startsWith('/api/') && !path.startsWith('/api/media/'))) return response;
   return noStore(response);
 };

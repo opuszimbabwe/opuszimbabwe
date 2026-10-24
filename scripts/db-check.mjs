@@ -270,7 +270,7 @@ const socials = parseJson('footer_socials JSON parses', settingsMap.footer_socia
 check('footer_socials has 5 links with labels + hrefs', Array.isArray(socials) && socials.length === 5 && socials.every((s) => s && s.label && s.href && s.icon));
 
 const contactCards = parseJson('contact_cards JSON parses', settingsMap.contact_cards);
-check('contact_cards has 3 cards with titles + hrefs', Array.isArray(contactCards) && contactCards.length === 3 && contactCards.every((c) => c && c.title && c.href && c.icon));
+check('contact_cards has 4 cards with titles + hrefs', Array.isArray(contactCards) && contactCards.length === 4 && contactCards.every((c) => c && c.title && c.href && c.icon));
 
 const faqHome = parseJson('faq_home JSON parses', settingsMap.faq_home);
 check('faq_home has question/answer pairs', Array.isArray(faqHome) && faqHome.length >= 3 && faqHome.every((f) => f && f.q && f.a));

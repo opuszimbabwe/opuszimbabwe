@@ -84,7 +84,7 @@ export default function Contact() {
 
       <section className="border-b border-[#eeeeee] py-16">
         <div className="mx-auto max-w-4xl px-6">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             {cards.map((card) => {
               const Icon = resolveIcon(card.icon)
               const external = card.href.startsWith('http')
@@ -167,7 +167,7 @@ export default function Contact() {
               onChange={(e) => setMessage(e.target.value)}
             />
             <a
-              href={`https://wa.me/263776396530?text=${waMessage}`}
+              href={`https://wa.me/263710740387?text=${waMessage}`}
               target="_blank"
               rel="noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3.5 font-semibold text-white hover:bg-dark"
@@ -182,7 +182,7 @@ export default function Contact() {
       </section>
 
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2">
           {[
             ['Within the hour', 'WhatsApp response during business hours'],
             ['Within 1 business day', 'Email response guaranteed'],

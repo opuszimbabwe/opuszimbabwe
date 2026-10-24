@@ -1,0 +1,28 @@
+// Browser fixtures only. No live gateway requests and no payment or contact writes.
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE_PATH||'playwright-core');const assert=require('node:assert/strict');
+const base='http://127.0.0.1:8788';
+const methods=[{code:'PZW211',name:'Ecocash USD',minimumAmount:.01,maximumAmount:500},{code:'PZW212',name:'Innbucks USD',minimumAmount:1,maximumAmount:1000}];
+const config={configured:true,currencies:[{code:'USD',name:'US Dollar'},{code:'ZiG',name:'Zimbabwe Gold'}],methods};
+const receipt={id:'test-checkout-id',name:'Browser Test Payer',invoice:'TEST-QUOTE',amount:25,currency:'USD',method:'Ecocash USD',reference:'TEST-REFERENCE-ONLY',status:'PENDING',paid:false,terminal:false,date:null};
+(async()=>{const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
+ const context=await browser.newContext({viewport:{width:1440,height:1100}}),page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));let createCount=0,submitted,paid=false;
+ await page.route('**/api/payments/config?*',r=>r.fulfill({json:config}));
+ await page.route('**/api/payments/create',async r=>{createCount++;submitted=r.request().postDataJSON();await r.fulfill({status:202,json:{id:receipt.id,redirectUrl:null,receipt}})});
+ await page.route('**/api/payments/status?*',r=>r.fulfill({json:{receipt:paid?{...receipt,status:'SUCCESS',paid:true,terminal:true,date:'2026-10-25T10:00:00Z'}:receipt,continueUrl:null}}));
+ await page.goto(base+'/payments/');await page.getByRole('button',{name:'Continue to Pesepay',exact:true}).waitFor();await page.getByRole('radio').first().waitFor();assert.equal(await page.locator('nav[aria-label="Primary"],#footer').count(),0,'Checkout is standalone');
+ for(const name of ['PayPal','Visa','Mastercard']){await page.getByRole('button',{name,exact:true}).click();await page.getByRole('dialog').waitFor();assert.match(await page.getByRole('dialog').innerText(),/International payments are currently unavailable/);assert.match(await page.getByRole('dialog').innerText(),/support@opuszim.co.zw/);await page.keyboard.press('Escape');assert.equal(createCount,0)}
+ for(const width of [375,768,1440]){await page.setViewportSize({width,height:1100});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'No checkout overflow '+width)}
+ await page.screenshot({path:'/workspace/scratch/opus-checkout-form.png',fullPage:true});
+ await page.getByLabel('Payer name',{exact:true}).fill(receipt.name);await page.getByLabel('Email address',{exact:true}).fill('payer@example.test');await page.getByLabel('Phone number',{exact:true}).fill('0710123456');await page.getByLabel('Invoice or project reference',{exact:true}).fill(receipt.invoice);await page.getByLabel('Amount to pay',{exact:true}).fill('25.00');
+ await page.getByRole('button',{name:'Continue to Pesepay',exact:true}).click();await page.getByRole('heading',{name:'Processing Your Payment',exact:true}).waitFor();assert.equal(createCount,1);assert.equal(submitted.method,'PZW211');assert.match(submitted.token,/^[a-f0-9]{64}$/);assert.equal(await page.getByRole('heading',{name:'Payment Successful',exact:true}).count(),0);
+ await page.screenshot({path:'/workspace/scratch/opus-payment-processing.png',fullPage:true});
+ paid=true;await page.getByRole('button',{name:'Check payment status',exact:true}).click();await page.getByRole('heading',{name:'Payment Successful',exact:true}).waitFor();assert.match(await page.locator('.payment-details').innerText(),/USD 25\.00/);assert.match(await page.locator('.payment-details').innerText(),/12:00/);assert.match(await page.locator('.payment-details').innerText(),/TEST-REFERENCE-ONLY/);
+ await page.screenshot({path:'/workspace/scratch/opus-payment-receipt.png',fullPage:true});
+ for(const width of [375,768,1440]){await page.setViewportSize({width,height:1100});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth))}
+ // A query parameter cannot make an unverified payment successful.
+ const forged=await context.newPage();await forged.route('**/api/payments/status?*',r=>r.fulfill({json:{receipt,continueUrl:null}}));await forged.goto(base+'/payments/?payment=unverified&token='+'a'.repeat(64)+'&status=success');await forged.getByRole('heading',{name:'Processing Your Payment',exact:true}).waitFor();assert.equal(await forged.getByRole('heading',{name:'Payment Successful',exact:true}).count(),0);assert.equal(new URL(forged.url()).searchParams.has('token'),false,'Receipt access token removed from visible URL');
+ const unavailable=await context.newPage();await unavailable.route('**/api/payments/config?*',r=>r.fulfill({json:{...config,configured:false}}));await unavailable.goto(base+'/payments/');await unavailable.getByText('Online payments are being set up.',{exact:false}).waitFor();assert.equal(await unavailable.getByRole('button',{name:'Continue to Pesepay',exact:true}).isDisabled(),true);
+ // Shared shell and protected admin gate still work away from checkout.
+ await page.goto(base+'/services/');await page.locator('.site-content[data-loading="false"]').waitFor();await page.locator('nav[aria-label="Primary"]').waitFor();assert.equal(await page.locator('#footer').count(),1);
+ assert.deepEqual(errors,[]);console.log('PASS: reference-inspired standalone Poppins checkout, international overlays/Escape, responsive form/processing/verified receipt, no forged success, capability URL cleanup, missing-key fail-closed, marketing shell preserved. No real payment requests.');
+}finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
