@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_WHY_CHOOSE_US, WhyItem } from '@/lib/content';
+import PaymentTrustStrip from '@/components/PaymentTrustStrip';
 import { resolveIcon } from '@/lib/icons';
 import { useSiteContent } from '@/lib/use-site-content';
 
@@ -77,6 +78,7 @@ export default function WhyChooseUs({ items }: { items?: Reason[] }) {
               <p className="mt-3 font-poppins text-[0.96rem] leading-[1.7] text-[#0d0d0d]/75 m-0">
                 {item.body}
               </p>
+              {(item.show_payments ?? item.title.trim().toLowerCase() === 'local payments') && <PaymentTrustStrip compact />}
             </article>
           </div>
         );

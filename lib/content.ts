@@ -37,7 +37,7 @@ export type PaymentMethod = {
   visible: boolean;
 };
 
-export type WhyItem = { title: string; body: string; icon?: string };
+export type WhyItem = { title: string; body: string; icon?: string; show_payments?: boolean };
 export type RelatedItem = { label: string; href: string };
 
 export type ServiceToolItem = {
@@ -103,6 +103,8 @@ export type ProjectRecord = {
   description: string;
   /** Admin-uploaded screenshot of the live project (may be empty). */
   screenshot: string;
+  logo?: string;
+  preview_video?: string;
   status: 'active' | 'coming_soon';
   order_index: number;
   visible: boolean;
@@ -269,6 +271,7 @@ export const DEFAULT_WHY_CHOOSE_US: WhyItem[] = [
   },
   {
     title: 'Local Payments',
+    show_payments: true,
     body: 'Pay with EcoCash, OneMoney, InnBucks, Zimswitch or ZIPIT. No USD card required.',
     icon: '',
   },
@@ -1341,6 +1344,8 @@ function normalizeProject(raw: any, index: number): ProjectRecord | null {
     location: str(raw.location, '').slice(0, 200),
     description: str(raw.description, '').slice(0, 3000),
     screenshot: str(raw.screenshot, '').slice(0, 500),
+    logo: str(raw.logo, '').slice(0, 500),
+    preview_video: str(raw.preview_video, '').slice(0, 500),
     status: raw.status === 'coming_soon' ? 'coming_soon' : 'active',
     order_index: Number.isFinite(Number(raw.order_index)) ? Number(raw.order_index) : index,
     visible: raw.visible === true || raw.visible === 1 || raw.visible === '1',
@@ -1385,6 +1390,7 @@ function normalizeWhyChooseUs(raw: unknown, fallback: WhyItem[]): WhyItem[] {
       title: str(x.title, '').slice(0, 200).trim(),
       body: str(x.body, '').slice(0, 1000).trim(),
       icon: str(x.icon, '').slice(0, 500).trim(),
+      show_payments: typeof x.show_payments === 'boolean' ? x.show_payments : str(x.title, '').trim().toLowerCase() === 'local payments',
     }))
     .filter((x) => x.title && x.body);
   return Array.isArray(raw) ? items : fallback;

@@ -207,6 +207,7 @@ function Field({
       </span>
       {rows ? (
         <textarea
+          aria-label={label}
           className={cls + ' min-h-[88px] leading-6'}
           value={value}
           rows={rows}
@@ -215,6 +216,7 @@ function Field({
         />
       ) : (
         <input
+          aria-label={label}
           className={cls}
           value={value}
           placeholder={placeholder}
@@ -452,6 +454,7 @@ function ImageField({
       </span>
       <div className="flex gap-2">
         <input
+          aria-label={label}
           className="w-full rounded-xl border border-[#e2e4e8] bg-[#f8f9fb] px-3.5 py-2.5 text-[.88rem] text-[#0d0d0d] outline-none focus:border-[#E85D2A] focus:bg-white"
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -868,6 +871,10 @@ export default function AdminDashboard() {
             : prev
         );
         setMessage({ kind: 'ok', text: `Uploaded hero cycle image to R2: ${url} — press Save hero cycles to apply.` });
+      } else if (target && target.startsWith('projectlogo:')) {
+        const id = target.slice('projectlogo:'.length);
+        setProjects(prev => prev ? prev.map(p => p.id === id ? { ...p, logo: url } : p) : prev);
+        setMessage({ kind: 'ok', text: 'Client logo uploaded. Save live work to apply.' });
       } else if (target && target.startsWith('projectscreenshot:')) {
         const id = target.slice('projectscreenshot:'.length);
         setProjects((prev) =>
@@ -1299,8 +1306,8 @@ export default function AdminDashboard() {
             {/* TAB 2: LOCAL PAYMENTS */}
             {tab === 'payments' && settings && (
               <Card
-                title="Local Payments Trust Strip"
-                hint="Displayed immediately below the hero. Upload payment icons/logos, add new local payment methods, or toggle visibility."
+                title="Local Payments Logos"
+                hint="Displayed inside the Local Payments reason card. Add, replace, remove or hide payment logos here; choose which reason cards show them in How It Works & Why Choose Us."
                 action={
                   <button
                     disabled={busy}
@@ -1318,7 +1325,7 @@ export default function AdminDashboard() {
               >
                 <div className="mb-6 max-w-md">
                   <Field
-                    label="Payment Strip Label"
+                    label="Payment logos accessible label"
                     value={homeSections.payment_label}
                     onChange={(v) => patchHomeSections({ payment_label: v })}
                     hint="Default: We accept local payments"
@@ -1750,6 +1757,8 @@ export default function AdminDashboard() {
                           value={item.url}
                           onChange={(v) => patch({ url: v })}
                         />
+                        <ImageField label="Client Logo (optional)" value={item.logo || ''} onChange={v => patch({ logo: v })} onUpload={() => pickFile(`projectlogo:${item.id}`)} hint="Shown below the screenshot; blank uses the project name." />
+                        <Field label="Hover Video URL (optional)" value={item.preview_video || ''} onChange={v => patch({ preview_video: v })} hint="HTTPS MP4/WebM URL. Plays muted on hover or keyboard focus; reduced-motion users see the screenshot." />
                         <Field label="Service Tag" value={item.tag} onChange={(v) => patch({ tag: v })} />
                         <Field label="Location" value={item.location} onChange={(v) => patch({ location: v })} />
                       </div>
@@ -1760,7 +1769,7 @@ export default function AdminDashboard() {
                             value={item.screenshot || ''}
                             onChange={(v) => patch({ screenshot: v })}
                             onUpload={() => pickFile(`projectscreenshot:${item.id}`)}
-                            hint="Upload a screenshot of the live site (PNG, JPG, WebP, GIF, AVIF, SVG)."
+                            hint="The complete screenshot fits inside the rounded square without cropping."
                             previewBg="#f8f8f6"
                           />
                         </div>
@@ -1859,6 +1868,7 @@ export default function AdminDashboard() {
                       >
                         <div className="space-y-3">
                           <Field label="Reason Title" value={item.title} onChange={(v) => patch({ title: v })} />
+                          <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={item.show_payments ?? item.title.trim().toLowerCase() === 'local payments'} onChange={e => patch({ show_payments: e.target.checked })} />Show managed payment logos in this card</label>
                           <IconPicker
                             label="Optional Card Icon (Upload or choose)"
                             value={item.icon || ''}

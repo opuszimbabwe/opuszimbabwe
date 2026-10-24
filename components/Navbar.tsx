@@ -65,8 +65,8 @@ export default function Navbar() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ease-out ${
         scrolled
-          ? 'py-3 bg-transparent pointer-events-none'
-          : 'py-4 bg-[#f8f8f6]'
+          ? 'py-3 bg-white shadow-[0_2px_6px_rgba(13,13,13,0.06)] pointer-events-none'
+          : 'py-4 bg-white shadow-[0_2px_6px_rgba(13,13,13,0.06)]'
       }`}
     >
       <div className="site-frame flex items-center justify-between">
@@ -96,7 +96,7 @@ export default function Navbar() {
             aria-label="Primary"
             className={`flex items-center transition-all duration-300 ease-out rounded-full ${
               scrolled
-                ? 'bg-white/95 backdrop-blur-md shadow-[0_10px_30px_rgba(13,13,13,0.10)] border border-black/[0.06] px-3 py-2 gap-1'
+                ? 'bg-white/95 backdrop-blur-md shadow-[0_2px_6px_rgba(13,13,13,0.06)] border border-black/[0.06] px-3 py-2 gap-1'
                 : 'bg-transparent shadow-none border border-transparent px-2 py-1.5 gap-1'
             }`}
           >
@@ -105,8 +105,8 @@ export default function Navbar() {
               const Icon = item.icon;
               const linkCls = `inline-flex items-center gap-2 rounded-full px-3 py-2 text-[14px] transition-colors duration-200 ${
                 active
-                  ? 'bg-white shadow-sm font-semibold text-[#0d0d0d]'
-                  : 'font-normal text-[#0d0d0d]/70 hover:text-[#E85D2A]'
+                  ? 'bg-white shadow-sm font-bold text-[#0d0d0d]'
+                  : 'font-semibold text-[#0d0d0d]/70 hover:text-[#E85D2A]'
               }`;
 
               return (
@@ -153,7 +153,7 @@ export default function Navbar() {
         >
           <Link
             href="/contact/"
-            className="bg-[#E85D2A] hover:brightness-110 text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 whitespace-nowrap"
+            className="get-started-gradient hover:brightness-110 text-white rounded-full px-6 py-2.5 text-sm font-semibold transition-all duration-200 whitespace-nowrap"
           >
             Get Started
           </Link>
@@ -174,7 +174,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="lg:hidden fixed inset-0 top-[68px] z-[60] bg-[#f8f8f6] border-t border-[#e5e7eb] overflow-y-auto pointer-events-auto">
+        <div className="lg:hidden fixed inset-0 top-[68px] z-[60] bg-white border-t border-[#e5e7eb] overflow-y-auto pointer-events-auto">
           <nav className="flex flex-col gap-0 px-8 py-6 text-[1.05rem] font-semibold text-[#0d0d0d]">
             {navItems.map((item) => {
               const active = isActive(item);
@@ -185,7 +185,7 @@ export default function Navbar() {
                     <button
                       onClick={() => setServicesOpen(!servicesOpen)}
                       aria-expanded={servicesOpen}
-                      className={`w-full flex justify-between items-center px-4 py-4 ${active ? 'rounded-full bg-white shadow-sm' : ''}`}
+                      className={`w-full flex justify-between items-center px-4 py-4 ${active ? 'rounded-full bg-white shadow-sm font-bold' : 'font-semibold'}`}
                     >
                       <span className="flex items-center gap-2">{active && <Icon size={18} aria-hidden="true" />}Services</span>
                       <span className="text-[#E85D2A] text-xl leading-none">{servicesOpen ? '−' : '+'}</span>
@@ -220,7 +220,7 @@ export default function Navbar() {
             <Link
               onClick={() => setOpen(false)}
               href="/contact/"
-              className="mt-6 bg-[#E85D2A] text-white rounded-full px-5 py-3.5 text-center font-semibold"
+              className="get-started-gradient mt-6 text-white rounded-full px-5 py-3.5 text-center font-semibold"
             >
               Get Started
             </Link>

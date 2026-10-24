@@ -20,7 +20,7 @@ export default function Footer(){
   const logo = content?.settings.navbar_logo || DEFAULT_SETTINGS.navbar_logo
   return (
     <footer id="footer" className="bg-[#f5f5f5] text-dark">
-      <div className="h-[3px] w-full bg-primary" style={{background: 'linear-gradient(90deg, #E85D2A 0%, #F97316 50%, #F4A226 100%)'}}/>
+      <div className="footer-divider h-px w-full bg-[#e5e7eb]" aria-hidden="true"/>
       <div className="site-frame py-14">
         <FooterSocials/>
 

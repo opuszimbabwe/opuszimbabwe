@@ -3,7 +3,7 @@
 import { DEFAULT_HOME_SECTIONS, DEFAULT_PAYMENT_METHODS, PaymentMethod } from '@/lib/content';
 import { useSiteContent } from '@/lib/use-site-content';
 
-export default function PaymentTrustStrip() {
+export default function PaymentTrustStrip({ compact = false }: { compact?: boolean }) {
   const { content } = useSiteContent();
   const methods: PaymentMethod[] = (
     content?.settings?.payment_methods
@@ -15,39 +15,10 @@ export default function PaymentTrustStrip() {
 
   if (methods.length === 0) return null;
 
-  return (
-    <div
-      style={{ backgroundColor: homeSections.hero_bg || '#f8f8f6' }}
-      className="w-full pt-2 pb-12"
-    >
-      <div className="max-w-5xl mx-auto px-6 flex flex-col items-center text-center">
-        <p className="font-poppins font-light text-[14px] text-[#0d0d0d]/70 m-0">
-          {homeSections.payment_label || 'We accept local payments'}
-        </p>
-        <div
-          className="mt-5 w-full flex flex-wrap items-center justify-center gap-8 sm:gap-12 md:gap-16"
-          aria-label="Accepted local payment methods"
-        >
-          {methods.map((method) => {
-            const isPaynow = method.logo.includes('paynow-logo.png');
-            return (
-              <div
-                key={method.id}
-                title={method.name}
-                className="group flex items-center justify-center px-2 py-1 overflow-hidden"
-              >
-                <img
-                  src={method.logo}
-                  alt={method.name}
-                  className={`${
-                    isPaynow ? 'h-12 sm:h-14 scale-150' : 'h-8 sm:h-9'
-                  } w-auto object-contain `}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
+  return <div className={compact ? 'payment-card-logos mt-6 flex flex-wrap items-center gap-x-5 gap-y-4' : 'flex flex-wrap items-center justify-center gap-8'} aria-label={homeSections.payment_label || 'Accepted local payment methods'}>
+    {methods.map(method => method.logo === '/images/paynow-logo.png' ?
+      <span key={method.id} title={method.name} data-logo-crop="paynow" style={{ position: 'relative', overflow: 'hidden', width: 96, aspectRatio: '152/27' }}>
+        <img src={method.logo} alt={method.name} loading="lazy" style={{ position: 'absolute', maxWidth: 'none', width: `${685 / 152 * 100}%`, height: `${364 / 27 * 100}%`, left: `${-267 / 152 * 100}%`, top: `${-167 / 27 * 100}%` }} />
+      </span> : <img key={method.id} src={method.logo} alt={method.name} title={method.name} loading="lazy" className="h-7 max-w-[100px] object-contain" />)}
+  </div>;
 }

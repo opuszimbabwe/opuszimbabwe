@@ -105,3 +105,15 @@ Returning from a native file picker previously invoked both public-content and s
 The shared inner-hero-frame applies the responsive page gutters to all six service heroes and the contact hero. The services index also uses the shared text frame. Contact fields now use native fieldset/legend notches: empty fields have a complete outline; focused/filled labels sit on the top border, with no painted background patch. Field fill is controlled by --field-fill and remains independent of the surrounding page.
 
 Local checks passed: typecheck/build, test-upload-focus-outline.cjs (two actual local uploads, delayed focus checks, draft retention, native notch/transparent label, all six service heroes/contact at phone/tablet/desktop), test-admin-visibility.cjs and test-content-lifecycle.cjs. Tests never upload to production. These edits await visual review in the isolated preview; do not push main before approval.
+
+## Pending review: payments, navigation and project showcase
+
+Payment logos moved from the standalone under-hero strip into the Local Payments Why Choose Us card. Existing payment-method add/edit/remove/upload/visibility controls still supply that list. Each reason card has a Show managed payment logos toggle; legacy Local Payments titles enable it automatically, and the persisted flag survives later title changes. The payment label is now the accessible name of the logo group. Known transparent padding in the bundled Paynow asset is cropped at render time; the file and admin-uploaded replacements are preserved.
+
+Navigation keeps its route icons/pills, links, spacing and scroll behaviour, with white surfaces, near grey shadows, semibold default text, bold current pages, and red-to-orange Get Started buttons on desktop/mobile. Footer’s orange rule is replaced by a 1px soft grey divider.
+
+Home and Projects share ProjectCard: a rounded square canvas with inset, object-contain screenshots (no content cropping), client logo/name beneath (38px logo, 32px/24px spacing), full 16px description and project metadata. Optional admin-managed logo and hover-video URL support the supplied reference. Video loads/plays only on hover or keyboard focus; reduced-motion users keep the screenshot, and failed/blocked playback retains it. Uploaded screenshot, name, URL, location, visibility and description controls remain.
+
+Migration 0014_project_presentation adds optional logo/preview_video columns with empty defaults; applied locally only. After main-site approval, back up production and apply this additive migration before deploying the new project-save endpoint. Public reads tolerate pre-migration rows. Do not publish main or apply remote migration before approval.
+
+Checks: typecheck/build, test-projects-payments-navbar.cjs (local API writes/restoration, hidden logos/card toggle/renaming, actual generated WebM hover/focus playback, reduced motion, screenshot containment and mobile layout), and smoke-api.mjs (113 checks). Updated stale smoke expectations for the already-approved secure admin redirect and new service-word hero rather than retaining old public-admin/old-headline assumptions.

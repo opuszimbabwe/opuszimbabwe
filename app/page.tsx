@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import SectionBackdrop from '@/components/SectionBackdrop';
 import HomeHero from '@/components/HomeHero';
-import PaymentTrustStrip from '@/components/PaymentTrustStrip';
 import HomeServicesGrid from '@/components/HomeServicesGrid';
 import TrustedPartners from '@/components/TrustedPartners';
 import OpusApproach from '@/components/OpusApproach';
@@ -39,7 +38,6 @@ export default function Home() {
       <HomeHero />
 
       {/* 2. Payment trust strip — immediately below the hero */}
-      <PaymentTrustStrip />
 
       {/* 3. Services — six cards in a 3x2 grid (White section by default) */}
       <section

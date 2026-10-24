@@ -58,9 +58,11 @@ async function main() {
   }
   {
     const { res, text } = await req('/admin/');
-    check('GET /admin/ responds 200', res.status === 200);
-    check('/admin is noindex', text.includes('noindex'));
-    check('/admin renders dashboard shell', text.includes('Content admin'));
+    check('/admin redirects to secure /sysadmin/', res.status === 308 && res.headers.get('location')?.endsWith('/sysadmin/'));
+    check('/admin redirect cannot be cached', res.headers.get('cache-control')?.includes('no-store'));
+    check('/admin does not serve dashboard controls', !text.includes('Content admin') && !text.includes('Save hero design'));
+    const secure = await req('/sysadmin/');
+    check('/sysadmin is noindex and has no unauthenticated dashboard controls', secure.text.includes('noindex') && !secure.text.includes('Save hero design'));
   }
   {
     const { res, text } = await req('/robots.txt');
@@ -846,9 +848,8 @@ async function main() {
 
     const home = await req('/');
     check(
-      'home renders the static hero headline, payment strip, "Partners who trust us", and why-choose-us cards',
-      home.text.includes('Your business is struggling.') &&
-        (home.text.includes('Let&#x27;s change that.') || home.text.includes("Let's change that.")) &&
+      'home renders service-word hero, payment logos inside Why Choose Us, and trusted partners',
+      (home.text.includes('Work with Zimbabwe&#x27;s Best') || home.text.includes("Work with Zimbabwe's Best")) && home.text.includes('hero-rotating-words') && home.text.includes('payment-card-logos') &&
         home.text.includes('We accept local payments') &&
         home.text.includes('Partners who trust us') &&
         home.text.includes('/images/partner-great-couples.png') &&

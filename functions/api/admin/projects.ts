@@ -44,6 +44,8 @@ export const onRequestPut: PagesHandler = async (context) => {
     location: string;
     description: string;
     screenshot: string;
+    logo: string;
+    preview_video: string;
     status: string;
     visible: number;
   }[] = [];
@@ -59,6 +61,9 @@ export const onRequestPut: PagesHandler = async (context) => {
     if (screenshot && !isUrlPath(screenshot)) {
       return json({ error: 'invalid_project_screenshot', name }, 400);
     }
+    const logo = str(project?.logo, 500).trim();
+    const preview_video = str(project?.preview_video, 500).trim();
+    if ((logo && !isUrlPath(logo)) || (preview_video && !isUrlPath(preview_video))) return json({ error: 'invalid_project_media', name }, 400);
     cleaned.push({
       id: str(project?.id, 80).trim() || `pr_${crypto.randomUUID().slice(0, 8)}`,
       name,
@@ -67,6 +72,7 @@ export const onRequestPut: PagesHandler = async (context) => {
       location: str(project?.location, 200).trim(),
       description: str(project?.description, 3000).trim(),
       screenshot,
+      logo, preview_video,
       status,
       visible: project?.visible === false || project?.visible === 0 ? 0 : 1,
     });
@@ -79,7 +85,7 @@ export const onRequestPut: PagesHandler = async (context) => {
       statements.push(
         db
           .prepare(
-            'INSERT INTO projects (id, name, url, tag, location, description, screenshot, status, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))'
+            'INSERT INTO projects (id, name, url, tag, location, description, screenshot, logo, preview_video, status, order_index, visible, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime(\'now\'))'
           )
           .bind(
             project.id,
@@ -89,6 +95,7 @@ export const onRequestPut: PagesHandler = async (context) => {
             project.location,
             project.description,
             project.screenshot,
+            project.logo, project.preview_video,
             project.status,
             index,
             project.visible

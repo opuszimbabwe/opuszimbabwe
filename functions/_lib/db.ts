@@ -52,6 +52,8 @@ export interface ProjectRow {
   location: string;
   description: string;
   screenshot?: string;
+  logo?: string;
+  preview_video?: string;
   status: string;
   order_index: number;
   visible: number;
@@ -162,7 +164,7 @@ export async function readAllContent(db: D1Database) {
       .catch(() => ({ results: [] as ServiceExtrasRow[] })),
     db
       .prepare(
-        'SELECT id, name, url, tag, location, description, screenshot, status, order_index, visible FROM projects ORDER BY order_index ASC'
+        'SELECT * FROM projects ORDER BY order_index ASC'
       )
       .all<ProjectRow>()
       .catch(() =>
@@ -211,6 +213,8 @@ export async function readAllContent(db: D1Database) {
     location: p.location,
     description: p.description,
     screenshot: p.screenshot || '',
+    logo: p.logo || '',
+    preview_video: p.preview_video || '',
     status: p.status === 'coming_soon' ? 'coming_soon' : 'active',
     order_index: p.order_index,
     visible: Boolean(p.visible),
@@ -353,6 +357,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           const icon = text(x.icon, 500).trim();
           return {
             title: text(x.title, 200).trim(),
+            show_payments: typeof x.show_payments === 'boolean' ? x.show_payments : text(x.title, 200).trim().toLowerCase() === 'local payments',
             body: text(x.body, 1000).trim(),
             icon: icon && (!icon.includes(':') || isUrlPath(icon)) ? icon : '',
           };
