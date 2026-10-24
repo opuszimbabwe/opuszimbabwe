@@ -70,7 +70,7 @@ export default function Contact() {
     <main>
       <div className="inner-hero-frame"><SectionBackdrop design={content?.settings.contact_hero_design || DEFAULT_SETTINGS.contact_hero_design} className="rounded-[36px] px-6 py-20 sm:px-10 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-white/70">Contact Opus Zimbabwe</p>
+
           <h1 className="mt-3 text-4xl font-bold leading-tight text-white md:text-5xl">
             Tell us what you need.
             <br />

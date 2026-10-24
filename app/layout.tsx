@@ -14,6 +14,7 @@ const poppins = localFont({
   ],
   variable: '--font-poppins',
   display: 'block',
+  preload: false,
 });
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -35,7 +36,7 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={poppins.variable}>
-      <body className="font-poppins bg-[#f8f8f6] text-[#0d0d0d]">
+      <body className="font-poppins bg-[#ffffff] text-[#0d0d0d]">
         <SiteContentBoundary>
         <BrandHeadSync />
         <Navbar />

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { PricingSection } from '@/components/PricingCard';
-import ServiceHero from '@/components/ServiceHero';
+import ServiceEditorialHero from '@/components/ServiceEditorialHero';
 import ServiceVisual from '@/components/ServiceVisual';
 import {
   DEFAULT_SERVICE_PAGES,
@@ -45,47 +45,34 @@ export default function ServicePageTemplate({
   const isDomainsHosting = data.serviceId === 'domains-hosting';
 
   return (
-    <main className="bg-[#f8f8f6] text-[#0d0d0d]">
-      {/* Hero */}
-      <ServiceHero
-        serviceId={data.serviceId}
-        serviceName={data.eyebrow}
-        domainCta={data.domainCta}
-        fallback={{
-          eyebrow: data.eyebrow,
-          headline: data.headline,
-          intro: data.intro,
-          cta: data.cta,
-          background: data.image,
-        }}
-      />
+    <main className="bg-[#ffffff] text-[#0d0d0d]">
+      <ServiceEditorialHero data={data} />
 
       {/* Section 1 — The problem */}
-      <section className="mx-auto max-w-4xl px-6 py-20 sm:py-24">
-        <h2 className="font-poppins text-sm font-bold uppercase tracking-[0.14em] text-[#0d0d0d]/55">
-          The problem
-        </h2>
-        <blockquote className="mt-5 border-l-4 border-[#0d0d0d] pl-6 font-poppins text-2xl font-bold leading-snug text-[#0d0d0d] md:text-3xl">
+      {!isWebDesign && <section className="site-frame service-context">
+
+        <blockquote className="service-context-quote">
           {page.problem_text}
         </blockquote>
-      </section>
+      </section>}
+      {isWebDesign && <section className="site-frame service-conversion-story"><h2 className="service-conversion-heading"><span className="textured-accent">Trust, branding, UX.</span><br />Built to turn visits into business.</h2><div><p>{page.what_intro}</p><p>{page.problem_text}</p></div></section>}
 
       {/* Section 2 — What we build / design / provide / integrate (White section) */}
-      <section className="bg-white py-20 sm:py-24">
-        <div className="mx-auto max-w-5xl px-6">
+      <section className="site-frame service-conversion">
+        <div>
           <h2 className="font-poppins text-3xl font-bold tracking-tight text-[#0d0d0d] md:text-4xl">
             {page.what_heading}
           </h2>
-          {page.what_intro && (
+          {!isWebDesign && page.what_intro && (
             <p className="mt-4 max-w-3xl font-poppins text-[1.05rem] leading-8 text-[#0d0d0d]/80">
               {page.what_intro}
             </p>
           )}
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className={isWebDesign ? 'service-offering-list' : 'mt-10 grid gap-5 md:grid-cols-2'}>
             {page.what_items.map((item, idx) => (
-              <div
+              isWebDesign ? <details key={`${item.title}-${idx}`} className="service-offering"><summary>{item.title}<span aria-hidden="true">+</span></summary>{item.body && <p>{item.body}</p>}</details> : <div
                 key={`${item.title}-${idx}`}
-                className="rounded-[24px] border border-[#ebebea] bg-[#f8f8f6] p-7 transition-all hover:bg-[#fff8f4]"
+                className="rounded-[24px] border border-[#ebebea] bg-[#ffffff] p-7 transition-all hover:bg-[#ffffff]"
               >
                 <h3 className="font-poppins text-lg font-bold text-[#0d0d0d]">{item.title}</h3>
                 {item.body && (
@@ -96,14 +83,13 @@ export default function ServicePageTemplate({
               </div>
             ))}
           </div>
-          <div className="mx-auto mt-8 max-w-4xl">
-            <ServiceVisual serviceId={data.serviceId} fallback={data.image} />
-          </div>
+
         </div>
+        <div className="service-conversion-art"><ServiceVisual serviceId={data.serviceId} fallback={data.image} /></div>
       </section>
 
       {/* Section 3 — Pricing */}
-      <section id="pricing" className="bg-[#f8f8f6] py-20 sm:py-24">
+      <section id="pricing" className="bg-[#ffffff] py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center">
             <h2 className="font-poppins text-3xl font-bold text-[#0d0d0d] md:text-4xl">Pricing</h2>
@@ -254,15 +240,15 @@ export default function ServicePageTemplate({
       </section>
 
       {/* Section 4 — Process (White section) */}
-      <section className="bg-white py-20 sm:py-24">
+      <section className="bg-white py-20 sm:py-24 service-delivery">
         <div className="mx-auto max-w-4xl px-6">
           <h2 className="font-poppins text-3xl font-bold tracking-tight text-[#0d0d0d] md:text-4xl">
-            Process
+            {isWebDesign ? <>Landing pages.<br /><span className="textured-accent">From design to development and testing.</span></> : 'Process'}
           </h2>
           <div className="mt-10 divide-y divide-[#e7e9e8]">
             {page.process_steps.map((step, index) => (
               <div key={`${step.title}-${index}`} className="flex items-start gap-5 py-6">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f8f8f6] border border-[#e5e7eb] text-sm font-bold text-[#0d0d0d]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#ffffff] border border-[#e5e7eb] text-sm font-bold text-[#0d0d0d]">
                   {index + 1}
                 </span>
                 <div>
@@ -280,7 +266,7 @@ export default function ServicePageTemplate({
       </section>
 
       {/* Section 5 — Tools we use (Admin-controlled logos strip) */}
-      <section className="bg-[#f8f8f6] py-16 sm:py-20">
+      {(page.tools_items.length > 0) && <section className="bg-white py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-6 text-center">
           <h2 className="font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             Tools we use
@@ -315,6 +301,7 @@ export default function ServicePageTemplate({
         </div>
       </section>
 
+      }
       {/* Section 6 — WhatsApp CTA */}
       <section className="bg-white px-6 pb-24 pt-6">
         <div className="mx-auto max-w-5xl rounded-[32px] bg-[#0d0d0d] px-7 py-16 text-center text-white shadow-[0_16px_45px_rgba(0,0,0,.14)] sm:px-12">

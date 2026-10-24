@@ -56,7 +56,7 @@ export default function ServicesShowcase({ serviceIds, eyebrow, heading, intro }
     <div className="relative mt-14 text-left">
       {(eyebrow || heading || intro) && (
         <div className="mx-auto max-w-3xl text-center">
-          {eyebrow && <p className="text-[.75rem] font-bold uppercase tracking-[.16em] text-primary">{eyebrow}</p>}
+
           {heading && <h3 className={`${eyebrow ? 'mt-3' : 'mt-0'} text-4xl font-bold tracking-tight text-dark sm:text-5xl`}>{heading}</h3>}
           {intro && <p className="mx-auto mt-3 max-w-2xl leading-7 text-muted-fg">{intro}</p>}
         </div>
@@ -75,7 +75,7 @@ export default function ServicesShowcase({ serviceIds, eyebrow, heading, intro }
           >
             <div className="flex w-full flex-1 flex-col overflow-hidden rounded-[48px] md:flex-row">
               <div className="flex w-full flex-col justify-center px-7 py-10 sm:px-12 sm:py-14 md:w-1/2 md:px-14 lg:px-16">
-                <p className="text-[.7rem] font-bold uppercase tracking-[.16em] text-[#58766d]">{s.tagline}</p>
+
                 <h3 className="mt-5 max-w-[500px] text-[1.8rem] font-bold leading-[1.08] tracking-[-.035em] text-[#10202d] sm:text-[2.35rem] lg:text-[2.8rem]">
                   {s.name}
                 </h3>

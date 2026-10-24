@@ -4,7 +4,7 @@ import { ArrowRight, Plus } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import type { ServiceRecord } from '@/lib/content';
 
-const tones: Record<string, string> = { 'web-design': '#527b91', 'software-development': '#74734c', 'ai-automation': '#5e4b7b', 'graphic-design': '#9c543b', 'domains-hosting': '#326f65', 'api-integrations': '#3d587f' };
+const tones: Record<string, string> = { 'web-design': '#9b4236', 'software-development': '#58415d', 'ai-automation': '#a13f65', 'graphic-design': '#274e48', 'domains-hosting': '#a05c14', 'api-integrations': '#252943' };
 export default function ServiceCard({ service, expanded, onExpand }: { service: ServiceRecord; expanded: boolean; onExpand: (next: boolean) => void }) {
   const tone = service.card_bg_color && service.card_bg_color.toLowerCase() !== '#ffffff' ? service.card_bg_color : tones[service.id] || '#735b4a';
   const detailsId = `service-details-${service.id}`;

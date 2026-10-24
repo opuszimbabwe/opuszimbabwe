@@ -16,7 +16,7 @@ const items = [
 export default function FAQ() {
   return (
     <main id="faq" className="mx-auto max-w-3xl px-6 py-20">
-      <p className="text-[.8rem] font-semibold uppercase tracking-[.12em] text-[#0d0d0d]/55">FAQ</p>
+
       <h1 className="mb-10 mt-3 text-4xl font-bold text-dark">Questions, answered.</h1>
       <FaqAccordion list="page" items={items.map(([q, a]) => ({ q, a }))} />
     </main>

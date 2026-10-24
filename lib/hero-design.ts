@@ -43,7 +43,7 @@ export const DEFAULT_HERO_DESIGN: HeroDesign = {
   show_media: true, media_image: '', media_fit: 'contain', media_height: 360,
   background_x: 50, background_y: 50, overlay_placement: 'full', overlay_width: 100,
   text_panel: false, panel_color: '#ffffff', panel_opacity: 0.92, panel_radius: 24, panel_padding: 32,
-  background: { background_color: '#f8f8f6', background_image: '', overlay_kind: 'solid', overlay_color: '#0d0d0d', overlay_gradient: '90deg,#0d0d0d,#E85D2A', overlay_opacity: 0 },
+  background: { background_color: '#ffffff', background_image: '', overlay_kind: 'solid', overlay_color: '#0d0d0d', overlay_gradient: '90deg,#0d0d0d,#E85D2A', overlay_opacity: 0 },
   backgrounds: [],
 };
 const hex = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;

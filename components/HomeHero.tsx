@@ -87,7 +87,7 @@ export function HomeHeroView({ design, sections, cycles, loading = false, previe
         <div className="home-hero-text" style={{ textAlign: design.text_align, color: design.body_color }}>
           <div className="home-hero-copy" style={panelStyle}>
             {design.text_panel && <div className="home-hero-text-panel" aria-hidden="true" style={{ backgroundColor: design.panel_color, opacity: design.panel_opacity, borderRadius: design.panel_radius }} />}
-            {design.eyebrow && <p className="mb-4 text-sm font-semibold uppercase tracking-wider">{design.eyebrow}</p>}
+
             <Heading className="hero-heading font-poppins" style={{ color: design.heading_color, fontWeight: design.heading_weight }}>
               {design.headline_mode === 'service_words' ? <>{design.headline || "Work with Zimbabwe's Best"}{' '}<span style={{ color: design.show_accent ? design.accent_color : design.heading_color }}><RotatingServiceWords words={items.map(heroServiceWord)} index={activeService} animate={!reducedMotion && design.animation !== 'none'} /></span></> : <>{design.headline || sections.hero_headline_main}{design.show_accent && <>{' '}<span style={{ color: design.accent_color }}>{design.headline_accent || sections.hero_headline_accent}</span></>}</>}
             </Heading>

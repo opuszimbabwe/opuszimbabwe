@@ -5,20 +5,20 @@ import { usePathname } from 'next/navigation';
 import { loadSiteContent, useSiteContent } from '@/lib/use-site-content';
 const useBeforePaint = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-/** Never expose a previous content snapshot while a document or route refreshes. */
+/** Gate first loads and restored documents; keep the verified session visible during navigation. */
 export default function SiteContentBoundary({ children }: { children: React.ReactNode }) {
-  const { status } = useSiteContent();
+  const { status, content } = useSiteContent();
   const path = usePathname();
   const previousPath = useRef<string | null>(null);
   const [fontsReady, setFontsReady] = useState(false);
   useBeforePaint(() => {
     if (previousPath.current === path) return;
     previousPath.current = path;
-    void loadSiteContent(true, true);
+    void loadSiteContent(Boolean(content), !content);
   }, [path]);
   useEffect(() => {
     let mounted = true;
-    Promise.all([300, 400, 500, 600, 700, 800, 900].map(weight =>
+    Promise.all([400, 600, 700].map(weight =>
       document.fonts.load(`${weight} 16px ${getComputedStyle(document.body).fontFamily}`)
     )).catch(() => undefined).finally(() => { if (mounted) setFontsReady(true); });
     return () => { mounted = false; };

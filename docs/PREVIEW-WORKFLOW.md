@@ -137,3 +137,5 @@ The owner requested the services overview follow the Orizon services structure w
 The shared textured-accent class now uses orange/red with the same Poppins and grain treatment everywhere, including Live Work and Why Choose Us. No blue texture remains in this shared style; navy text and existing client/payment artwork retain their intended colours. No data migration is needed.
 
 Validation: typecheck/build and scripts/test-services-overview.cjs covering content/links, colour/visibility edits, empty states, phone/tablet/desktop widths, guidance, individual service navigation, and global orange/red texture. Publish through the existing main Git integration and verify live HTML/assets/API with TLS validation retained.
+
+2026-10-25: User explicitly authorized this services/page-speed batch directly on main. White canvas, varied service colours/full image cards, editorial service heroes and own website showcase. Publication requires production migration 0016 after a D1 backup. Preserve Access and all current media/admin content.

@@ -62,7 +62,7 @@ export default function ServiceHero({
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/72 to-black/85" />
 
       <div className="relative mx-auto max-w-4xl px-6 py-20 sm:px-10 text-center md:py-28">
-        <p className="text-[.78rem] font-semibold uppercase tracking-[.16em] text-white/70">{eyebrow}</p>
+
         <h1 className="mt-4 text-4xl font-bold leading-tight text-white md:text-5xl">{headline}</h1>
         <p className="mx-auto mt-5 max-w-2xl text-[1.05rem] leading-7 text-white/80">{intro}</p>
         <Link

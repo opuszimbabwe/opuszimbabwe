@@ -12,7 +12,7 @@ const config: Config = {
         success: '#22C55E',
         dark: '#0d0d0d',
         fg: '#0d0d0d',
-        surface: '#f8f8f6',
+        surface: '#ffffff',
         muted: {
           DEFAULT: '#F5F5F5',
           fg: '#525252',

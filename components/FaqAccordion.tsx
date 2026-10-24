@@ -36,7 +36,7 @@ export default function FaqAccordion({
             className={`overflow-hidden rounded-2xl border transition-colors duration-200 ${
               isOpen
                 ? 'border-[#e5e7eb] bg-white shadow-[0_10px_28px_rgba(13,13,13,0.06)]'
-                : 'border-transparent bg-white/80 hover:bg-[#fff8f4]'
+                : 'border-transparent bg-white/80 hover:bg-[#ffffff]'
             }`}
           >
             <button

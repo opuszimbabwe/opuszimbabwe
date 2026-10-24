@@ -124,7 +124,7 @@ export default function Navbar() {
                             <Link
                               key={href}
                               href={href}
-                              className="rounded-xl px-3 py-2.5 text-sm text-[#0d0d0d] hover:bg-[#fff8f4] hover:text-[#E85D2A] transition-colors"
+                              className="rounded-xl px-3 py-2.5 text-sm text-[#0d0d0d] hover:bg-[#ffffff] hover:text-[#E85D2A] transition-colors"
                             >
                               {label}
                             </Link>

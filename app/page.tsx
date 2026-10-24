@@ -34,7 +34,7 @@ export default function Home() {
   const s = content?.settings?.home_sections || DEFAULT_HOME_SECTIONS;
 
   return (
-    <main className="bg-[#f8f8f6] text-[#0d0d0d]">
+    <main className="bg-[#ffffff] text-[#0d0d0d]">
       {/* 1. Hero */}
       <HomeHero />
 
@@ -56,7 +56,7 @@ export default function Home() {
 
       {/* 4. Trusted by — partner logos ("Partners who trust us") */}
       <section
-        style={{ backgroundColor: s.partners_bg || '#f8f8f6' }}
+        style={{ backgroundColor: s.partners_bg || '#ffffff' }}
         className="py-16"
       >
         <div className="site-frame text-center">

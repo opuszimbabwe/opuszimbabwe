@@ -295,13 +295,13 @@ export const DEFAULT_WHY_CHOOSE_US: WhyItem[] = [
 export const DEFAULT_HOME_SECTIONS: HomeSectionsConfig = {
   hero_headline_main: homepageCopy.hero_headline_main,
   hero_headline_accent: homepageCopy.hero_headline_accent,
-  hero_bg: '#f8f8f6',
+  hero_bg: '#ffffff',
   payment_label: 'We accept local payments',
   services_heading: 'One team. Every digital capability your organisation needs.',
   services_bg: '#ffffff',
   partners_heading: 'Partners who trust us',
   partners_subheading: 'Trusted by businesses, NGOs, and institutions across Zimbabwe.',
-  partners_bg: '#f8f8f6',
+  partners_bg: '#ffffff',
   how_it_works_heading: 'How we take your project from idea to launch.',
   how_it_works_bg: '#f8fafc',
   projects_heading: 'Live work we have delivered.',
@@ -989,7 +989,7 @@ export const staticExtras: Record<string, ServiceExtras> = {
   'web-design': {
     service_id: 'web-design',
     hero_eyebrow: 'Website Design & Development',
-    hero_headline: 'A website that represents your business the way it deserves to be represented.',
+    hero_headline: 'Website design. Built for business.',
     hero_intro:
       'We design and develop professional websites for businesses, NGOs, schools, churches and organisations across Zimbabwe — built to be fast, credible and ready to grow with you.',
     hero_cta: 'View Packages',

@@ -127,7 +127,7 @@ function mapExtras(e: ServiceExtrasRow) {
 }
 
 export async function readAllContent(db: D1Database) {
-  const [servicesRows, pricingRows, settingsRows] = await Promise.all([
+  const [servicesRows, pricingRows, settingsRows, extrasRows, projectRows, partnerRows] = await Promise.all([
     db
       .prepare(
         'SELECT id, tagline, name, description, page_description, items, icon, gradient, card_bg_color, slug, image, order_index, visible FROM services ORDER BY order_index ASC'
@@ -146,9 +146,6 @@ export async function readAllContent(db: D1Database) {
       )
       .all<PricingRow>(),
     db.prepare('SELECT key, value FROM settings').all<{ key: string; value: string }>(),
-  ]);
-
-  const [extrasRows, projectRows, partnerRows] = await Promise.all([
     db
       .prepare(
         'SELECT service_id, hero_eyebrow, hero_headline, hero_intro, hero_cta, hero_background, visual_background, hero_background_kind, hero_gradient, why_items, related_items FROM service_extras'
