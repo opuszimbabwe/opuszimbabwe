@@ -324,6 +324,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
     case 'hero_cycles': {
       const cleaned = entries(value, 16)
         .map((x) => ({
+          headline_word: text(x.headline_word, 100).trim(),
           question: text(x.question, 500).trim(),
           solution: text(x.solution, 1000).trim(),
           image: text(x.image, 500).trim(),

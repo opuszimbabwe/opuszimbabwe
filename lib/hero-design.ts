@@ -1,6 +1,8 @@
 import { validDesign, type SectionDesign } from './section-design';
 export type HeroSlide = { id: string; image: string };
 export type HeroDesign = {
+  headline_mode: 'static' | 'service_words';
+  caption_gap: number; caption_size: number; caption_weight: number;
   layout: 'split' | 'full_bleed' | 'card';
   text_align: 'left' | 'center' | 'right';
   text_position: 'left' | 'center' | 'right';
@@ -27,17 +29,18 @@ export type HeroDesign = {
   background: SectionDesign; backgrounds: HeroSlide[];
 };
 export const DEFAULT_HERO_DESIGN: HeroDesign = {
-  layout: 'split', text_align: 'left', text_position: 'left', vertical_align: 'top',
+  headline_mode: 'service_words', caption_gap: 10, caption_size: 18, caption_weight: 500,
+  layout: 'split', text_align: 'left', text_position: 'right', vertical_align: 'top',
   rotation: 'services', animation: 'fade', interval_ms: 4500, transition_ms: 600, pause_on_hover: true,
   use_existing_background: true, show_accent: true,
   use_reference_gutters: true, edge_spacing: 40, frame_width: 1440, card_inset: 24, border_radius: 32,
   corner_mode: 'layout', top_left_radius: 0, top_right_radius: 0, bottom_left_radius: 0, bottom_right_radius: 0,
   min_height: 620, padding_top: 88, padding_bottom: 64, text_width: 720,
-  heading_size: 72, heading_mobile_size: 38, heading_weight: 700, body_size: 25, body_mobile_size: 22,
+  heading_size: 56, heading_mobile_size: 38, heading_weight: 700, body_size: 25, body_mobile_size: 22,
   heading_color: '#0d0d0d', accent_color: '#DC2626', body_color: '#0d0d0d',
-  eyebrow: '', headline: '', headline_accent: '', description: '', button_label: 'Learn More', button_href: '',
+  eyebrow: '', headline: "Work with Zimbabwe's Best", headline_accent: '', description: '', button_label: 'Learn More', button_href: '',
   button_color: '#E85D2A', button_text_color: '#ffffff', secondary_label: 'Help me choose', secondary_href: '/projects/', secondary_action: 'guide',
-  show_media: true, media_image: '', media_fit: 'contain', media_height: 440,
+  show_media: true, media_image: '', media_fit: 'contain', media_height: 360,
   background_x: 50, background_y: 50, overlay_placement: 'full', overlay_width: 100,
   text_panel: false, panel_color: '#ffffff', panel_opacity: 0.92, panel_radius: 24, panel_padding: 32,
   background: { background_color: '#f8f8f6', background_image: '', overlay_kind: 'solid', overlay_color: '#0d0d0d', overlay_gradient: '90deg,#0d0d0d,#E85D2A', overlay_opacity: 0 },
@@ -47,6 +50,7 @@ const hex = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 const safeImage = (v: unknown) => typeof v === 'string' && v.length <= 500 && (!v || /^(\/(?!\/)[^\s]*|https:\/\/[^\s]+)$/.test(v));
 const safeLink = (v: unknown) => safeImage(v) || (typeof v === 'string' && v.length <= 500 && /^(#[A-Za-z][\w-]*|mailto:[^\s]+|tel:[+\d\s-]+)$/.test(v));
 const numeric: Partial<Record<keyof HeroDesign, [number, number]>> = {
+  caption_gap: [0, 48], caption_size: [14, 28],
   top_left_radius: [0, 160], top_right_radius: [0, 160], bottom_left_radius: [0, 160], bottom_right_radius: [0, 160],
   interval_ms: [3000, 30000], transition_ms: [0, 2000], edge_spacing: [0, 200], frame_width: [960, 1920],
   card_inset: [0, 160], border_radius: [0, 80], min_height: [320, 1100], padding_top: [0, 240], padding_bottom: [0, 200], text_width: [260, 1100],
@@ -58,6 +62,7 @@ export function validHeroDesign(value: unknown): value is HeroDesign {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const v = value as HeroDesign;
   const enums: Partial<Record<keyof HeroDesign, readonly unknown[]>> = {
+    headline_mode: ['static', 'service_words'], caption_weight: [300, 400, 500, 600, 700],
     corner_mode: ['layout', 'uniform', 'individual'], secondary_action: ['link', 'guide'],
     layout: ['split', 'full_bleed', 'card'], text_align: ['left', 'center', 'right'], text_position: ['left', 'center', 'right'],
     vertical_align: ['top', 'center', 'bottom'], rotation: ['services', 'backgrounds', 'none'], animation: ['fade', 'slide', 'zoom', 'none'],
@@ -78,15 +83,17 @@ export function upgradeHeroDesign(value: unknown): HeroDesign | null {
   const raw = value as Partial<HeroDesign>;
   if (raw.background !== undefined && (!raw.background || typeof raw.background !== 'object' || Array.isArray(raw.background))) return null;
   const secondaryAction = raw.secondary_action ?? (raw.secondary_label ? 'link' : DEFAULT_HERO_DESIGN.secondary_action);
-  const upgraded = { ...structuredClone(DEFAULT_HERO_DESIGN), ...raw, secondary_action: secondaryAction, background: { ...DEFAULT_HERO_DESIGN.background, ...raw.background } };
+  const upgraded = { ...structuredClone(DEFAULT_HERO_DESIGN), ...raw, headline_mode: raw.headline_mode ?? 'static', caption_gap: raw.caption_gap ?? 20, caption_size: raw.caption_size ?? 16, caption_weight: raw.caption_weight ?? 300, secondary_action: secondaryAction, background: { ...DEFAULT_HERO_DESIGN.background, ...raw.background } };
   return validHeroDesign(upgraded) ? upgraded : null;
 }
 export function normalizeHeroDesign(value: unknown): HeroDesign {
   return upgradeHeroDesign(value) || structuredClone(DEFAULT_HERO_DESIGN);
 }
-export function heroPreset(name: 'current' | 'campaign' | 'full_bleed' | 'centered_card'): HeroDesign {
+export function heroPreset(name: 'current' | 'classic' | 'campaign' | 'full_bleed' | 'centered_card'): HeroDesign {
   const d = structuredClone(DEFAULT_HERO_DESIGN);
   if (name === 'current') return d;
+  if (name === 'classic') return { ...d, headline_mode: 'static', headline: '', text_position: 'left', vertical_align: 'top', heading_size: 72, media_height: 440, caption_gap: 20, caption_size: 16, caption_weight: 300 };
+  d.headline_mode = 'static'; d.headline = 'Built for your next chapter.'; d.show_accent = false;
   d.use_existing_background = false;
   d.rotation = 'backgrounds'; d.animation = 'fade'; d.show_media = false; d.secondary_label = 'Help me choose'; d.button_label = 'Discuss my project'; d.button_href = '/contact/';
   d.description = 'Websites, software, AI and automation built around the way your organisation works.';

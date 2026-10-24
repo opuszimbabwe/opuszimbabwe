@@ -23,11 +23,11 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
   const set = (key: keyof HeroDesign, value: unknown) => patch({ [key]: value });
   const range = (key: keyof HeroDesign, label: string, min: number, max: number, step = 1) => <Range key={key} label={label} value={d[key] as number} min={min} max={max} step={step} onChange={v => set(key, v)} />;
   const color = (key: keyof HeroDesign, label: string) => <Color key={key} label={label} value={d[key] as string} onChange={v => set(key, v)} />;
-  const select = (key: keyof HeroDesign, label: string, choices: [string, string][]) => <Select label={label} value={String(d[key])} choices={choices} onChange={v => set(key, key === 'heading_weight' ? Number(v) : v)} />;
+  const select = (key: keyof HeroDesign, label: string, choices: [string, string][]) => <Select label={label} value={String(d[key])} choices={choices} onChange={v => set(key, (key === 'heading_weight' || key === 'caption_weight') ? Number(v) : v)} />;
   return <div className="space-y-6">
     <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-xl font-bold">Home Hero Design Studio</h2><p className="mt-2 text-sm text-black/60">Choose a starting point, adjust the controls, then save. Poppins stays consistent across every layout.</p></div><button disabled={busy || !validHeroDesign(d)} onClick={onSave} className="rounded-full bg-[#E85D2A] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50">Save hero design</button></div>
     <p className="text-sm text-black/60">1. Choose a preset → 2. Adjust the sections below → 3. Review the layout → 4. Save hero design.</p>
-    <div className="flex flex-wrap gap-2" aria-label="Hero presets">{([['current', 'Current split'], ['campaign', 'Campaign banner'], ['full_bleed', 'Full-bleed centred'], ['centered_card', 'Centred card']] as const).map(([name, label]) => <button type="button" key={name} onClick={() => onChange(heroPreset(name))} className="rounded-full border border-black/20 bg-white px-4 py-2 text-sm font-medium hover:border-[#E85D2A]">{label}</button>)}</div>
+    <div className="flex flex-wrap gap-2" aria-label="Hero presets">{([['current', 'Zimbabwe services — images left'], ['classic', 'Classic split'], ['campaign', 'Campaign banner'], ['full_bleed', 'Full-bleed centred'], ['centered_card', 'Centred card']] as const).map(([name, label]) => <button type="button" key={name} onClick={() => onChange(heroPreset(name))} className="rounded-full border border-black/20 bg-white px-4 py-2 text-sm font-medium hover:border-[#E85D2A]">{label}</button>)}</div>
     <p className="text-sm text-black/60">The campaign preset provides a McAfee-style background banner with fixed text and two actions. Use your own images and wording. Background rotation never changes the service text.</p>
     <details open className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Layout & spacing</summary><div className="mt-5 grid gap-5 md:grid-cols-2">
       {select('layout', 'Hero layout', [['split', 'Current split layout'], ['full_bleed', 'Full-bleed background'], ['card', 'Inset hero card']])}
@@ -46,7 +46,8 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       {(d.corner_mode === 'uniform' || (d.corner_mode === 'layout' && d.layout === 'card')) && range('border_radius', 'Card corner radius (px)', 0, 80)}
       {d.corner_mode === 'individual' && <>{range('top_left_radius', 'Top left hero corner (px)', 0, 160)}{range('top_right_radius', 'Top right hero corner (px)', 0, 160)}{range('bottom_left_radius', 'Bottom left hero corner (px)', 0, 160)}{range('bottom_right_radius', 'Bottom right hero corner (px)', 0, 160)}</>}
     </div></details>
-    <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Copy, typography & buttons</summary><p className="mt-3 text-sm text-black/60">Blank headline, emphasis and description fields use the existing homepage copy and service-cycle text. Fill them to keep your own fixed message.</p><div className="mt-5 grid gap-5 md:grid-cols-2">
+    <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Copy, typography & buttons</summary><p className="mt-3 text-sm text-black/60">Choose a fixed headline or service words that rotate with the service images. In rotating-word mode a blank headline uses Work with Zimbabwe’s Best; a blank description hides the old questions. Edit each service word below in Service cycles.</p><div className="mt-5 grid gap-5 md:grid-cols-2">
+      {select('headline_mode', 'Headline style', [['service_words', 'Work with Zimbabwe’s Best + rotating services'], ['static', 'Fixed headline / classic service questions']])}
       <Text label="Eyebrow" value={d.eyebrow} onChange={v => patch({ eyebrow: v })} />
       <Text label="Headline override" value={d.headline} onChange={v => patch({ headline: v })} multiline />
       <Toggle label="Show headline emphasis" value={d.show_accent} onChange={v => patch({ show_accent: v })} />
@@ -84,6 +85,8 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       <Toggle label="Show foreground image in split/card layouts" value={d.show_media} onChange={v => patch({ show_media: v })} />
       <div><Text label="Foreground image override URL" value={d.media_image} onChange={v => patch({ media_image: v })} /><button type="button" disabled={busy} onClick={() => onUpload('heroimage:foreground')} className="mt-2 rounded-full border px-4 py-2 text-sm disabled:opacity-50">Upload foreground image</button></div>
       {select('media_fit', 'Foreground image fit', [['contain', 'Fit whole image'], ['cover', 'Fill and crop']])}{range('media_height', 'Foreground image height (px)', 200, 700)}
+      {range('caption_gap', 'Image-to-description gap (px)', 0, 48)}{range('caption_size', 'Image description size (px)', 14, 28)}
+      {select('caption_weight', 'Poppins image description weight', [['300', 'Light'], ['400', 'Regular'], ['500', 'Medium'], ['600', 'Semibold'], ['700', 'Bold']])}
     </div></details>
     <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Rotation & animation</summary><div className="mt-5 grid gap-5 md:grid-cols-2">
       {select('rotation', 'Rotation mode', [['none', 'Static hero'], ['services', 'Current service-image and text rotation'], ['backgrounds', 'Background images only; keep text fixed']])}

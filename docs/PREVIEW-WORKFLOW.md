@@ -81,3 +81,13 @@ Local check: `PLAYWRIGHT_MODULE_PATH=/workspace/.tools/browser/node_modules/play
 The owner authorised the security fix separately from pending visual changes. `/admin/` and its static/data variants redirect to the canonical `/sysadmin/`. Production middleware authenticates every sysadmin page/data request before serving it, including deployment hostnames. Production API authentication fails closed without cryptographic Access verification; header simulation is localhost-only. The static document contains no dashboard controls; AdminAccessBoundary verifies the session before rendering and rechecks on tab/history restoration. Existing Access application policies and bindings remain in place.
 
 Checks: bundle/run `scripts/test-admin-access.ts` with esbuild and node --test; run `scripts/test-admin-visibility.cjs` against the local Pages emulator for initial, denied, authenticated and restored sessions.
+
+## Selectable service-word hero and contact fields (preview)
+
+The new default/current preset uses “Work with Zimbabwe’s Best”, Poppins Bold, synchronized service words and service images on the left. All six existing services, images, descriptions and destination links remain editable. Classic split, campaign, full-bleed and card presets remain available; older saved hero designs upgrade to static headline mode so a custom monthly campaign is preserved. Foreground controls now include caption gap, size and Poppins weight. The existing transparent artwork is cropped at render time to remove internal padding; uploaded/custom images retain their normal fit controls.
+
+Word entry/exit uses a 500ms vertical spring transition, clears the previous word after exit and reserves space for the longest phrase. The accessible heading exposes one service phrase; reduced-motion and pause controls stop cycling. The same active index drives the image, description, headline word and destination. Service headline words round-trip through the admin API and content normalization.
+
+Contact fields strip textarea-only props, provide connected labels and reserve separate label/text space for typed, autofilled and prefilled content. Phone fields use tel; service selection has an accessible name. Test with `scripts/test-rotating-hero.cjs` against local Pages; it restores settings.
+
+Preview proxy overlays only the proposed hero design on public GET content. It has no production database bindings or admin-write proxy. Visual changes await approval; security commit 6bc343b was authorised and deployed separately.

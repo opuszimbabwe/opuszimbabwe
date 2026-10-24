@@ -45,7 +45,7 @@ test('both background designs round-trip from admin validation to public render 
 
 import { DEFAULT_HERO_DESIGN, heroPreset, validHeroDesign } from '../lib/hero-design';
 test('hero presets validate and round-trip through the public content model', () => {
-  for (const name of ['current', 'campaign', 'full_bleed', 'centered_card'] as const) {
+  for (const name of ['current', 'classic', 'campaign', 'full_bleed', 'centered_card'] as const) {
     const hero = heroPreset(name);
     assert.ok(validHeroDesign(hero), name);
     const saved = sanitizeSetting('hero_design', hero);
@@ -86,4 +86,16 @@ test('legacy hero settings keep their layout when independent corners and guide 
   assert.equal(updated.secondary_href, '/projects/');
   const campaign = heroPreset('campaign');
   assert.equal(campaign.top_left_radius, 0); assert.equal(campaign.top_right_radius, 0); assert.equal(campaign.bottom_left_radius, 64); assert.equal(campaign.bottom_right_radius, 64);
+});
+
+test('legacy hero layout stays static and new service-word fields survive saves', () => {
+  const legacy = { ...heroPreset('classic') } as any;
+  for (const key of ['headline_mode', 'caption_gap', 'caption_size', 'caption_weight']) delete legacy[key];
+  const saved = JSON.parse(sanitizeSetting('hero_design', legacy)!);
+  assert.equal(saved.headline_mode, 'static'); assert.equal(saved.text_position, 'left');
+  assert.equal(saved.caption_size, 16); assert.equal(saved.caption_gap, 20);
+  const cycles = [{ headline_word: 'Our Custom Website Team', question: 'Classic question?', solution: 'Our service description.', image: '/images/hero-website-design.png', href: '/services/web-design/' }];
+  const result = JSON.parse(sanitizeSetting('hero_cycles', cycles)!);
+  assert.equal(result[0].headline_word, cycles[0].headline_word);
+  assert.equal(normalizeContent(raw({ hero_cycles: result }))?.settings.hero_cycles[0].headline_word, cycles[0].headline_word);
 });

@@ -1067,6 +1067,7 @@ export default function AdminDashboard() {
                     items={settings.hero_cycles}
                     onChange={(next) => patchSettings({ hero_cycles: next })}
                     blank={() => ({
+                      headline_word: 'Digital Solutions Team',
                       question: 'New rotating question?',
                       solution: 'Solution text shown beneath the hero visual.',
                       image: '/images/hero-website-design.png',
@@ -1091,8 +1092,9 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div className="mt-4 grid gap-4 md:grid-cols-2">
+                          <Field label="Rotating service headline" value={cycle.headline_word || ''} onChange={(v) => patchCycle({ headline_word: v })} hint="e.g. Website Developers. Blank uses the service’s default name." />
                           <Field
-                            label="Rotating Question (Left Column)"
+                            label="Classic rotating question"
                             value={cycle.question}
                             onChange={(v) => patchCycle({ question: v })}
                           />
@@ -1103,13 +1105,13 @@ export default function AdminDashboard() {
                             hint="e.g. /services/web-design/"
                           />
                           <Field
-                            label="Solution Text (Right Column below image)"
+                            label="Service description below image"
                             value={cycle.solution}
                             onChange={(v) => patchCycle({ solution: v })}
                             rows={3}
                           />
                           <ImageField
-                            label="Right Column Image (No background shape)"
+                            label="Service image (No background shape)"
                             value={cycle.image}
                             onChange={(v) => patchCycle({ image: v })}
                             onUpload={() => pickFile(`herocycle:${index}`)}

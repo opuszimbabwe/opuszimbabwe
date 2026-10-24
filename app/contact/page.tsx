@@ -128,15 +128,16 @@ export default function Contact() {
             send from there.
           </p>
           <div className="mt-8 space-y-4">
-            <FloatingInput label="Your name or organisation" value={name} onChange={(e) => setName(e.target.value)} />
-            <FloatingInput label="Email address" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <FloatingInput label="Your name or organisation" name="name" autoComplete="organization" value={name} onChange={(e) => setName(e.target.value)} />
+            <FloatingInput label="Email address" name="email" autoComplete="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <FloatingInput
-              label="WhatsApp or phone number"
+              label="WhatsApp or phone number" name="phone" type="tel" autoComplete="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
             <div className="relative">
               <select
+                aria-label="Service interested in" name="service"
                 value={service}
                 onChange={(e) => setService(e.target.value)}
                 className="w-full appearance-none rounded-[14px] border-2 border-[#e5e7eb] bg-[#f5f5f5] px-4 py-3.5 text-[.95rem] text-dark outline-none focus:border-primary focus:bg-white"
@@ -159,7 +160,7 @@ export default function Contact() {
               />
             )}
             <FloatingInput
-              label="Tell us what you need"
+              label="Tell us what you need" name="message"
               textarea
               rows={5}
               value={message}

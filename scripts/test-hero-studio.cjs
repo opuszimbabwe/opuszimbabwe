@@ -86,7 +86,7 @@ const headers = { 'Cf-Access-Authenticated-User-Email': 'info.opuszim@gmail.com'
   await reduced.waitForTimeout(3200); assert.equal(await reduced.locator('.home-hero-background[data-active="true"]').getAttribute('src'), initial);
   assert.equal(await reduced.locator('.home-hero-background').first().evaluate(e => getComputedStyle(e).transitionDuration), '0s');
   console.log('PASS: phone/desktop sizing and reduced-motion preference');
-  const split = heroPreset('current'); split.background.background_image = '/images/hero-bg.jpg'; split.rotation = 'none'; split.show_accent = false; split.headline = 'Split with a background.';
+  const split = heroPreset('classic'); split.background.background_image = '/images/hero-bg.jpg'; split.rotation = 'none'; split.show_accent = false; split.headline = 'Split with a background.';
   await put(split); await page.goto(base); await page.locator('.site-content[data-loading="false"]').waitFor();
   assert.equal(await page.locator('.home-hero-shell').getAttribute('data-media'), 'true');
   assert.equal(await page.locator('.home-hero-background').count(), 1);

@@ -23,6 +23,7 @@ export type ServiceRecord = {
 };
 
 export type HeroCycle = {
+  headline_word?: string;
   question: string;
   solution: string;
   image: string;
@@ -194,6 +195,7 @@ export type SiteContent = {
 // Default 6 rotating hero cycles from the Homepage Redesign Brief.
 export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
   {
+    headline_word: 'Website Developers',
     question: 'Still losing customers who search for you online and find nothing?',
     solution:
       'We build fast, credible websites for Zimbabwean businesses, NGOs, schools and churches — ready from day one.',
@@ -201,6 +203,7 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/web-design/',
   },
   {
+    headline_word: 'Software Developers',
     question: 'Still running your business on spreadsheets and WhatsApp groups?',
     solution:
       'We build custom systems — school management, inventory, POS, CRM, booking and HR — around how you actually work.',
@@ -208,6 +211,7 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/software-development/',
   },
   {
+    headline_word: 'AI & Automation Team',
     question: 'Still paying staff to do work a system could handle automatically?',
     solution:
       'We build WhatsApp chatbots, customer support AI and automated workflows that run quietly in the background.',
@@ -215,6 +219,7 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/ai-automation/',
   },
   {
+    headline_word: 'Graphic Designers',
     question: 'Does your brand look as serious as the work you actually do?',
     solution:
       'We design logos, flyers, brochures, business cards and social graphics that make your business look the part.',
@@ -222,6 +227,7 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/graphic-design/',
   },
   {
+    headline_word: 'Domain & Hosting Team',
     question: 'Still sending business emails from a Gmail address?',
     solution:
       'We register your .co.zw domain, set up reliable hosting and give your team professional email addresses.',
@@ -229,6 +235,7 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/domains-hosting/',
   },
   {
+    headline_word: 'Integration Specialists',
     question: 'Are your payment system, website and WhatsApp still not talking to each other?',
     solution:
       'We connect EcoCash, Paynow, your CRM, WhatsApp and Google into one joined-up system with no manual copying.',
@@ -236,6 +243,10 @@ export const DEFAULT_HERO_CYCLES: HeroCycle[] = [
     href: '/services/api-integrations/',
   },
 ];
+
+export function heroServiceWord(cycle: HeroCycle): string {
+  return cycle.headline_word?.trim() || DEFAULT_HERO_CYCLES.find(item => item.href === cycle.href)?.headline_word || 'Digital Solutions Team';
+}
 
 export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
   { id: 'ecocash', name: 'EcoCash', logo: '/images/ecocash-logo.png', visible: true },
@@ -1346,6 +1357,7 @@ function normalizeFaq(raw: unknown, fallback: FaqItem[]): FaqItem[] {
 function normalizeHeroCycles(raw: unknown, fallback: HeroCycle[]): HeroCycle[] {
   const items = objectArray(raw, 16)
     .map((x) => ({
+      headline_word: str(x.headline_word, '').slice(0, 100).trim(),
       question: str(x.question, '').slice(0, 500).trim(),
       solution: str(x.solution, '').slice(0, 1000).trim(),
       image: str(x.image, '').slice(0, 500).trim(),

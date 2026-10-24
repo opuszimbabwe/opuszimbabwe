@@ -15,7 +15,7 @@ import HeroDesignEditor from '${repo}/components/admin/HeroDesignEditor';
 import { HomeHeroView } from '${repo}/components/HomeHero';
 import { DEFAULT_HERO_DESIGN, upgradeHeroDesign } from '${repo}/lib/hero-design';
 import { DEFAULT_HOME_SECTIONS, DEFAULT_HERO_CYCLES } from '${repo}/lib/content';
-const storageKey = 'opus-hero-playground-draft';
+const storageKey = 'opus-hero-playground-service-words-draft';
 function App() {
  const [draft, setDraft] = useState(() => { try { const saved = JSON.parse(localStorage.getItem(storageKey) || 'null'); return upgradeHeroDesign(saved) || structuredClone(DEFAULT_HERO_DESIGN); } catch { return structuredClone(DEFAULT_HERO_DESIGN); } });
  const [message, setMessage] = useState('');
