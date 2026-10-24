@@ -75,3 +75,9 @@ Additional check: `PLAYWRIGHT_MODULE_PATH=/workspace/.tools/browser/node_modules
 Hero/settings saves additionally return a committed public settings snapshot in the save response. The client applies it immediately instead of making a second content GET. A private settings revision counter advances in the same D1 transaction; delayed older save responses cannot replace newer settings already loaded in that browser. Existing service/project/pricing state is retained while applying a settings-only snapshot. If a snapshot cannot be read after a successful write, the client falls back to a required fresh read and never reveals an old snapshot on failure.
 
 Local check: `PLAYWRIGHT_MODULE_PATH=/workspace/.tools/browser/node_modules/playwright-core node scripts/test-hero-save-consistency.cjs` verifies delayed-save ordering and a successful save when a subsequent content GET is unavailable. It restores original settings and must run sequentially with other mutation tests.
+
+## Admin access hardening
+
+The owner authorised the security fix separately from pending visual changes. `/admin/` and its static/data variants redirect to the canonical `/sysadmin/`. Production middleware authenticates every sysadmin page/data request before serving it, including deployment hostnames. Production API authentication fails closed without cryptographic Access verification; header simulation is localhost-only. The static document contains no dashboard controls; AdminAccessBoundary verifies the session before rendering and rechecks on tab/history restoration. Existing Access application policies and bindings remain in place.
+
+Checks: bundle/run `scripts/test-admin-access.ts` with esbuild and node --test; run `scripts/test-admin-visibility.cjs` against the local Pages emulator for initial, denied, authenticated and restored sessions.

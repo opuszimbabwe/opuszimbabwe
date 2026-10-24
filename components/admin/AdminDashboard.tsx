@@ -61,6 +61,7 @@ import {
 } from '@/lib/content';
 import { ICON_NAMES, resolveIcon } from '@/lib/icons';
 import { useSiteContent, announceSiteContentChange } from '@/lib/use-site-content';
+import { useAdminSession } from '@/components/admin/AdminAccessBoundary';
 import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
 import SectionBackdrop from '@/components/SectionBackdrop';
 import type { SectionDesign } from '@/lib/section-design';
@@ -93,6 +94,10 @@ const DEFAULT_ADMIN_HEADERS: Record<string, string> = {
   'Cf-Access-Authenticated-User-Email': 'info.opuszim@gmail.com',
   'Cf-Access-Jwt-Assertion': 'opus-admin-dashboard-session',
 };
+
+function adminHeaders(): Record<string, string> {
+  return typeof window !== 'undefined' && ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname) ? DEFAULT_ADMIN_HEADERS : {};
+}
 
 const GRADIENT_PRESETS = [
   '160deg,#1a1a1a,#454545',
@@ -135,7 +140,7 @@ async function api(path: string, init?: RequestInit): Promise<any> {
     ...init,
     headers: {
       'content-type': 'application/json',
-      ...DEFAULT_ADMIN_HEADERS,
+      ...adminHeaders(),
       ...(init?.headers || {}),
     },
     cache: 'no-store',
@@ -158,7 +163,7 @@ async function uploadFile(file: File): Promise<{ url: string }> {
   form.append('file', file);
   const res = await fetch('/api/admin/upload', {
     method: 'POST',
-    headers: { ...DEFAULT_ADMIN_HEADERS },
+    headers: { ...adminHeaders() },
     body: form,
     cache: 'no-store',
   });
@@ -562,8 +567,8 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState<Tab>('home');
   const [activeServiceId, setActiveServiceId] = useState<string>('web-design');
   const [activePageId, setActivePageId] = useState<string>('web-design');
-  const [session, setSession] = useState<Session>(null);
-  const [checkedSession, setCheckedSession] = useState(false);
+  const session = useAdminSession();
+  const checkedSession = true;
   const [services, setServices] = useState<ServiceRecord[] | null>(null);
   const [extras, setExtras] = useState<Record<string, ServiceExtras> | null>(null);
   const [pricing, setPricing] = useState<PricingRecord[] | null>(null);
@@ -575,12 +580,6 @@ export default function AdminDashboard() {
   const uploadTarget = useRef<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    api('/api/admin/session')
-      .then((data) => setSession({ email: data.email }))
-      .catch(() => setSession(null))
-      .finally(() => setCheckedSession(true));
-  }, []);
 
   useEffect(() => {
     if (services !== null) return;

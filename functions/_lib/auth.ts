@@ -4,13 +4,9 @@
 // through Cloudflare Access (edge authentication for the Opus Zimbabwe
 // account, allow-listed to info.opuszim@gmail.com).
 //
-// Two modes:
-//  - Header mode (default): requires both `Cf-Access-Authenticated-User-Email`
-//    and `Cf-Access-Jwt-Assertion` headers with an allow-listed email.
-//  - Strict mode: when CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUD are set, the
-//    Access JWT is cryptographically verified (signature via the team JWKS,
-//    audience, expiry, email claim). Use this in production so requests that
-//    bypass Access (e.g. via the *.pages.dev URL) cannot spoof the headers.
+// Production requires cryptographic verification of the Access JWT using
+// CF_ACCESS_TEAM_DOMAIN and CF_ACCESS_AUD. Missing configuration fails closed.
+// Header-only identity simulation is restricted to the local emulator.
 
 import { Env, PagesContext } from './types';
 
@@ -148,6 +144,12 @@ export async function requireAdmin(context: PagesContext): Promise<string | Resp
     }
     if (emailHeader && emailHeader !== email) return unauthorized('Access header and JWT do not match.');
     return email;
+  }
+
+  // Header-only identity simulation is for the local emulator, never production.
+  const hostname = new URL(request.url).hostname;
+  if (!['localhost', '127.0.0.1', '[::1]'].includes(hostname)) {
+    return unauthorized('Verified Cloudflare Access authentication is required.');
   }
 
   if (!emailHeader) {

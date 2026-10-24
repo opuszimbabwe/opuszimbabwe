@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import AdminAccessBoundary from '@/components/admin/AdminAccessBoundary';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 
 export const metadata: Metadata = {
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function SystemAdminPage() {
-  return <AdminDashboard />;
+  return <AdminAccessBoundary><AdminDashboard /></AdminAccessBoundary>;
 }
