@@ -172,7 +172,7 @@ check(
 const headlineFor = (id) => extras.find((e) => e.service_id === id)?.hero_headline;
 check(
   'web design hero headline matches brief',
-  headlineFor('web-design') === 'A website that represents your business the way it deserves to be represented.'
+  headlineFor('web-design') === 'Website design. Built for business.'
 );
 check(
   'software hero headline matches brief',
@@ -319,11 +319,11 @@ check(
   )
 );
 check(
-  'home_sections has "Partners who trust us" and white/warm backgrounds',
+  'home_sections has "Partners who trust us" and white backgrounds',
   homeSections &&
     homeSections.partners_heading === 'Partners who trust us' &&
     homeSections.services_bg === '#ffffff' &&
-    homeSections.partners_bg === '#f8f8f6'
+    homeSections.partners_bg === '#ffffff'
 );
 
 // 7. Write round-trip (update + restore) to prove the database is writable
