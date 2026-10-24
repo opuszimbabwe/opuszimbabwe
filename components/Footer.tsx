@@ -1,8 +1,11 @@
+'use client'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSiteContent } from '@/lib/use-site-content'
+import { DEFAULT_SETTINGS } from '@/lib/content'
 import FooterSocials from '@/components/FooterSocials'
 
-const services=[
+const fallbackServices=[
   ['Website Design & Development','/services/web-design'],
   ['Software & Systems','/services/software-development'],
   ['AI & Automation','/services/ai-automation'],
@@ -12,10 +15,13 @@ const services=[
 ]
 
 export default function Footer(){
+  const { content } = useSiteContent()
+  const services = content ? content.services.filter(service => service.visible).map(service => [service.name, `/services/${service.slug}/`]) : fallbackServices
+  const logo = content?.settings.navbar_logo || DEFAULT_SETTINGS.navbar_logo
   return (
     <footer id="footer" className="bg-[#f5f5f5] text-dark">
       <div className="h-[3px] w-full bg-primary" style={{background: 'linear-gradient(90deg, #E85D2A 0%, #F97316 50%, #F4A226 100%)'}}/>
-      <div className="max-w-7xl mx-auto px-6 py-14">
+      <div className="site-frame py-14">
         <FooterSocials/>
 
         <div className="grid md:grid-cols-3 gap-10">
@@ -41,7 +47,7 @@ export default function Footer(){
 
         {/* Logo centered */}
         <div className="mt-14 flex justify-center">
-          <Image src="/images/logo-full.png" alt="Opus Zimbabwe" width={520} height={347} className="w-[min(420px,80vw)] h-auto object-contain opacity-90" />
+          <Image src={logo} alt="Opus Zimbabwe" width={520} height={347} className="w-[min(420px,80vw)] h-auto object-contain opacity-90" />
         </div>
 
         {/* REQUIRED: centre aligned as per request */}

@@ -7,12 +7,12 @@ import { useSiteContent } from '@/lib/use-site-content';
 
 export default function BrandHeadSync() {
   const pathname = usePathname();
-  const { content } = useSiteContent();
+  const { content, status } = useSiteContent();
   const favicon = content?.settings?.favicon_icon || DEFAULT_SETTINGS.favicon_icon;
   const browserTitle = content?.settings?.browser_title || DEFAULT_SETTINGS.browser_title;
 
   useEffect(() => {
-    if (typeof document === 'undefined') return;
+    if (typeof document === 'undefined' || status === 'loading') return;
 
     // Public content pages take the admin-set browser title. Utility pages
     // (admin, sysadmin, sitemap) keep their own metadata titles.
@@ -37,7 +37,7 @@ export default function BrandHeadSync() {
         }
       });
     }
-  }, [favicon, browserTitle, pathname]);
+  }, [favicon, browserTitle, pathname, status]);
 
   return null;
 }

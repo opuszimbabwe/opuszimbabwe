@@ -40,7 +40,7 @@ export function ProjectPreviewPlaceholder({ url, name }: { url: string; name: st
 export default function HomeProjects() {
   const { content } = useSiteContent();
   // Admin can add as many active live work projects as needed — all visible active projects render.
-  const projects = (content?.projects?.length ? content.projects : staticProjects).filter(
+  const projects = (content ? content.projects : staticProjects).filter(
     (p) =>
       p.visible &&
       p.status === 'active' &&
@@ -69,7 +69,7 @@ export default function HomeProjects() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [projects.length]);
 
   if (projects.length === 0) return null;
 

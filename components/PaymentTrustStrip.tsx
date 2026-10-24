@@ -6,7 +6,7 @@ import { useSiteContent } from '@/lib/use-site-content';
 export default function PaymentTrustStrip() {
   const { content } = useSiteContent();
   const methods: PaymentMethod[] = (
-    content?.settings?.payment_methods?.length
+    content?.settings?.payment_methods
       ? content.settings.payment_methods
       : DEFAULT_PAYMENT_METHODS
   ).filter((m) => m.visible);
@@ -41,7 +41,7 @@ export default function PaymentTrustStrip() {
                   alt={method.name}
                   className={`${
                     isPaynow ? 'h-12 sm:h-14 scale-150' : 'h-8 sm:h-9'
-                  } w-auto object-contain grayscale opacity-65 transition-all duration-200 ease-out group-hover:grayscale-0 group-hover:opacity-100`}
+                  } w-auto object-contain `}
                 />
               </div>
             );

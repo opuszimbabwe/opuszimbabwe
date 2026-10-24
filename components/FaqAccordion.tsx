@@ -21,8 +21,8 @@ export default function FaqAccordion({
       : list === 'page'
       ? content?.settings?.faq_page
       : null;
-  const rawList: FaqItem[] = managed && managed.length ? managed : items || [];
-  const resolved: FaqItem[] = list === 'home' ? rawList.slice(0, 3) : rawList;
+  const rawList: FaqItem[] = managed ?? items ?? [];
+  const resolved: FaqItem[] = rawList;
 
   if (resolved.length === 0) return null;
 

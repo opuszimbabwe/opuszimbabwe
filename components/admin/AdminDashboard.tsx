@@ -60,9 +60,13 @@ import {
   staticProjects,
 } from '@/lib/content';
 import { ICON_NAMES, resolveIcon } from '@/lib/icons';
-import { useSiteContent } from '@/lib/use-site-content';
+import { useSiteContent, announceSiteContentChange } from '@/lib/use-site-content';
+import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
+import SectionBackdrop from '@/components/SectionBackdrop';
+import type { SectionDesign } from '@/lib/section-design';
 
 type Tab =
+  | 'hero'
   | 'home'
   | 'payments'
   | 'services'
@@ -142,8 +146,10 @@ async function api(path: string, init?: RequestInit): Promise<any> {
   }
   const data = parseJson(await res.text());
   if (!res.ok) {
-    throw new Error((data && (data.error || data.hint)) || `Request failed (HTTP ${res.status})`);
+    const message = data?.error === 'invalid_value_for_payment_methods' ? 'Payment methods were not saved. Every row needs a name and a valid /images/…, /api/media/… or HTTPS logo URL. No entries were removed.' : (data && (data.error || data.hint)) || `Request failed (HTTP ${res.status})`;
+    throw new Error(message);
   }
+  if (init?.method && init.method !== 'GET') await announceSiteContentChange();
   return data;
 }
 
@@ -316,6 +322,7 @@ function ListEditor<T>({
   render,
   addLabel,
   emptyLabel,
+  disabled = false,
 }: {
   items: T[];
   onChange: (next: T[]) => void;
@@ -323,9 +330,10 @@ function ListEditor<T>({
   render: (item: T, patch: (patch: Partial<T>) => void, remove: () => void, index: number) => React.ReactNode;
   addLabel: string;
   emptyLabel?: string;
+  disabled?: boolean;
 }) {
   return (
-    <div className="space-y-3">
+    <fieldset disabled={disabled} className="space-y-3 disabled:opacity-60">
       {items.map((item, i) =>
         render(
           item,
@@ -342,7 +350,7 @@ function ListEditor<T>({
       >
         <Plus size={15} /> {addLabel}
       </button>
-    </div>
+    </fieldset>
   );
 }
 
@@ -465,6 +473,18 @@ function ImageField({
   );
 }
 
+function SectionDesignEditor({ value, onChange, onUpload }: { value: SectionDesign; onChange: (value: SectionDesign) => void; onUpload: () => void }) {
+  const patch = (next: Partial<SectionDesign>) => onChange({ ...value, ...next });
+  return <div className="space-y-4">
+    <ImageField label="Background image" value={value.background_image} onChange={v => patch({ background_image: v })} onUpload={onUpload} hint="Optional. Clear the URL to use the background colour alone." />
+    <ColorSwatchField label="Background colour" value={value.background_color} onChange={v => patch({ background_color: v })} presets={SECTION_BG_PRESETS} />
+    <label className="block text-sm font-semibold">Overlay type<select className="ml-3 rounded-lg border p-2" value={value.overlay_kind} onChange={e => patch({ overlay_kind: e.target.value as SectionDesign['overlay_kind'] })}><option value="solid">Plain colour</option><option value="gradient">Gradient</option></select></label>
+    {value.overlay_kind === 'solid' ? <ColorSwatchField label="Overlay colour" value={value.overlay_color} onChange={v => patch({ overlay_color: v })} presets={SECTION_BG_PRESETS} /> : <GradientBuilder value={value.overlay_gradient} onChange={v => patch({ overlay_gradient: v })} />}
+    <label className="block text-sm font-semibold">Overlay opacity: {Math.round(value.overlay_opacity * 100)}%<input className="mt-2 block w-full" type="range" min="0" max="1" step="0.05" value={value.overlay_opacity} onChange={e => patch({ overlay_opacity: Number(e.target.value) })} /></label>
+    <SectionBackdrop design={value} className="rounded-xl p-8 text-center text-white"><p className="mx-auto font-semibold">Live background preview</p><p className="mx-auto text-sm">Check that your text remains readable.</p></SectionBackdrop>
+  </div>;
+}
+
 function IconPicker({
   label,
   value,
@@ -572,16 +592,7 @@ export default function AdminDashboard() {
       setPartners(structuredClone(content.partners));
       setSettings(structuredClone(content.settings));
     } else if (status === 'failed') {
-      setServices(structuredClone(staticContent.services));
-      setExtras(structuredClone(staticExtras));
-      setPricing(structuredClone(staticContent.pricing));
-      setProjects(structuredClone(staticProjects));
-      setPartners(structuredClone(staticPartners));
-      setSettings(structuredClone(DEFAULT_SETTINGS));
-      setMessage({
-        kind: 'info',
-        text: 'Content API unreachable — editing fallback content. Saving requires the Cloudflare Pages server.',
-      });
+      setMessage({ kind: 'err', text: 'Current content could not be loaded. Use Reload from D1 to retry. Editing is unavailable until current content loads; saved site content has not changed.' });
     }
   }, [status, content, services]);
 
@@ -675,7 +686,7 @@ export default function AdminDashboard() {
   };
 
   const savePartners = async () => {
-    if (!partners) return;
+    if (!partners) return false;
     setBusy(true);
     setMessage(null);
     try {
@@ -684,8 +695,10 @@ export default function AdminDashboard() {
         body: JSON.stringify({ partners }),
       });
       setMessage({ kind: 'ok', text: `Saved ${partners.length} partner${partners.length === 1 ? '' : 's'}.` });
+      return true;
     } catch (e: any) {
       setMessage({ kind: 'err', text: e.message });
+      return false;
     } finally {
       setBusy(false);
     }
@@ -716,12 +729,26 @@ export default function AdminDashboard() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    const target = uploadTarget.current;
     setBusy(true);
     setMessage(null);
     try {
       const { url } = await uploadFile(file);
-      const target = uploadTarget.current;
-      if (target === 'hero') {
+      if (target === 'heroimage:background' || target === 'heroimage:foreground' || target?.startsWith('heroslide:')) {
+        setSettings(prev => {
+          if (!prev) return prev;
+          const hero = prev.hero_design;
+          const patch = target === 'heroimage:background' ? { background: { ...hero.background, background_image: url } }
+            : target === 'heroimage:foreground' ? { media_image: url }
+            : { backgrounds: hero.backgrounds.map(slide => slide.id === target.slice('heroslide:'.length) ? { ...slide, image: url } : slide) };
+          return { ...prev, hero_design: { ...hero, ...patch } };
+        });
+        setMessage({ kind: 'ok', text: 'Hero image uploaded. Save hero design to apply.' });
+      } else if (target === 'designimage:cta_design' || target === 'designimage:contact_hero_design') {
+        const key = target.slice('designimage:'.length) as 'cta_design' | 'contact_hero_design';
+        setSettings(prev => prev ? { ...prev, [key]: { ...prev[key], background_image: url } } : prev);
+        setMessage({ kind: 'ok', text: 'Background uploaded. Save the section design to apply.' });
+      } else if (target === 'hero') {
         patchSettings({ hero_background: url });
         setMessage({ kind: 'ok', text: `Uploaded to R2: ${url} — press Save to apply.` });
       } else if (target === 'navbar_logo') {
@@ -790,13 +817,13 @@ export default function AdminDashboard() {
         );
         setMessage({ kind: 'ok', text: `Uploaded Why Us icon to R2: ${url} — press Save Why Choose Us to apply.` });
       } else if (target && target.startsWith('paymentlogo:')) {
-        const index = Number(target.slice('paymentlogo:'.length));
+        const id = target.slice('paymentlogo:'.length);
         setSettings((prev) =>
-          prev && Number.isFinite(index)
+          prev
             ? {
                 ...prev,
-                payment_methods: (prev.payment_methods || DEFAULT_PAYMENT_METHODS).map((m, i) =>
-                  i === index ? { ...m, logo: url } : m
+                payment_methods: (prev.payment_methods || DEFAULT_PAYMENT_METHODS).map((m) =>
+                  m.id === id ? { ...m, logo: url } : m
                 ),
               }
             : prev
@@ -840,10 +867,10 @@ export default function AdminDashboard() {
         );
         setMessage({ kind: 'ok', text: `Uploaded hero cycle image to R2: ${url} — press Save hero cycles to apply.` });
       } else if (target && target.startsWith('projectscreenshot:')) {
-        const index = Number(target.slice('projectscreenshot:'.length));
+        const id = target.slice('projectscreenshot:'.length);
         setProjects((prev) =>
-          prev && Number.isFinite(index)
-            ? prev.map((p, i) => (i === index ? { ...p, screenshot: url } : p))
+          prev
+            ? prev.map((p) => (p.id === id ? { ...p, screenshot: url } : p))
             : prev
         );
         setMessage({
@@ -851,9 +878,9 @@ export default function AdminDashboard() {
           text: `Uploaded project screenshot to R2: ${url} — press Save live work to apply.`,
         });
       } else if (target && target.startsWith('partnerlogo:')) {
-        const index = Number(target.slice('partnerlogo:'.length));
+        const id = target.slice('partnerlogo:'.length);
         setPartners((prev) =>
-          prev && Number.isFinite(index) ? prev.map((p, i) => (i === index ? { ...p, logo: url } : p)) : prev
+          prev ? prev.map((p) => (p.id === id ? { ...p, logo: url } : p)) : prev
         );
         setMessage({ kind: 'ok', text: `Uploaded partner logo to R2: ${url} — press Save partners to apply.` });
       }
@@ -876,6 +903,7 @@ export default function AdminDashboard() {
       setProjects(structuredClone(normalized.projects));
       setPartners(structuredClone(normalized.partners));
       setSettings(structuredClone(normalized.settings));
+      announceSiteContentChange();
       setMessage({ kind: 'ok', text: 'Reloaded latest site content from D1.' });
     } catch (e: any) {
       setMessage({ kind: 'err', text: e.message });
@@ -889,9 +917,10 @@ export default function AdminDashboard() {
     {
       group: 'Homepage & Design',
       items: [
-        { id: 'home', label: 'Hero & Sections', badge: settings?.hero_cycles?.length || 6, icon: Sparkles },
-        { id: 'payments', label: 'Local Payments', badge: settings?.payment_methods?.length || 5, icon: CreditCard },
-        { id: 'partners', label: 'Trusted Partners', badge: partners?.length || 4, icon: Handshake },
+        { id: 'hero', label: 'Home Hero Design', icon: Sparkles },
+        { id: 'home', label: 'Homepage Sections', badge: settings?.hero_cycles?.length || 6, icon: Sparkles },
+        { id: 'payments', label: 'Local Payments', badge: settings?.payment_methods?.length ?? 5, icon: CreditCard },
+        { id: 'partners', label: 'Trusted Partners', badge: partners?.length ?? 4, icon: Handshake },
         { id: 'process', label: 'How It Works & Why Us', icon: Layers },
       ],
     },
@@ -970,7 +999,7 @@ export default function AdminDashboard() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr] items-start">
           {/* Organised Sidebar Navigation */}
-          <aside className="rounded-[24px] border border-[#e8eaed] bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,0.03)] lg:sticky lg:top-24">
+          <aside className="rounded-[24px] border border-[#e8eaed] bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,0.03)] lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto">
             <div className="space-y-5">
               {navGroups.map((group) => (
                 <div key={group.group}>
@@ -986,6 +1015,7 @@ export default function AdminDashboard() {
                           key={item.id}
                           type="button"
                           onClick={() => setTab(item.id)}
+                        aria-current={active ? 'page' : undefined}
                           className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-[.85rem] font-semibold transition-all ${
                             active
                               ? 'bg-[#0d0d0d] text-white shadow-sm'
@@ -1017,36 +1047,100 @@ export default function AdminDashboard() {
           {/* Main Editor Area */}
           <div className="space-y-6 min-w-0">
             {/* TAB 1: HERO & HOMEPAGE SECTIONS */}
+            {tab === 'hero' && settings && <>
+              <HeroDesignEditor value={settings.hero_design} onChange={value => patchSettings({ hero_design: value })} onUpload={pickFile} onSave={() => saveSettings(['hero_design'], 'Home hero design saved.')} busy={busy} sections={homeSections} cycles={settings.hero_cycles} />
+              <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Original service carousel content</summary><p className="my-4 text-sm text-black/60">Used only in the Services rotation mode. Background-only rotation is managed in the hero editor above.</p>
+                <Card
+                  title="Hero Rotating Cycles"
+                  hint="Each cycle rotates in sync: Left question + Learn More URL, and Right transparent image (sits directly on the body with no container shape) + solution text."
+                  action={
+                    <button
+                      disabled={busy}
+                      onClick={() => saveSettings(['hero_cycles'], 'Hero rotating cycles saved.')}
+                      className="rounded-full bg-[#E85D2A] px-5 py-2 text-[.82rem] font-semibold text-white hover:brightness-110 disabled:opacity-50"
+                    >
+                      Save hero cycles
+                    </button>
+                  }
+                >
+                  <ListEditor<HeroCycle>
+                  disabled={busy}
+                    items={settings.hero_cycles}
+                    onChange={(next) => patchSettings({ hero_cycles: next })}
+                    blank={() => ({
+                      question: 'New rotating question?',
+                      solution: 'Solution text shown beneath the hero visual.',
+                      image: '/images/hero-website-design.png',
+                      href: '/services/web-design/',
+                    })}
+                    addLabel="Add hero cycle"
+                    emptyLabel="No hero cycles yet."
+                    render={(cycle, patchCycle, removeCycle, index) => (
+                      <div key={index} className="rounded-2xl border border-[#e8eaed] bg-[#fafbfc] p-5">
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center rounded-full bg-[#0d0d0d] px-3 py-1 text-[.72rem] font-bold uppercase tracking-wider text-white">
+                            Cycle {index + 1}
+                          </span>
+                          {settings.hero_cycles.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={removeCycle}
+                              className="inline-flex items-center gap-1 text-[.75rem] font-semibold text-red-600 hover:underline"
+                            >
+                              <Trash2 size={13} /> Remove cycle
+                            </button>
+                          )}
+                        </div>
+                        <div className="mt-4 grid gap-4 md:grid-cols-2">
+                          <Field
+                            label="Rotating Question (Left Column)"
+                            value={cycle.question}
+                            onChange={(v) => patchCycle({ question: v })}
+                          />
+                          <Field
+                            label="Learn More Destination URL"
+                            value={cycle.href}
+                            onChange={(v) => patchCycle({ href: v })}
+                            hint="e.g. /services/web-design/"
+                          />
+                          <Field
+                            label="Solution Text (Right Column below image)"
+                            value={cycle.solution}
+                            onChange={(v) => patchCycle({ solution: v })}
+                            rows={3}
+                          />
+                          <ImageField
+                            label="Right Column Image (No background shape)"
+                            value={cycle.image}
+                            onChange={(v) => patchCycle({ image: v })}
+                            onUpload={() => pickFile(`herocycle:${index}`)}
+                            hint="Transparent PNG/WebP/SVG sits directly on the page body."
+                            previewBg={homeSections.hero_bg || '#f8f8f6'}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  />
+                </Card>
+              </details></>}
+
             {tab === 'home' && settings && (
               <>
                 <Card
-                  title="Static Hero Headline & Section Colours"
-                  hint="Control the overarching hero headline, red emphasis phrase, and each homepage section's heading and background colour (alternate between #ffffff White and #f8f8f6 Warm Off-White)."
+                  title="Homepage Sections & Final CTA"
+                  hint="Edit section headings, backgrounds and the final call to action. Hero layout, copy and carousel controls are together in Home Hero Design."
                   action={
                     <button
                       disabled={busy}
                       onClick={() =>
-                        saveSettings(['home_sections'], 'Homepage headlines and section backgrounds saved.')
+                        saveSettings(['home_sections', 'cta_design'], 'Homepage sections and CTA design saved.')
                       }
                       className="rounded-full bg-[#E85D2A] px-5 py-2 text-[.82rem] font-semibold text-white hover:brightness-110 disabled:opacity-50"
                     >
-                      Save headlines &amp; colours
+                      Save page sections
                     </button>
                   }
                 >
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Field
-                      label="Static Hero Headline (Near-Black)"
-                      value={homeSections.hero_headline_main}
-                      onChange={(v) => patchHomeSections({ hero_headline_main: v })}
-                    />
-                    <Field
-                      label="Static Hero Headline (Red Emphasis Phrase)"
-                      value={homeSections.hero_headline_accent}
-                      onChange={(v) => patchHomeSections({ hero_headline_accent: v })}
-                    />
-                  </div>
-
                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-[#ececec] bg-[#fbfbfc] p-4 space-y-3">
                       <p className="text-[.75rem] font-bold uppercase tracking-wider text-[#0d0d0d]">
@@ -1188,81 +1282,12 @@ export default function AdminDashboard() {
                         onChange={(v) => patchHomeSections({ cta_bg: v })}
                         presets={SECTION_BG_PRESETS}
                       />
+                      <SectionDesignEditor value={settings.cta_design} onChange={v => patchSettings({ cta_design: v })} onUpload={() => pickFile('designimage:cta_design')} />
                     </div>
                   </div>
                 </Card>
 
-                <Card
-                  title="Hero Rotating Cycles"
-                  hint="Each cycle rotates in sync: Left question + Learn More URL, and Right transparent image (sits directly on the body with no container shape) + solution text."
-                  action={
-                    <button
-                      disabled={busy}
-                      onClick={() => saveSettings(['hero_cycles'], 'Hero rotating cycles saved.')}
-                      className="rounded-full bg-[#E85D2A] px-5 py-2 text-[.82rem] font-semibold text-white hover:brightness-110 disabled:opacity-50"
-                    >
-                      Save hero cycles
-                    </button>
-                  }
-                >
-                  <ListEditor<HeroCycle>
-                    items={settings.hero_cycles}
-                    onChange={(next) => patchSettings({ hero_cycles: next })}
-                    blank={() => ({
-                      question: 'New rotating question?',
-                      solution: 'Solution text shown beneath the hero visual.',
-                      image: '/images/hero-website-design.png',
-                      href: '/services/web-design/',
-                    })}
-                    addLabel="Add hero cycle"
-                    emptyLabel="No hero cycles yet."
-                    render={(cycle, patchCycle, removeCycle, index) => (
-                      <div key={index} className="rounded-2xl border border-[#e8eaed] bg-[#fafbfc] p-5">
-                        <div className="flex items-center justify-between">
-                          <span className="inline-flex items-center rounded-full bg-[#0d0d0d] px-3 py-1 text-[.72rem] font-bold uppercase tracking-wider text-white">
-                            Cycle {index + 1}
-                          </span>
-                          {settings.hero_cycles.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={removeCycle}
-                              className="inline-flex items-center gap-1 text-[.75rem] font-semibold text-red-600 hover:underline"
-                            >
-                              <Trash2 size={13} /> Remove cycle
-                            </button>
-                          )}
-                        </div>
-                        <div className="mt-4 grid gap-4 md:grid-cols-2">
-                          <Field
-                            label="Rotating Question (Left Column)"
-                            value={cycle.question}
-                            onChange={(v) => patchCycle({ question: v })}
-                          />
-                          <Field
-                            label="Learn More Destination URL"
-                            value={cycle.href}
-                            onChange={(v) => patchCycle({ href: v })}
-                            hint="e.g. /services/web-design/"
-                          />
-                          <Field
-                            label="Solution Text (Right Column below image)"
-                            value={cycle.solution}
-                            onChange={(v) => patchCycle({ solution: v })}
-                            rows={3}
-                          />
-                          <ImageField
-                            label="Right Column Image (No background shape)"
-                            value={cycle.image}
-                            onChange={(v) => patchCycle({ image: v })}
-                            onUpload={() => pickFile(`herocycle:${index}`)}
-                            hint="Transparent PNG/WebP/SVG sits directly on the page body."
-                            previewBg={homeSections.hero_bg || '#f8f8f6'}
-                          />
-                        </div>
-                      </div>
-                    )}
-                  />
-                </Card>
+
               </>
             )}
 
@@ -1299,7 +1324,7 @@ export default function AdminDashboard() {
                   items={settings.payment_methods || DEFAULT_PAYMENT_METHODS}
                   onChange={(next) => patchSettings({ payment_methods: next })}
                   blank={() => ({
-                    id: `pm_${Date.now().toString(36)}`,
+                    id: `pm_${crypto.randomUUID()}`,
                     name: 'New Payment Method',
                     logo: '/images/ecocash-logo.png',
                     visible: true,
@@ -1318,7 +1343,7 @@ export default function AdminDashboard() {
                           label="Payment Logo / Icon"
                           value={item.logo}
                           onChange={(v) => patch({ logo: v })}
-                          onUpload={() => pickFile(`paymentlogo:${idx}`)}
+                          onUpload={() => pickFile(`paymentlogo:${item.id}`)}
                           hint="Upload SVG, PNG, WebP or ICO."
                         />
                         <div className="flex flex-col items-end gap-3 pt-6">
@@ -1355,7 +1380,7 @@ export default function AdminDashboard() {
                     <button
                       disabled={busy}
                       onClick={ async () => {
-                        await savePartners();
+                        if (!(await savePartners())) return;
                         await saveSettings(['home_sections'], 'Partners and section heading saved.');
                       }}
                       className="rounded-full bg-[#E85D2A] px-5 py-2 text-[.82rem] font-semibold text-white hover:brightness-110 disabled:opacity-50"
@@ -1384,7 +1409,7 @@ export default function AdminDashboard() {
                   items={partners}
                   onChange={setPartners}
                   blank={() => ({
-                    id: `pa_${Date.now().toString(36)}`,
+                    id: `pa_${crypto.randomUUID()}`,
                     name: 'New Partner',
                     logo: '/images/partner-great-couples.png',
                     url: '',
@@ -1433,7 +1458,7 @@ export default function AdminDashboard() {
                           label="Partner Logo"
                           value={item.logo}
                           onChange={(v) => patch({ logo: v })}
-                          onUpload={() => pickFile(`partnerlogo:${idx}`)}
+                          onUpload={() => pickFile(`partnerlogo:${item.id}`)}
                           previewBg={item.bg_color || '#ffffff'}
                           hint="Preview above shows the logo on its configured tile background colour."
                         />
@@ -1729,7 +1754,7 @@ export default function AdminDashboard() {
                             label="Project Screenshot"
                             value={item.screenshot || ''}
                             onChange={(v) => patch({ screenshot: v })}
-                            onUpload={() => pickFile(`projectscreenshot:${idx}`)}
+                            onUpload={() => pickFile(`projectscreenshot:${item.id}`)}
                             hint="Upload a screenshot of the live site (PNG, JPG, WebP, GIF, AVIF, SVG)."
                             previewBg="#f8f8f6"
                           />
@@ -1764,6 +1789,7 @@ export default function AdminDashboard() {
                   }
                 >
                   <ListEditor<ApproachItem>
+                  disabled={busy}
                     items={settings.approach_items}
                     onChange={(next) => patchSettings({ approach_items: next })}
                     blank={() => ({ title: 'New Step', body: 'Step description.', icon: 'Globe' })}
@@ -1816,6 +1842,7 @@ export default function AdminDashboard() {
                   }
                 >
                   <ListEditor<WhyItem>
+                  disabled={busy}
                     items={settings.why_choose_us || DEFAULT_WHY_CHOOSE_US}
                     onChange={(next) => patchSettings({ why_choose_us: next })}
                     blank={() => ({ title: 'New Reason', body: 'Reason description.', icon: '' })}
@@ -2327,6 +2354,7 @@ export default function AdminDashboard() {
                                 />
                                 <button
                                   type="button"
+                                  disabled={busy}
                                   onClick={() =>
                                     patch({ tools_items: page.tools_items.filter((_, j) => j !== idx) })
                                   }
@@ -2339,6 +2367,7 @@ export default function AdminDashboard() {
                           </div>
                           <button
                             type="button"
+                            disabled={busy}
                             onClick={() =>
                               patch({
                                 tools_items: [
@@ -2525,6 +2554,7 @@ export default function AdminDashboard() {
                   }
                 >
                   <ListEditor<SocialLink>
+                  disabled={busy}
                     items={settings.footer_socials}
                     onChange={(next) => patchSettings({ footer_socials: next })}
                     blank={() => ({ label: '', href: 'https://', icon: 'Globe' })}
@@ -2553,6 +2583,11 @@ export default function AdminDashboard() {
                   />
                 </Card>
 
+                <Card title="Contact Page Hero Background" hint="Background image, colour and overlay update without rebuilding the site."
+                  action={<button disabled={busy} onClick={() => saveSettings(['contact_hero_design'], 'Contact hero background saved.')} className="rounded-full bg-[#E85D2A] px-5 py-2 text-sm font-semibold text-white disabled:opacity-50">Save contact hero</button>}>
+                  <SectionDesignEditor value={settings.contact_hero_design} onChange={v => patchSettings({ contact_hero_design: v })} onUpload={() => pickFile('designimage:contact_hero_design')} />
+                </Card>
+
                 <Card
                   title="Contact Page Cards & Icons"
                   hint="Manage contact cards on /contact and upload custom icons."
@@ -2567,6 +2602,7 @@ export default function AdminDashboard() {
                   }
                 >
                   <ListEditor<ContactCard>
+                  disabled={busy}
                     items={settings.contact_cards}
                     onChange={(next) => patchSettings({ contact_cards: next })}
                     blank={() => ({ title: '', line: '', note: '', href: '', icon: 'Mail' })}

@@ -6,7 +6,6 @@ const config: Config = {
     extend: {
       fontFamily: {
         poppins: ['var(--font-poppins)', 'sans-serif'],
-        inter: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
         primary: '#E85D2A',

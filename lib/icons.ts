@@ -3,12 +3,14 @@
 
 import React, { type ComponentType } from 'react';
 import {
+  Search, PenTool, Code2, CheckCircle2, Rocket,
   ArrowRight, Bot, Facebook, Globe, Instagram, LayoutDashboard, Link2,
   Linkedin, Mail, MessageCircle, Palette, Phone, Plug, Server, Settings,
   Sparkles, TrendingUp, Twitter,
 } from 'lucide-react';
 
 export const iconMap: Record<string, ComponentType<any>> = {
+  Search, PenTool, Code2, CheckCircle2, Rocket,
   ArrowRight, Bot, Facebook, Globe, Instagram, LayoutDashboard, Link2,
   Linkedin, Mail, MessageCircle, Palette, Phone, Plug, Server, Settings,
   Sparkles, TrendingUp, Twitter,

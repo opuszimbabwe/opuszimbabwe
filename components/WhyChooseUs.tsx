@@ -11,7 +11,7 @@ export const DEFAULT_WHY_REASONS: Reason[] = DEFAULT_WHY_CHOOSE_US;
 export default function WhyChooseUs({ items }: { items?: Reason[] }) {
   const { content } = useSiteContent();
   const resolvedItems: Reason[] =
-    content?.settings?.why_choose_us?.length
+    content?.settings?.why_choose_us
       ? content.settings.why_choose_us
       : items || DEFAULT_WHY_CHOOSE_US;
 
@@ -32,7 +32,7 @@ export default function WhyChooseUs({ items }: { items?: Reason[] }) {
           if (Number.isNaN(index)) return;
           observer.unobserve(entry.target);
           setRevealed((prev) =>
-            prev[index] ? prev : prev.map((value, i) => (i === index ? true : value))
+            prev[index] ? prev : resolvedItems.map((_, i) => i === index || Boolean(prev[i]))
           );
         });
       },

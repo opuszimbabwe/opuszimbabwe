@@ -9,7 +9,7 @@ const REMOVED_PROJECT_IDS = new Set(['zimtrade', 'agricom']);
 
 export default function ProjectsList() {
   const { content } = useSiteContent();
-  const projects = (content?.projects?.length ? content.projects : staticProjects).filter(
+  const projects = (content ? content.projects : staticProjects).filter(
     (p) => p.visible && p.status === 'active' && !REMOVED_PROJECT_IDS.has(p.id)
   );
 

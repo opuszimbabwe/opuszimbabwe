@@ -100,7 +100,7 @@ export function PricingSection({
       features: p.features,
     }));
   const cards =
-    content && content.pricing.length
+    content
       ? content.pricing
           .filter((p) => p.visible)
           .map((p) => ({

@@ -20,8 +20,8 @@ export default function ServiceExtras({
 }) {
   const { content } = useSiteContent();
   const extras = extrasFor(content, serviceId);
-  const why = extras?.why_items?.length ? extras.why_items : fallbackWhy;
-  const related = extras?.related_items?.length ? extras.related_items : fallbackRelated;
+  const why = extras ? extras.why_items : fallbackWhy;
+  const related = extras ? extras.related_items : fallbackRelated;
 
   if (why.length === 0 && related.length === 0) return null;
 

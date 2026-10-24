@@ -8,7 +8,7 @@ import { useSiteContent } from '@/lib/use-site-content';
 
 export default function FooterSocials() {
   const { content } = useSiteContent();
-  const socials = content?.settings?.footer_socials?.length
+  const socials = content?.settings?.footer_socials
     ? content.settings.footer_socials
     : DEFAULT_SETTINGS.footer_socials;
 

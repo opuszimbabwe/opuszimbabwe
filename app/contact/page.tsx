@@ -6,6 +6,7 @@
 // /domains cards pass the extension the visitor clicked).
 // The contact cards are admin-managed (Brand tab in /admin).
 
+import SectionBackdrop from '@/components/SectionBackdrop'
 import { ArrowRight } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import FloatingInput from '@/components/FloatingInput'
@@ -30,6 +31,8 @@ export default function Contact() {
     const params = new URLSearchParams(window.location.search)
     const serviceParam = params.get('service')
     const domainParam = params.get('domain')
+    const brief = params.get('brief')
+    if (brief) setMessage(brief.slice(0, 2000))
     if (serviceParam) {
       setRequested(serviceParam)
       setService(serviceParam)
@@ -40,14 +43,14 @@ export default function Contact() {
     }
   }, [])
 
-  const cards = content?.settings?.contact_cards?.length
+  const cards = content?.settings?.contact_cards
     ? content.settings.contact_cards
     : DEFAULT_SETTINGS.contact_cards
 
   const options = useMemo(() => {
-    const services = content?.services?.length ? content.services : staticServices
+    const services = content ? content.services : staticServices
     const names = services.filter((s) => s.visible).map((s) => s.name)
-    const base = names.length ? names : staticServices.map((s) => s.name)
+    const base = names
     return requested && !base.includes(requested) ? [requested, ...base] : base
   }, [content, requested])
 
@@ -65,7 +68,7 @@ export default function Contact() {
 
   return (
     <main>
-      <section className="bg-primary px-6 py-16">
+      <SectionBackdrop design={content?.settings.contact_hero_design || DEFAULT_SETTINGS.contact_hero_design} className="px-6 py-16">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-[.78rem] font-semibold uppercase tracking-[.14em] text-white/70">Contact Opus Zimbabwe</p>
           <h1 className="mt-3 text-4xl font-bold leading-tight text-white md:text-5xl">
@@ -77,7 +80,7 @@ export default function Contact() {
             Most projects start with a short conversation. WhatsApp is fastest — we usually respond within the hour.
           </p>
         </div>
-      </section>
+      </SectionBackdrop>
 
       <section className="border-b border-[#eeeeee] py-16">
         <div className="mx-auto max-w-4xl px-6">

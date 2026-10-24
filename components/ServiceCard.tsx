@@ -1,70 +1,24 @@
+'use client';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import React from 'react';
+import { ArrowRight, Plus } from 'lucide-react';
+import type { CSSProperties } from 'react';
+import type { ServiceRecord } from '@/lib/content';
 
-type ServiceCardProps = {
-  gradient: string;
-  title: string;
-  icon: any;
-  heading: string;
-  description: string;
-  ctaText: string;
-  ctaHref: string;
-  image: string;
-  cardBgColor?: string;
-};
-
-export default function ServiceCard({
-  title,
-  icon,
-  heading,
-  description,
-  ctaText,
-  ctaHref,
-  image,
-  cardBgColor = '#ffffff',
-}: ServiceCardProps) {
-  const Icon = icon;
-
-  return (
-    <article
-      style={{ '--card-text-bg': cardBgColor || '#ffffff' } as React.CSSProperties}
-      className="svc-card group relative isolate overflow-hidden rounded-[40px] border-l-[3px] border-l-transparent bg-white text-left shadow-[0_8px_24px_rgba(0,0,0,0.07)] transition-all duration-200 ease-out hover:-translate-y-[6px] hover:border-l-[#E85D2A] hover:bg-[#fff8f4] hover:shadow-[0_18px_44px_rgba(0,0,0,0.12)]"
-    >
-      <div className="absolute inset-x-0 top-0 h-[350px] overflow-hidden rounded-t-[40px] bg-[#e9e9e9]">
-        <img
-          src={image}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out group-hover:scale-[1.02]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/10 to-black/55" />
-        <span className="absolute left-6 top-6 rounded-full border border-white/60 bg-white/90 px-3.5 py-1.5 text-[.65rem] font-bold uppercase tracking-[.12em] text-[#0d0d0d] shadow-sm backdrop-blur-sm">
-          {title}
-        </span>
-      </div>
-
-      <div className="svc-text-section relative mt-[290px] min-h-[260px] rounded-tr-[55px] px-6 pb-7 pt-[76px] sm:px-7">
-        <div className="svc-avatar-ring" aria-hidden="true">
-          <span className="flex h-[110px] w-[110px] items-center justify-center rounded-full bg-[#0d0d0d] text-white shadow-inner">
-            <Icon size={34} strokeWidth={1.7} />
-          </span>
-        </div>
-
-        <h3 className="text-[1.3rem] font-bold leading-tight tracking-tight text-[#0d0d0d]">
-          {heading}
-        </h3>
-        <p className="mt-3 min-h-[7.5rem] text-[.9rem] leading-[1.7] text-[#0d0d0d]/75">
-          {description}
-        </p>
-
-        <Link
-          href={ctaHref}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#E85D2A] px-5 py-2.5 text-[.85rem] font-semibold text-white shadow-[0_4px_12px_rgba(232,93,42,0.25)] transition-all duration-200 ease-out group-hover:translate-x-1.5 hover:brightness-110"
-        >
-          {ctaText}
-          <ArrowRight size={15} className="transition-transform duration-200 ease-out group-hover:translate-x-1" />
-        </Link>
-      </div>
-    </article>
-  );
+const tones: Record<string, string> = { 'web-design': '#527b91', 'software-development': '#74734c', 'ai-automation': '#5e4b7b', 'graphic-design': '#9c543b', 'domains-hosting': '#326f65', 'api-integrations': '#3d587f' };
+export default function ServiceCard({ service, expanded, onExpand }: { service: ServiceRecord; expanded: boolean; onExpand: (next: boolean) => void }) {
+  const tone = service.card_bg_color && service.card_bg_color.toLowerCase() !== '#ffffff' ? service.card_bg_color : tones[service.id] || '#735b4a';
+  const detailsId = `service-details-${service.id}`;
+  return <article className="service-panel" data-open={expanded} style={{ '--service-tone': tone } as CSSProperties}
+    onPointerEnter={event => { if (event.pointerType === 'mouse') onExpand(true); }}>
+    <img className="service-panel-image" src={service.image} alt="" loading="lazy" />
+    <div className="service-panel-shade" aria-hidden="true" />
+    <button type="button" className="service-panel-trigger" aria-expanded={expanded} aria-controls={detailsId} onClick={() => onExpand(!expanded)} onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onExpand(true); }}>
+      <span className="service-panel-title">{service.name}</span>
+      <span className="service-panel-plus" aria-hidden="true"><Plus size={24} /></span>
+    </button>
+    <div id={detailsId} className="service-panel-details" hidden={!expanded}>
+      <p>{service.description}</p>
+      <Link href={`/services/${service.slug}/`} className="service-page-button mt-5 inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold">Explore {service.tagline.toLowerCase()} <ArrowRight size={17} /></Link>
+    </div>
+  </article>;
 }

@@ -1,0 +1,118 @@
+// Requires Chromium and playwright-core. Use only with the local Pages server.
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE_PATH || 'playwright-core');
+const assert = require('node:assert/strict');
+const base = process.env.BASE_URL || 'http://127.0.0.1:8788';
+if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw new Error('Local test server only.');
+const headers = { 'Cf-Access-Authenticated-User-Email': 'info.opuszim@gmail.com', 'Cf-Access-Jwt-Assertion': 'local-design-ui-test' };
+(async () => {
+  const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1050 } });
+  const original = await (await context.request.get(base + '/api/content')).json();
+  const put = async (path, data) => { const r = await context.request.put(base + path, { headers, data }); assert.equal(r.status(), 200, await r.text()); };
+  const page = await context.newPage();
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  try {
+    await page.goto(base); await page.locator('.site-content[data-loading="false"]').waitFor();
+    assert.equal(await page.locator('.service-rail').count(), 2);
+    const panels = page.locator('.service-rail').first().locator('.service-panel');
+    assert.equal(await panels.count(), 3);
+    assert.equal(await panels.nth(2).getAttribute('data-open'), 'true');
+    await panels.first().hover();
+    await page.waitForFunction(() => { const p = document.querySelectorAll('.service-rail .service-panel'); return p[0].getBoundingClientRect().width > p[2].getBoundingClientRect().width * 1.8; });
+    assert.equal(await panels.first().getByRole('button').getAttribute('aria-expanded'), 'true');
+    assert.equal(await panels.nth(2).getByRole('button').getAttribute('aria-expanded'), 'false');
+    assert.ok(await panels.first().getByRole('link').isVisible());
+    assert.match(await panels.first().getByRole('link').getAttribute('href'), /services\/web-design/);
+    assert.equal(await panels.first().locator('.service-panel-details').evaluate(el => getComputedStyle(el).bottom), '28px');
+    assert.equal(await panels.first().locator('.service-panel-details').evaluate(el => getComputedStyle(el).fontSize), '18px');
+    assert.notEqual(await panels.first().getByRole('link').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)');
+    await page.locator('.service-rail').first().screenshot({ path: '/workspace/scratch/opus-service-rail.png' });
+    const icons = page.locator('.approach-icon');
+    for (let i = 0; i < 5; i++) assert.equal(await icons.nth(i).evaluate(el => getComputedStyle(el).boxShadow), 'none');
+    await icons.first().hover();
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.approach-icon')).borderColor === 'rgb(232, 93, 42)');
+    assert.notEqual(await icons.first().evaluate(el => getComputedStyle(el).boxShadow), 'none');
+    assert.equal(await icons.nth(1).evaluate(el => getComputedStyle(el).boxShadow), 'none');
+    console.log('PASS: expanding rails, accessible controls, correct links and hover-only brand outline');
+
+    const methods = Array.from({ length: 7 }, (_, i) => ({ id: `ui-logo-${i}`, name: `New method ${i}`, logo: '/images/logo-full.png', visible: true }));
+    const partners = methods.map((m, i) => ({ ...m, id: `ui-partner-${i}`, name: `New partner ${i}`, url: '', bg_color: '#ffffff' }));
+    await put('/api/admin/settings', { payment_methods: methods }); await put('/api/admin/partners', { partners });
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForFunction(() => document.querySelectorAll('img[alt^="New method"]').length === 7 && document.querySelectorAll('img[alt^="New partner"]').length === 7);
+    assert.equal(await page.locator('.site-content').getAttribute('data-loading'), 'false');
+    assert.ok(await page.locator('h1').isVisible());
+    console.log('PASS: current page refreshes all 7 replaced logo rows without flashing fallback');
+
+    const admin = await context.newPage(); await admin.goto(base + '/sysadmin/');
+    await admin.getByRole('button', { name: /Local Payments/ }).click();
+    let releaseUpload, beginUpload, uploadedUrl;
+    const uploadStarted = new Promise(resolve => { beginUpload = resolve; });
+    await admin.route('**/api/admin/upload', async route => {
+      const response = await route.fetch();
+      uploadedUrl = (await response.json()).url;
+      await new Promise(resolve => { releaseUpload = resolve; beginUpload(); });
+      await route.fulfill({ response });
+    });
+    const chooserPromise = admin.waitForEvent('filechooser');
+    await admin.getByRole('button', { name: 'Upload', exact: true }).nth(1).click();
+    await (await chooserPromise).setFiles({ name: 'replacement.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64') });
+    await uploadStarted;
+    await admin.getByRole('button', { name: 'Remove', exact: true }).first().click();
+    releaseUpload();
+    await admin.getByText(/Uploaded payment icon\/logo to R2/).waitFor();
+    const logoInputs = admin.locator('input[placeholder="/images/… or /api/media/…"]');
+    assert.equal(await logoInputs.first().inputValue(), uploadedUrl);
+    assert.equal(await logoInputs.nth(1).inputValue(), '/images/logo-full.png');
+    await admin.getByRole('button', { name: 'Save local payments', exact: true }).click();
+    await admin.getByText('Local payment methods and label saved.', { exact: true }).waitFor();
+    const movedLogo = await (await context.request.get(base + '/api/content')).json();
+    assert.equal(movedLogo.settings.payment_methods.length, 6);
+    assert.equal(movedLogo.settings.payment_methods[0].id, 'ui-logo-1');
+    assert.equal(movedLogo.settings.payment_methods[0].logo, uploadedUrl);
+    console.log('PASS: removing an earlier row during upload still updates the correct logo by ID');
+    await admin.getByRole('button', { name: /Brand, Icons & Contact/ }).click();
+    const contactCard = admin.getByRole('heading', { name: 'Contact Page Hero Background', exact: true }).locator('../../..');
+    await contactCard.locator('input[placeholder="/images/… or /api/media/…"]').fill('/images/hero-bg.jpg');
+    await contactCard.getByLabel('Overlay type').selectOption('gradient');
+    await contactCard.getByRole('slider').fill('0.75');
+    await contactCard.getByRole('button', { name: 'Save contact hero', exact: true }).click();
+    await admin.getByText('Contact hero background saved.', { exact: true }).waitFor();
+    const saved = await (await context.request.get(base + '/api/content')).json();
+    assert.equal(saved.settings.contact_hero_design.background_image, '/images/hero-bg.jpg');
+    assert.equal(saved.settings.contact_hero_design.overlay_kind, 'gradient');
+    assert.equal(saved.settings.contact_hero_design.overlay_opacity, 0.75);
+    const contact = await context.newPage(); await contact.goto(base + '/contact/');
+    await contact.locator('.site-content[data-loading="false"]').waitFor();
+    assert.match(await contact.locator('.section-backdrop [aria-hidden="true"]').first().evaluate(el => getComputedStyle(el).backgroundImage), /hero-bg.jpg/);
+    assert.match(await contact.locator('.section-backdrop [aria-hidden="true"]').nth(1).evaluate(el => getComputedStyle(el).backgroundImage), /linear-gradient/);
+    console.log('PASS: contact background edited in admin, saved to D1 and rendered on the public page');
+
+    await admin.getByRole('button', { name: /Homepage Sections/ }).click();
+    const ctaEditor = admin.getByText('8. Final CTA Section', { exact: true }).locator('..');
+    await ctaEditor.locator('input[placeholder="/images/… or /api/media/…"]').fill('/images/hero-bg.jpg');
+    await ctaEditor.getByLabel('Overlay type').selectOption('gradient');
+    await ctaEditor.getByRole('slider').fill('0.8');
+    await admin.getByRole('button', { name: 'Save page sections', exact: true }).click();
+    await admin.getByText('Homepage sections and CTA design saved.', { exact: true }).waitFor();
+    await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await page.waitForFunction(() => document.querySelector('.section-backdrop [aria-hidden="true"]')?.style.backgroundImage.includes('hero-bg.jpg'));
+    console.log('PASS: CTA editor saves its image/gradient and the existing home page updates live');
+
+    const touch = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await touch.goto(base); await touch.locator('.site-content[data-loading="false"]').waitFor();
+    const mobilePanel = touch.locator('.service-panel').first();
+    await mobilePanel.getByRole('button').tap();
+    assert.equal(await mobilePanel.getAttribute('data-open'), 'true');
+    assert.ok(await mobilePanel.getByRole('link').isVisible());
+    assert.ok(await touch.locator('.service-rail').first().evaluate(el => el.getBoundingClientRect().right <= innerWidth));
+    const reduced = await browser.newPage({ reducedMotion: 'reduce' }); await reduced.goto(base); await reduced.locator('.site-content[data-loading="false"]').waitFor();
+    assert.equal(await reduced.locator('.service-panel').first().evaluate(el => getComputedStyle(el).transitionDuration), '0s');
+    assert.deepEqual(errors, []);
+    console.log('PASS: touch expansion, mobile sizing and reduced-motion support');
+  } finally {
+    await put('/api/admin/partners', { partners: original.partners });
+    await put('/api/admin/settings', { payment_methods: original.settings.payment_methods, cta_design: original.settings.cta_design, contact_hero_design: original.settings.contact_hero_design });
+    await browser.close();
+  }
+})().catch(error => { console.error(error); process.exit(1); });

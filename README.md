@@ -21,8 +21,7 @@ npm start
 
 `/sysadmin` (private, Cloudflare Access protected) edits site content stored in
 Cloudflare D1 — service cards and images, pricing cards, hero background —
-with images uploaded to R2. The public site keeps rendering the built-in
-static fallback content when the API is unavailable.
+with images uploaded to R2. JavaScript-enabled pages wait for current API content before displaying the site. If a fresh read fails, a retry screen is shown instead of older built-in content. Static fallback HTML remains available without JavaScript.
 
 ```bash
 npm run checks              # typecheck + build + local D1 migrations + db checks

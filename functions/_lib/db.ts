@@ -1,3 +1,5 @@
+import { upgradeHeroDesign } from '../../lib/hero-design';
+import { validDesign } from '../../lib/section-design';
 // Shared D1 helpers for reading and validating site content.
 
 import { D1Database } from './types';
@@ -68,6 +70,9 @@ export interface PartnerRow {
 export const URL_SETTINGS = ['hero_background', 'navbar_logo', 'favicon_icon', 'manifest_icon'] as const;
 export const TEXT_SETTINGS = ['browser_title'] as const;
 export const JSON_SETTINGS = [
+  'hero_design',
+  'cta_design',
+  'contact_hero_design',
   'hero_cycles',
   'payment_methods',
   'home_sections',
@@ -239,6 +244,9 @@ export async function readAllContent(db: D1Database) {
     extras,
     settings: {
       hero_background: settingsMap.hero_background || '',
+      hero_design: parseJsonUnknown(settingsMap.hero_design),
+      cta_design: parseJsonUnknown(settingsMap.cta_design),
+      contact_hero_design: parseJsonUnknown(settingsMap.contact_hero_design),
       hero_cycles: parseJsonUnknown(settingsMap.hero_cycles),
       payment_methods: parseJsonUnknown(settingsMap.payment_methods),
       home_sections: parseJsonUnknown(settingsMap.home_sections),
@@ -307,6 +315,11 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
   }
 
   switch (key) {
+    case 'hero_design':
+      { const design = upgradeHeroDesign(value); return design ? JSON.stringify(design) : null; }
+    case 'cta_design':
+    case 'contact_hero_design':
+      return validDesign(value) ? JSON.stringify(value) : null;
     case 'hero_cycles': {
       const cleaned = entries(value, 16)
         .map((x) => ({
@@ -320,18 +333,19 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
       return JSON.stringify(cleaned);
     }
     case 'payment_methods': {
-      const cleaned = entries(value, 24)
-        .map((x, idx) => ({
-          id: text(x.id, 80).trim() || `pm_${idx}`,
-          name: text(x.name, 120).trim(),
-          logo: text(x.logo, 500).trim(),
-          visible: x.visible !== false && x.visible !== 0,
-        }))
-        .filter((x) => x.name && isUrlPath(x.logo));
-      if (cleaned.length === 0) return null;
+      // Validate the full list before saving; never silently drop edited logos.
+      if (!Array.isArray(value) || value.length > 24) return null;
+      const cleaned = value.map((x, idx) => ({
+        id: text(x?.id, 80).trim() || `pm_${idx}`,
+        name: text(x?.name, 120).trim(),
+        logo: text(x?.logo, 500).trim(),
+        visible: x?.visible !== false && x?.visible !== 0 && x?.visible !== '0',
+      }));
+      if (cleaned.some(x => !x.name || !x.logo || !isUrlPath(x.logo)) || new Set(cleaned.map(x => x.id)).size !== cleaned.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'why_choose_us': {
+      if (!Array.isArray(value) || value.length > 20) return null;
       const cleaned = entries(value, 20)
         .map((x) => {
           const icon = text(x.icon, 500).trim();
@@ -342,7 +356,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           };
         })
         .filter((x) => x.title && x.body);
-      if (cleaned.length === 0) return null;
+      if (cleaned.length !== value.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'service_pages': {
@@ -361,7 +375,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
             const logo = text(x.logo, 500).trim();
             return {
               name: text(x.name, 120).trim(),
-              logo: logo && isUrlPath(logo) ? logo : '/images/tools/nextjs.svg',
+              logo,
             };
           })
           .filter((x) => x.name);
@@ -380,7 +394,15 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           }))
           .filter((x) => x.plan && x.price);
 
+        for (const [field, cleaned, limit] of [
+          ['what_items', whatItems, 30], ['process_steps', processSteps, 20], ['tools_items', toolsItems, 30],
+          ['domain_prices', domainPrices, 20], ['email_plans', emailPlans, 20],
+        ] as const) {
+          if (raw[field] !== undefined && (!Array.isArray(raw[field]) || raw[field].length > limit || cleaned.length !== raw[field].length)) return null;
+        }
+        if (toolsItems.some(tool => tool.logo && !isUrlPath(tool.logo))) return null;
         const ctaUrl = text(raw.cta_url, 500).trim();
+        if (ctaUrl && !isSafeLink(ctaUrl)) return null;
         out[id] = {
           service_id: id,
           problem_text: text(raw.problem_text, 2000).trim(),
@@ -420,23 +442,24 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
         services_bg: color(s.services_bg, '#ffffff'),
         partners_heading: text(s.partners_heading, 300).trim() || 'Partners who trust us',
         partners_subheading:
-          text(s.partners_subheading, 500).trim() ||
+          typeof s.partners_subheading === 'string' ? text(s.partners_subheading, 500).trim() :
           'Trusted by businesses, NGOs, and institutions across Zimbabwe.',
         partners_bg: color(s.partners_bg, '#f8f8f6'),
         how_it_works_heading: text(s.how_it_works_heading, 300).trim() || 'How we take your project from idea to launch.',
-        how_it_works_bg: color(s.how_it_works_bg, '#ffffff'),
+        how_it_works_bg: color(s.how_it_works_bg, '#f8fafc'),
         projects_heading: text(s.projects_heading, 300).trim() || 'Live work we have delivered.',
-        projects_bg: color(s.projects_bg, '#f8f8f6'),
+        projects_bg: color(s.projects_bg, '#f8fafc'),
         why_heading: text(s.why_heading, 300).trim() || 'Why choose us.',
         why_bg: color(s.why_bg, '#ffffff'),
         faq_heading: text(s.faq_heading, 300).trim() || 'Common questions.',
-        faq_bg: color(s.faq_bg, '#f8f8f6'),
+        faq_bg: color(s.faq_bg, '#f8fafc'),
         cta_heading: text(s.cta_heading, 300).trim() || 'Ready to get your business going?',
         cta_subheading: text(s.cta_subheading, 500).trim() || 'Tell us what you need and we will take it from there.',
         cta_bg: color(s.cta_bg, '#ffffff'),
       });
     }
     case 'footer_socials': {
+      if (!Array.isArray(value) || value.length > 20) return null;
       const cleaned = entries(value, 20)
         .map((x) => ({
           label: text(x.label, 120).trim(),
@@ -444,10 +467,11 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           icon: text(x.icon, 500).trim() || 'Globe',
         }))
         .filter((x) => x.label && isSafeLink(x.href));
-      if (cleaned.length === 0) return null;
+      if (cleaned.length !== value.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'contact_cards': {
+      if (!Array.isArray(value) || value.length > 20) return null;
       const cleaned = entries(value, 20)
         .map((x) => ({
           title: text(x.title, 120).trim(),
@@ -457,21 +481,23 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           icon: text(x.icon, 500).trim() || 'Mail',
         }))
         .filter((x) => x.title && (!x.href || isSafeLink(x.href)));
-      if (cleaned.length === 0) return null;
+      if (cleaned.length !== value.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'faq_home':
     case 'faq_page': {
+      if (!Array.isArray(value) || value.length > 40) return null;
       const cleaned = entries(value, 40)
         .map((x) => ({
           q: text(x.q, 500).trim(),
           a: text(x.a, 3000).trim(),
         }))
         .filter((x) => x.q && x.a);
-      if (cleaned.length === 0) return null;
+      if (cleaned.length !== value.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'approach_items': {
+      if (!Array.isArray(value) || value.length > 20) return null;
       const cleaned = entries(value, 20)
         .map((x) => ({
           title: text(x.title, 200).trim(),
@@ -479,7 +505,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
           icon: text(x.icon, 500).trim() || 'Globe',
         }))
         .filter((x) => x.title);
-      if (cleaned.length === 0) return null;
+      if (cleaned.length !== value.length) return null;
       return JSON.stringify(cleaned);
     }
     case 'built_for_zimbabwe': {

@@ -46,7 +46,7 @@ export const onRequestPut: PagesHandler = async (context) => {
     if (!name) return json({ error: 'partner_missing_name' }, 400);
 
     const logo = str(partner?.logo, 500).trim();
-    if (logo && !isUrlPath(logo)) return json({ error: 'invalid_partner_logo', name }, 400);
+    if (!logo || !isUrlPath(logo)) return json({ error: 'invalid_partner_logo', name }, 400);
 
     const url = str(partner?.url, 500).trim();
     if (url && !/^https:\/\/[^\s]+$/i.test(url)) return json({ error: 'invalid_partner_url', name }, 400);
@@ -63,6 +63,8 @@ export const onRequestPut: PagesHandler = async (context) => {
       visible: partner?.visible === false || partner?.visible === 0 ? 0 : 1,
     });
   }
+
+  if (new Set(cleaned.map(partner => partner.id)).size !== cleaned.length) return json({ error: 'duplicate_partner_id' }, 400);
 
   try {
     const db = context.env.DB;

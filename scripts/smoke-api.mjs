@@ -847,8 +847,8 @@ async function main() {
     const home = await req('/');
     check(
       'home renders the static hero headline, payment strip, "Partners who trust us", and why-choose-us cards',
-      home.text.includes('Your business is working hard.') &&
-        home.text.includes('The results should show it.') &&
+      home.text.includes('Your business is struggling.') &&
+        (home.text.includes('Let&#x27;s change that.') || home.text.includes("Let's change that.")) &&
         home.text.includes('We accept local payments') &&
         home.text.includes('Partners who trust us') &&
         home.text.includes('/images/partner-great-couples.png') &&

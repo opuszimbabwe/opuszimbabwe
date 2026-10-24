@@ -6,7 +6,7 @@ import { useSiteContent } from '@/lib/use-site-content';
 
 export default function TrustedPartners() {
   const { content } = useSiteContent();
-  const partners = (content?.partners?.length ? content.partners : staticPartners).filter((p) => p.visible);
+  const partners = (content ? content.partners : staticPartners).filter((p) => p.visible);
 
   const rowRef = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
@@ -29,7 +29,7 @@ export default function TrustedPartners() {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [partners.length]);
 
   if (partners.length === 0) return null;
 

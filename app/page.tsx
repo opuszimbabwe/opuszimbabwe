@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import SectionBackdrop from '@/components/SectionBackdrop';
 import HomeHero from '@/components/HomeHero';
 import PaymentTrustStrip from '@/components/PaymentTrustStrip';
 import HomeServicesGrid from '@/components/HomeServicesGrid';
@@ -10,7 +11,7 @@ import OpusApproach from '@/components/OpusApproach';
 import HomeProjects from '@/components/HomeProjects';
 import WhyChooseUs, { DEFAULT_WHY_REASONS } from '@/components/WhyChooseUs';
 import FaqAccordion from '@/components/FaqAccordion';
-import { DEFAULT_HOME_SECTIONS } from '@/lib/content';
+import { DEFAULT_HOME_SECTIONS, DEFAULT_SETTINGS } from '@/lib/content';
 import { useSiteContent } from '@/lib/use-site-content';
 
 const faqs = [
@@ -46,7 +47,7 @@ export default function Home() {
         style={{ backgroundColor: s.services_bg || '#ffffff' }}
         className="py-20 text-center"
       >
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="site-frame">
           <h2 className="mx-auto max-w-3xl font-poppins text-[1.85rem] font-bold leading-tight text-[#0d0d0d] md:text-[2.3rem]">
             {s.services_heading}
           </h2>
@@ -59,7 +60,7 @@ export default function Home() {
         style={{ backgroundColor: s.partners_bg || '#f8f8f6' }}
         className="py-16"
       >
-        <div className="mx-auto max-w-7xl px-6 text-center">
+        <div className="site-frame text-center">
           <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             {s.partners_heading}
           </h2>
@@ -74,10 +75,10 @@ export default function Home() {
 
       {/* 5. How it works — five steps (White section by default) */}
       <section
-        style={{ backgroundColor: s.how_it_works_bg || '#ffffff' }}
+        style={{ backgroundColor: s.how_it_works_bg }}
         className="py-20"
       >
-        <div className="mx-auto max-w-7xl px-6 text-center">
+        <div className="site-frame text-center">
           <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             {s.how_it_works_heading}
           </h2>
@@ -87,10 +88,10 @@ export default function Home() {
 
       {/* 6. Projects — live work */}
       <section
-        style={{ backgroundColor: s.projects_bg || '#f8f8f6' }}
+        style={{ backgroundColor: s.projects_bg }}
         className="py-20 text-center"
       >
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="site-frame">
           <h2 className="mx-auto text-center font-poppins text-2xl font-bold text-[#0d0d0d] md:text-3xl">
             {s.projects_heading}
           </h2>
@@ -114,7 +115,7 @@ export default function Home() {
 
       {/* 8. FAQ */}
       <section
-        style={{ backgroundColor: s.faq_bg || '#f8f8f6' }}
+        style={{ backgroundColor: s.faq_bg }}
         className="py-20 text-center"
       >
         <div className="mx-auto max-w-3xl px-6">
@@ -138,7 +139,7 @@ export default function Home() {
         style={{ backgroundColor: s.cta_bg || '#ffffff' }}
         className="px-6 py-20"
       >
-        <div className="mx-auto max-w-6xl rounded-[32px] bg-[#0d0d0d] px-7 py-16 text-center text-white shadow-[0_16px_45px_rgba(0,0,0,0.14)] sm:px-12">
+        <SectionBackdrop design={content?.settings.cta_design || DEFAULT_SETTINGS.cta_design} className="mx-auto max-w-6xl rounded-[32px] px-7 py-16 text-center text-white shadow-[0_16px_45px_rgba(0,0,0,0.14)] sm:px-12">
           <h2 className="mt-2 font-poppins text-3xl font-bold md:text-5xl">
             {s.cta_heading}
           </h2>
@@ -151,7 +152,7 @@ export default function Home() {
           >
             Contact Us
           </Link>
-        </div>
+        </SectionBackdrop>
       </section>
     </main>
   );

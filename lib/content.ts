@@ -1,3 +1,6 @@
+import { DEFAULT_HERO_DESIGN, normalizeHeroDesign, type HeroDesign } from './hero-design';
+import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN, normalizeDesign, type SectionDesign } from './section-design';
+import homepageCopy from './homepage-copy.json';
 // Site content model + built-in static fallback content.
 // The public site always renders these values first (static export);
 // when the Cloudflare Pages Functions API (/api/content) is reachable,
@@ -157,6 +160,9 @@ export type HomeSectionsConfig = {
 };
 
 export type SiteSettings = {
+  hero_design: HeroDesign;
+  cta_design: SectionDesign;
+  contact_hero_design: SectionDesign;
   hero_background: string;
   hero_cycles: HeroCycle[];
   payment_methods: PaymentMethod[];
@@ -272,8 +278,8 @@ export const DEFAULT_WHY_CHOOSE_US: WhyItem[] = [
 ];
 
 export const DEFAULT_HOME_SECTIONS: HomeSectionsConfig = {
-  hero_headline_main: 'Your business is working hard.',
-  hero_headline_accent: 'The results should show it.',
+  hero_headline_main: homepageCopy.hero_headline_main,
+  hero_headline_accent: homepageCopy.hero_headline_accent,
   hero_bg: '#f8f8f6',
   payment_label: 'We accept local payments',
   services_heading: 'One team. Every digital capability your organisation needs.',
@@ -282,13 +288,13 @@ export const DEFAULT_HOME_SECTIONS: HomeSectionsConfig = {
   partners_subheading: 'Trusted by businesses, NGOs, and institutions across Zimbabwe.',
   partners_bg: '#f8f8f6',
   how_it_works_heading: 'How we take your project from idea to launch.',
-  how_it_works_bg: '#ffffff',
+  how_it_works_bg: '#f8fafc',
   projects_heading: 'Live work we have delivered.',
-  projects_bg: '#f8f8f6',
+  projects_bg: '#f8fafc',
   why_heading: 'Why choose us.',
   why_bg: '#ffffff',
   faq_heading: 'Common questions.',
-  faq_bg: '#f8f8f6',
+  faq_bg: '#f8fafc',
   cta_heading: 'Ready to get your business going?',
   cta_subheading: 'Tell us what you need and we will take it from there.',
   cta_bg: '#ffffff',
@@ -730,6 +736,9 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
 
 // Defaults for the site-wide settings row.
 export const DEFAULT_SETTINGS: SiteSettings = {
+  hero_design: DEFAULT_HERO_DESIGN,
+  cta_design: DEFAULT_CTA_DESIGN,
+  contact_hero_design: DEFAULT_CONTACT_DESIGN,
   hero_background: '/images/hero-bg.jpg',
   hero_cycles: DEFAULT_HERO_CYCLES,
   payment_methods: DEFAULT_PAYMENT_METHODS,
@@ -767,13 +776,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { q: 'What do you need from me to get started?', a: 'A brief description of your business, any existing branding (logo, colours) and an idea of what you want the website or system to do. We guide you through the rest.' },
     { q: 'Can you build a system specifically for my school, clinic or business?', a: 'Yes. Custom software and management systems are one of our core services. We scope every project individually based on your actual requirements.' },
   ],
-  approach_items: [
-    { title: 'Understand', body: 'We take time to learn your business, your customers, and what you actually need before anything is built.', icon: 'Globe' },
-    { title: 'Plan', body: 'We map out exactly what will be built, how long it will take, and what it will cost — no surprises.', icon: 'Settings' },
-    { title: 'Build', body: 'We do the work. You stay updated throughout, not just at the end.', icon: 'LayoutDashboard' },
-    { title: 'Review', body: 'You check everything before it goes live. If something needs changing, we change it.', icon: 'Link2' },
-    { title: 'Launch & Support', body: 'We go live and stay with you. If something breaks or needs updating, we are reachable.', icon: 'TrendingUp' },
-  ],
+  approach_items: homepageCopy.approach_items,
   built_for_zimbabwe: {
     eyebrow: 'Built for Zimbabwe',
     heading: 'World-class execution. Local understanding.',
@@ -1335,7 +1338,7 @@ function normalizeFaq(raw: unknown, fallback: FaqItem[]): FaqItem[] {
   const items = objectArray(raw, 40)
     .map((x) => ({ q: str(x.q, '').slice(0, 500), a: str(x.a, '').slice(0, 3000) }))
     .filter((x) => x.q && x.a);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeHeroCycles(raw: unknown, fallback: HeroCycle[]): HeroCycle[] {
@@ -1359,7 +1362,7 @@ function normalizePaymentMethods(raw: unknown, fallback: PaymentMethod[]): Payme
       visible: x.visible !== false && x.visible !== 0 && x.visible !== '0',
     }))
     .filter((x) => x.name && x.logo);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeWhyChooseUs(raw: unknown, fallback: WhyItem[]): WhyItem[] {
@@ -1370,7 +1373,7 @@ function normalizeWhyChooseUs(raw: unknown, fallback: WhyItem[]): WhyItem[] {
       icon: str(x.icon, '').slice(0, 500).trim(),
     }))
     .filter((x) => x.title && x.body);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeServicePages(
@@ -1411,15 +1414,15 @@ function normalizeServicePages(
       problem_text: str(val.problem_text, base.problem_text).slice(0, 2000),
       what_heading: str(val.what_heading, base.what_heading).slice(0, 200),
       what_intro: str(val.what_intro, base.what_intro).slice(0, 1000),
-      what_items: whatItems.length ? whatItems : base.what_items,
+      what_items: Array.isArray(val.what_items) ? whatItems : base.what_items,
       price_range: str(val.price_range, base.price_range).slice(0, 200),
       price_summary: str(val.price_summary, base.price_summary).slice(0, 500),
       price_note: str(val.price_note, base.price_note).slice(0, 800),
       hosting_price: str(val.hosting_price, base.hosting_price || 'from $10/month').slice(0, 120),
-      domain_prices: domainPrices.length ? domainPrices : base.domain_prices,
-      email_plans: emailPlans.length ? emailPlans : base.email_plans,
-      process_steps: processSteps.length ? processSteps : base.process_steps,
-      tools_items: toolsItems.length ? toolsItems : base.tools_items,
+      domain_prices: Array.isArray(val.domain_prices) ? domainPrices : base.domain_prices,
+      email_plans: Array.isArray(val.email_plans) ? emailPlans : base.email_plans,
+      process_steps: Array.isArray(val.process_steps) ? processSteps : base.process_steps,
+      tools_items: Array.isArray(val.tools_items) ? toolsItems : base.tools_items,
       tools_note: str(val.tools_note, base.tools_note).slice(0, 300),
       cta_heading: str(val.cta_heading, base.cta_heading).slice(0, 300),
       cta_body: str(val.cta_body, base.cta_body).slice(0, 800),
@@ -1465,7 +1468,7 @@ function normalizeSocials(raw: unknown, fallback: SocialLink[]): SocialLink[] {
       icon: str(x.icon, 'Globe').slice(0, 500),
     }))
     .filter((x) => x.label && x.href);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeContactCards(raw: unknown, fallback: ContactCard[]): ContactCard[] {
@@ -1478,7 +1481,7 @@ function normalizeContactCards(raw: unknown, fallback: ContactCard[]): ContactCa
       icon: str(x.icon, 'Mail').slice(0, 500),
     }))
     .filter((x) => x.title);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeApproach(raw: unknown, fallback: ApproachItem[]): ApproachItem[] {
@@ -1489,7 +1492,7 @@ function normalizeApproach(raw: unknown, fallback: ApproachItem[]): ApproachItem
       icon: str(x.icon, 'Globe').slice(0, 500),
     }))
     .filter((x) => x.title);
-  return items.length ? items : fallback;
+  return Array.isArray(raw) ? items : fallback;
 }
 
 function normalizeBuilt(raw: unknown): BuiltForZimbabwe {
@@ -1547,6 +1550,9 @@ export function normalizeContent(raw: any): SiteContent | null {
   const rawSettings = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
   const hero = str((rawSettings as any).hero_background, '');
   const settings: SiteSettings = {
+    hero_design: normalizeHeroDesign((rawSettings as any).hero_design),
+    cta_design: normalizeDesign((rawSettings as any).cta_design, DEFAULT_CTA_DESIGN),
+    contact_hero_design: normalizeDesign((rawSettings as any).contact_hero_design, DEFAULT_CONTACT_DESIGN),
     hero_background: hero || DEFAULT_SETTINGS.hero_background,
     hero_cycles: normalizeHeroCycles((rawSettings as any).hero_cycles, DEFAULT_SETTINGS.hero_cycles),
     payment_methods: normalizePaymentMethods((rawSettings as any).payment_methods, DEFAULT_SETTINGS.payment_methods),
