@@ -1,6 +1,7 @@
 import { Pesepay, type Transport, type PaymentResult } from 'pesepay';
 import type { Env, PagesContext } from './types';
 import type { LocalMethod, PaymentReceipt } from '../../lib/payments';
+import { normaliseMobile } from '../../lib/payments';
 import { json } from './auth';
 
 const API = 'https://api.pesepay.com/api/payments-engine';
@@ -41,10 +42,9 @@ function text(value: unknown, name: string, max: number, required = true) {
 }
 export function paymentInput(raw: Record<string, unknown>) {
  const token = accessToken(raw.token);
- const name = text(raw.name, 'payer name', 100), email = text(raw.email, 'email address', 254).toLowerCase();
- if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new CheckoutError(400, 'Please enter a valid email address.');
- const phone = text(raw.phone ?? '', 'phone number', 24, false);
- if (phone && !/^\+?[\d\s()-]{7,24}$/.test(phone)) throw new CheckoutError(400, 'Please enter a valid phone number.');
+ const name = text(raw.name ?? '', 'payer name', 100, false), email = text(raw.email ?? '', 'email address', 254, false).toLowerCase();
+ if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new CheckoutError(400, 'Please enter a valid email address.');
+ const phone = normaliseMobile(text(raw.phone ?? '', 'phone number', 24, false));
  const invoice = text(raw.invoice, 'invoice or project reference', 120);
  const amount = text(raw.amount, 'amount', 12);
  if (!/^\d{1,7}(\.\d{1,2})?$/.test(amount)) throw new CheckoutError(400, 'Enter a positive amount with no more than two decimal places.');
@@ -86,7 +86,7 @@ export async function localMethods(currency: string): Promise<LocalMethod[]> {
  if (!['USD', 'ZiG'].includes(currency)) throw new CheckoutError(400, 'Please select a supported currency.');
  return (await publicGateway('/v1/payment-methods/for-currency?currencyCode=' + encodeURIComponent(currency)))
  .filter(item => item.active === true && typeof item.name === 'string' && LOCAL.test(item.name) && !INTERNATIONAL.test(item.name) && typeof item.code === 'string')
- .map(item => ({ code: String(item.code), name: String(item.name), minimumAmount: Number(item.minimumAmount) || 0.01, maximumAmount: Number(item.maximumAmount) || 1000000 }));
+ .map(item => ({ code: String(item.code), name: String(item.name), minimumAmount: Number(item.minimumAmount) || 0.01, maximumAmount: Number(item.maximumAmount) || 1000000, redirectRequired: item.redirectRequired === true, phoneField: Array.isArray(item.requiredFields) ? item.requiredFields.find((field: { name?: string }) => /^(customerPhoneNumber|phoneNumber|mobileNumber)$/.test(field.name || ''))?.name : undefined }));
 }
 export function safeRedirect(value: string) {
  const url = new URL(value);
@@ -94,7 +94,7 @@ export function safeRedirect(value: string) {
  return url.href;
 }
 export function receipt(row: PaymentRow): PaymentReceipt {
- return { id: row.id, name: row.payer_name, invoice: row.invoice, amount: (row.status === 'SUCCESS' && row.amount_paid_minor != null ? row.amount_paid_minor : row.amount_minor) / 100, invoiceAmount: row.amount_minor / 100, currency: row.currency, method: row.method_name, reference: row.gateway_reference, status: row.status, paid: row.status === 'SUCCESS', terminal: !['CREATING', 'INITIATED', 'PROCESSING', 'PENDING', 'PARTIALLY_PAID'].includes(row.status), date: row.transaction_date };
+ return { id: row.id, name: row.payer_name, invoice: row.invoice, amount: (row.status === 'SUCCESS' && row.amount_paid_minor != null ? row.amount_paid_minor : row.amount_minor) / 100, invoiceAmount: row.amount_minor / 100, currency: row.currency, method: row.method_name, reference: row.gateway_reference, status: row.status, paid: row.status === 'SUCCESS', terminal: !['CREATING', 'INITIATED', 'PROCESSING', 'PENDING', 'PARTIALLY_PAID', 'UNCONFIRMED'].includes(row.status), date: row.transaction_date };
 }
 export async function findPayment(env: Env, id: string) { return env.DB.prepare('SELECT * FROM customer_payments WHERE id = ?').bind(id).first<PaymentRow>(); }
 export async function authorisedPayment(context: PagesContext) {

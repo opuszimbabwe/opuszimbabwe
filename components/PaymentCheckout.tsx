@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, LockKeyhole, ShieldCheck, UserRound, Wallet, X, CircleAlert } from 'lucide-react';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, type PaymentConfig, type PaymentReceipt } from '@/lib/payments';
+import { SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt } from '@/lib/payments';
 
 type Session = { id: string; token: string };
 type Form = { name: string; email: string; phone: string; invoice: string; amount: string; currency: string; method: string };
@@ -12,9 +12,18 @@ const support = <>Contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a
 function remember(session: Session) {
  try { sessionStorage.setItem('opus-payment-' + session.id, session.token); sessionStorage.setItem('opus-last-payment', session.id); return true; } catch { return false; }
 }
-function MethodLogo({ name }: { name: string }) {
- const source = /ecocash/i.test(name) ? '/images/ecocash-logo.png' : /innbucks/i.test(name) ? '/images/innbucks-logo.svg' : /one.?money/i.test(name) ? '/images/onemoney-logo.svg' : '';
- return source ? <img className="payment-provider-logo" src={source} alt="" /> : <Wallet size={22} aria-hidden="true" />;
+function MethodLogo({ name, decorative = false }: { name: string; decorative?: boolean }) {
+ const brands: [RegExp, string, number, number, number, number, number, number][] = [
+  [/ecocash/i, '/images/ecocash-logo.png', 1471, 420, 0, 0, 1471, 420],
+  [/innbucks/i, '/images/payments/innbucks.png', 776, 312, 73, 82, 631, 134],
+  [/one\s?money/i, '/images/payments/onemoney.png', 797, 567, 0, 0, 797, 567],
+  [/zimswitch/i, '/images/payments/zimswitch.png', 500, 500, 25, 132, 450, 235],
+  [/omari/i, '/images/payments/omari.webp', 1553, 825, 246, 241, 1147, 464],
+ ];
+ const brand = brands.find(([pattern]) => pattern.test(name));
+ if (!brand) return <span className="payment-provider-fallback"><Wallet size={22} aria-hidden="true" /><span>{name}</span></span>;
+ const [, source, width, height, left, top, cropWidth, cropHeight] = brand;
+ return <span className="payment-brand-artwork" style={{ width: `min(180px, calc(var(--brand-height, 42px) * ${cropWidth / cropHeight}))`, aspectRatio: `${cropWidth}/${cropHeight}` }}><img src={source} alt={decorative ? '' : name} style={{ position: 'absolute', maxWidth: 'none', width: `${width / cropWidth * 100}%`, height: `${height / cropHeight * 100}%`, left: `${-left / cropWidth * 100}%`, top: `${-top / cropHeight * 100}%` }} /></span>;
 }
 function PaymentLogo() { return <a href="https://opuszim.co.zw/" aria-label="Opus Zimbabwe home" className="payment-logo"><img src="/images/logo-full.png" alt="Opus Zimbabwe" /></a>; }
 function dateLabel(value: string | null) {
@@ -31,7 +40,9 @@ export default function PaymentCheckout() {
  const [receipt, setReceipt] = useState<PaymentReceipt | null>(null);
  const [checking, setChecking] = useState(false);
  const [checkError, setCheckError] = useState('');
+ const [pollExpired, setPollExpired] = useState(false);
  const [resumable, setResumable] = useState(false);
+ const [phoneTouched, setPhoneTouched] = useState(false);
  const [configRetry, setConfigRetry] = useState(0);
  const modal = useRef<HTMLDialogElement>(null);
  const inFlight = useRef(false);
@@ -59,7 +70,7 @@ export default function PaymentCheckout() {
   const controller = new AbortController(); setConfigBusy(true); setConfigError('');
   fetch('/api/payments/config?currency=' + encodeURIComponent(form.currency), { cache: 'no-store', signal: controller.signal })
    .then(async response => { const body = await response.json(); if (!response.ok) throw new Error(body.error || 'Payment methods could not be loaded.'); return body as PaymentConfig; })
-   .then(body => { if (controller.signal.aborted) return; setConfig(body); setForm(value => ({ ...value, method: body.methods.some(method => method.code === value.method) ? value.method : body.methods[0]?.code || '' })); })
+   .then(body => { if (controller.signal.aborted) return; setConfig(body); setForm(value => ({ ...value, method: body.methods.some(method => method.code === value.method) ? value.method : '' })); })
    .catch(reason => { if (!controller.signal.aborted) { setConfig(null); setConfigError(reason.message || 'Payment methods could not be loaded.'); } })
    .finally(() => { if (!controller.signal.aborted) setConfigBusy(false); });
   return () => controller.abort();
@@ -81,22 +92,27 @@ export default function PaymentCheckout() {
  const [continueUrl, setContinueUrl] = useState('');
  useEffect(() => {
   if (!session) return;
+  setPollExpired(false);
   let stopped = false, attempts = 0, timer: ReturnType<typeof setTimeout>;
   const controller = new AbortController();
   const poll = async () => {
    if (stopped) return;
    if (document.visibilityState === 'visible') {
     const terminal = await checkStatus(controller.signal); attempts++;
-    if (terminal || attempts >= 24) return;
+    if (terminal) return;
+    if (attempts >= 24) { setPollExpired(true); return; }
    }
    if (!stopped) timer = setTimeout(poll, 5000);
   };
   void poll();
   return () => { stopped = true; controller.abort(); clearTimeout(timer); };
  }, [session, checkStatus]);
- function change(key: keyof Form, value: string) { setForm(previous => ({ ...previous, [key]: value })); setError(''); }
+ function change(key: keyof Form, value: string) { setForm(previous => ({ ...previous, [key]: value, ...(key === 'currency' ? { method: '' } : {}) })); if (key === 'method' || key === 'currency') setPhoneTouched(false); setError(''); }
  async function pay(event: React.FormEvent) {
   event.preventDefault(); if (busy || !config?.configured || configBusy) return;
+  if (!selectedMethod) return;
+  if (network) { const problem = mobileNumberError(form.phone, network); if (problem) { setPhoneTouched(true); setError(problem); return; } }
+  if (amountError) { setError(amountError); return; }
   setBusy(true); setError('');
   try {
    let token = newToken();
@@ -126,6 +142,13 @@ export default function PaymentCheckout() {
   attempt.current = null;
   history.replaceState(null, '', '/payments/'); setSession(null); setReceipt(null); setContinueUrl(''); setCheckError(''); setError(''); setForm(emptyForm); setResumable(false);
  }
+ const selectedMethod = config?.methods.find(method => method.code === form.method);
+ const network = selectedMethod ? mobileNetwork(selectedMethod.name) : null;
+ const directMobile = Boolean(network && !selectedMethod?.redirectRequired);
+ const phoneError = network ? mobileNumberError(form.phone, network, phoneTouched) : '';
+ const phoneValid = !network || !mobileNumberError(form.phone, network);
+ const amountValue = Number(form.amount);
+ const amountError = !form.amount ? '' : !/^\d+(\.\d{1,2})?$/.test(form.amount) ? 'Enter an amount with no more than two decimal places.' : selectedMethod && (amountValue < selectedMethod.minimumAmount || amountValue > selectedMethod.maximumAmount) ? `This method accepts ${form.currency} ${selectedMethod.minimumAmount.toFixed(2)}–${selectedMethod.maximumAmount.toFixed(2)}. Check your amount or choose another method.` : '';
  const paid = receipt?.paid === true && !checkError;
  const pending = !receipt || !receipt.terminal;
  return <main className="payment-page">
@@ -136,25 +159,29 @@ export default function PaymentCheckout() {
     {error && <div className="payment-notice" role="alert">{error}<p>{support}</p></div>}
     {resumable && <p className="payment-notice">Your previous payment details have been kept. Continue with the same details to check that attempt safely. <button type="button" className="payment-text-button" onClick={() => { if (attempt.current) setForm(attempt.current.form); }}>Restore previous details</button></p>}
     <form onSubmit={pay} className="payment-form">
-     <div className="payment-fields"><label>Payer name<input name="name" autoComplete="name" required maxLength={100} value={form.name} onChange={event => change('name', event.target.value)} /></label><label>Email address<input name="email" type="email" autoComplete="email" required maxLength={254} value={form.email} onChange={event => change('email', event.target.value)} /></label><label>Phone number<input name="phone" type="tel" autoComplete="tel" maxLength={24} value={form.phone} onChange={event => change('phone', event.target.value)} placeholder="0710 000 000" /></label><label>Invoice or project reference<input name="invoice" required maxLength={120} value={form.invoice} onChange={event => change('invoice', event.target.value)} placeholder="Reference from your quote or invoice" /></label></div>
-     <div className="payment-amount-fields"><label>Currency<select value={form.currency} onChange={event => change('currency', event.target.value)} disabled={busy}>{(config?.currencies.length ? config.currencies : [{ code: 'USD', name: 'US Dollar' }, { code: 'ZiG', name: 'Zimbabwe Gold' }]).map(currency => <option key={currency.code} value={currency.code}>{currency.code}</option>)}</select></label><label>Amount to pay<input name="amount" type="number" min="0.01" step="0.01" inputMode="decimal" required value={form.amount} onChange={event => change('amount', event.target.value)} placeholder="0.00" /></label></div>
-     <p className="payment-small">Use the amount and currency agreed on your quote or invoice.</p>
-     <fieldset className="payment-methods"><legend>Choose a local payment method</legend>
-      {configBusy ? <p role="status">Loading payment methods…</p> : configError ? <div role="alert"><p>{configError}</p><button type="button" className="payment-text-button" onClick={() => setConfigRetry(value => value + 1)}>Try loading methods again</button></div> : config?.methods.length ? <div className="payment-method-grid">{config.methods.map(method => <label key={method.code} className="payment-method" data-selected={form.method === method.code}><input type="radio" name="method" checked={form.method === method.code} onChange={() => change('method', method.code)} /><MethodLogo name={method.name} /><span>{method.name}</span></label>)}</div> : <p>No local methods are currently available for this currency. {support}</p>}
+     <div className="payment-currency-row"><label htmlFor="payment-currency">Payment currency<select id="payment-currency" aria-label="Payment currency" value={form.currency} onChange={event => change('currency', event.target.value)} disabled={busy || configBusy}>{(config?.currencies.length ? config.currencies : [{ code: 'USD', name: 'US Dollar' }, { code: 'ZiG', name: 'Zimbabwe Gold' }]).map(currency => <option key={currency.code} value={currency.code}>{currency.code}</option>)}</select></label></div>
+     <fieldset className="payment-methods payment-methods-first" disabled={busy}><legend><span className="payment-step-number">1</span> Choose your payment method</legend>
+      {configBusy ? <p role="status">Loading payment methods…</p> : configError ? <div role="alert"><p>{configError}</p><button type="button" className="payment-text-button" onClick={() => setConfigRetry(value => value + 1)}>Try loading methods again</button></div> : config?.methods.length ? <div className="payment-method-grid">{config.methods.map(method => <label key={method.code} className="payment-method" data-selected={form.method === method.code}><input type="radio" name="method" aria-label={method.name} aria-controls="payment-entry" checked={form.method === method.code} onChange={() => change('method', method.code)} /><MethodLogo name={method.name} decorative /></label>)}</div> : <p>No local methods are currently available for this currency. {support}</p>}
      </fieldset>
      <div className="payment-international"><p>International payments</p><div>{['PayPal', 'Visa', 'Mastercard'].map(method => <button key={method} type="button" onClick={() => modal.current?.showModal()}><CreditCard size={18} aria-hidden="true" />{method}</button>)}</div></div>
      {!configBusy && config && !config.configured && <div className="payment-notice" role="status">Online payments are being set up. {support}</div>}
-     <button type="submit" className="payment-submit" disabled={busy || configBusy || !config?.configured || !form.method}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />Continue to Pesepay</>}</button>
-     <p className="payment-small text-center">Complete your payment on Pesepay, then return here for confirmation.</p>
-    </form>
+     {selectedMethod && <section id="payment-entry" className="payment-entry" aria-labelledby="payment-entry-title"><h2 id="payment-entry-title"><span className="payment-step-number">2</span> Payment details</h2>
+      {network && <div className="payment-mobile-field"><label htmlFor="payment-mobile">{network === 'onemoney' ? 'OneMoney' : 'EcoCash'} mobile number<input id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} onChange={event => change('phone', event.target.value)} onBlur={() => setPhoneTouched(true)} aria-invalid={Boolean(phoneError)} aria-describedby="payment-mobile-feedback" placeholder={network === 'onemoney' ? '0710 000 000' : '0770 000 000'} disabled={busy} /></label><p id="payment-mobile-feedback" className={`payment-field-feedback ${phoneError ? 'is-error' : ''}`} role={phoneError ? 'alert' : undefined}>{phoneError || (network === 'onemoney' ? 'OneMoney: 071. You can also use +263.' : 'EcoCash: 077, 078 or 079. You can also use +263.')}</p></div>}
+      <div className="payment-fields"><label>Amount to pay<input name="amount" type="number" min={selectedMethod.minimumAmount} max={selectedMethod.maximumAmount} step="0.01" inputMode="decimal" required value={form.amount} onChange={event => change('amount', event.target.value)} aria-invalid={Boolean(amountError)} aria-describedby="payment-amount-feedback" placeholder="0.00" disabled={busy} /></label><label>Invoice or project reference<input name="invoice" required maxLength={120} value={form.invoice} onChange={event => change('invoice', event.target.value)} placeholder="Reference from your quote or invoice" disabled={busy} /></label></div>
+      <p id="payment-amount-feedback" className={`payment-field-feedback ${amountError ? 'is-error' : ''}`} role={amountError ? 'alert' : undefined}>{amountError || `Use the ${form.currency} amount agreed on your quote or invoice.`}</p>
+      <details className="payment-optional"><summary>Add receipt contact details (optional)</summary><div className="payment-fields"><label>Payer name<input name="name" autoComplete="name" maxLength={100} value={form.name} onChange={event => change('name', event.target.value)} disabled={busy} /></label><label>Email address<input name="email" type="email" autoComplete="email" maxLength={254} value={form.email} onChange={event => change('email', event.target.value)} disabled={busy} /></label></div></details>
+      <button type="submit" className="payment-submit" disabled={busy || configBusy || !config?.configured || !phoneValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{directMobile ? 'Request payment' : 'Continue to Pesepay'}</>}</button>
+      <p className="payment-small text-center">{directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : 'Enter your payment-authorisation details securely on Pesepay. We will confirm the result when you return.'}</p>
+     </section>}
+        </form>
    </> : <>
     <div className="payment-outcome" role="status">
-     <div className={`payment-state-icon ${paid ? 'is-paid' : pending && !checkError ? 'is-pending' : 'is-unconfirmed'}`}>{paid ? <Check size={54} strokeWidth={4} /> : pending && !checkError ? <LoaderCircle size={54} className="payment-spinner" /> : <CircleAlert size={54} />}</div>
-     <h1>{paid ? 'Payment Successful' : checkError ? 'Confirmation unavailable' : pending ? 'Processing Your Payment' : receipt?.status === 'REVERSED' ? 'Payment Reversed' : receipt?.status === 'UNCONFIRMED' || receipt?.status === 'VERIFICATION_FAILED' ? 'Payment needs confirmation' : 'Payment not completed'}</h1>
-     <p>{paid ? 'Your payment has been processed successfully. Thank you for your trust and support.' : checkError || (pending ? 'Please wait while we securely confirm your transaction with Pesepay.' : 'Please contact our support team with your reference before making another payment.')}</p>
+     <div className={`payment-state-icon ${paid ? 'is-paid' : pending && !checkError && !pollExpired ? 'is-pending' : 'is-unconfirmed'}`}>{paid ? <Check size={54} strokeWidth={4} /> : pending && !checkError && !pollExpired ? <LoaderCircle size={54} className="payment-spinner" /> : <CircleAlert size={54} />}</div>
+     <h1>{paid ? 'Payment Successful' : checkError ? 'Confirmation unavailable' : pending ? (pollExpired ? 'Payment awaiting confirmation' : 'Processing Your Payment') : receipt?.status === 'REVERSED' ? 'Payment Reversed' : receipt?.status === 'UNCONFIRMED' || receipt?.status === 'VERIFICATION_FAILED' ? 'Payment needs confirmation' : 'Payment not completed'}</h1>
+     <p>{paid ? 'Your payment has been processed successfully. Thank you for your trust and support.' : checkError || (pending ? (pollExpired ? 'This is taking longer than expected. Check your payment status again or contact support before making another payment.' : receipt?.status === 'UNCONFIRMED' ? 'We are checking whether the payment request reached your provider. Please do not start another payment; use Check payment status or contact support.' : 'Please wait while we securely confirm your transaction with Pesepay.') : 'Please contact our support team with your reference before making another payment.')}</p>
      {!paid && <div className="payment-small">{support}</div>}
     </div>
-    {receipt && (!pending || checkError) && <section className="payment-details" aria-labelledby="payment-details-title"><h2 id="payment-details-title">Payment details</h2><div className="payment-payer"><div><span>Payer Name</span><strong>{receipt.name}</strong></div><UserRound size={58} aria-hidden="true" /></div><div className="payment-detail-row"><CalendarDays aria-hidden="true" /><div><span>Payment Date &amp; Time</span><strong>{dateLabel(receipt.date)}</strong></div></div><div className="payment-detail-row"><CreditCard aria-hidden="true" /><div><span>Payment Method</span><strong className="payment-method-value">{receipt.method}<MethodLogo name={receipt.method} /></strong></div></div><div className="payment-detail-row"><ShieldCheck aria-hidden="true" /><div><span>Transaction Reference / Approval Code</span><strong>{receipt.reference || receipt.id}</strong></div></div><div className="payment-detail-row"><Wallet aria-hidden="true" /><div><span>Invoice / Project Reference</span><strong>{receipt.invoice}</strong></div></div><div className={`payment-amount-panel ${paid ? 'is-paid' : ''}`}><Coins size={48} aria-hidden="true" /><div><span>{paid ? 'Amount Paid' : 'Payment Amount'}</span><strong>{receipt.currency} {receipt.amount.toFixed(2)}</strong>{paid && receipt.invoiceAmount !== undefined && receipt.invoiceAmount !== receipt.amount && <span className="payment-small">Invoice amount: {receipt.currency} {receipt.invoiceAmount.toFixed(2)}</span>}</div></div></section>}
+    {receipt && (!pending || checkError) && <section className="payment-details" aria-labelledby="payment-details-title"><h2 id="payment-details-title">Payment details</h2>{receipt.name && <div className="payment-payer"><div><span>Payer Name</span><strong>{receipt.name}</strong></div><UserRound size={58} aria-hidden="true" /></div>}<div className="payment-detail-row"><CalendarDays aria-hidden="true" /><div><span>Payment Date &amp; Time</span><strong>{dateLabel(receipt.date)}</strong></div></div><div className="payment-detail-row"><CreditCard aria-hidden="true" /><div><span>Payment Method</span><strong className="payment-method-value"><MethodLogo name={receipt.method} /></strong></div></div><div className="payment-detail-row"><ShieldCheck aria-hidden="true" /><div><span>Transaction Reference / Approval Code</span><strong>{receipt.reference || receipt.id}</strong></div></div><div className="payment-detail-row"><Wallet aria-hidden="true" /><div><span>Invoice / Project Reference</span><strong>{receipt.invoice}</strong></div></div><div className={`payment-amount-panel ${paid ? 'is-paid' : ''}`}><Coins size={48} aria-hidden="true" /><div><span>{paid ? 'Amount Paid' : 'Payment Amount'}</span><strong>{receipt.currency} {receipt.amount.toFixed(2)}</strong>{paid && receipt.invoiceAmount !== undefined && receipt.invoiceAmount !== receipt.amount && <span className="payment-small">Invoice amount: {receipt.currency} {receipt.invoiceAmount.toFixed(2)}</span>}</div></div></section>}
     <div className="payment-receipt-actions">{!paid && <button type="button" onClick={() => void checkStatus()} disabled={checking}>{checking ? 'Checking…' : 'Check payment status'}</button>}{!paid && continueUrl && receipt?.status === 'INITIATED' && <a href={continueUrl}>Continue payment on Pesepay</a>}{paid && <><button type="button" onClick={() => window.print()}>Print receipt</button><button type="button" onClick={anotherPayment}>Make another payment</button></>}</div>
     {paid && <div className="payment-thanks"><Heart size={30} fill="currentColor" /><h2>Thank You!</h2><p>We appreciate your continued support.</p></div>}
    </>}

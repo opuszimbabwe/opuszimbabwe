@@ -471,3 +471,32 @@ textarea.contact-field-control { resize: vertical; min-height: 160px; }
 .payment-pending .payment-header > p { display: none; }
 .payment-pending .payment-logo { width: min(340px,65%); max-width: 340px; }
 .payment-pending .payment-outcome { padding-top: 56px; }
+
+/* Choose the provider first; expose only the information its flow needs. */
+.payment-header { flex-direction: column; justify-content: center; gap: 18px; }
+.payment-header .payment-logo { width: min(300px,70%); max-width: 300px; }
+.payment-currency-row { display: flex; justify-content: flex-end; margin-bottom: 24px; }
+.payment-currency-row label { width: 150px; }
+.payment-methods-first { margin-top: 0; padding-top: 0; border: 0; }
+.payment-methods-first legend { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.payment-step-number { display: inline-grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: #f2f4f7; color: #65718a; font-size: 13px; font-weight: 600; }
+.payment-method-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.payment-form .payment-method { position: relative; flex-direction: column; align-items: center; justify-content: center; min-height: 116px; padding: 20px 34px; }
+.payment-method input { position: absolute; right: 12px; top: 12px; width: 16px; height: 16px; }
+.payment-method:focus-within { outline: 2px solid #E85D2A; outline-offset: 3px; }
+.payment-brand-artwork { position: relative; display: block; overflow: hidden; flex-shrink: 0; max-width: 100%; }
+.payment-method .payment-brand-artwork { --brand-height: 70px; }
+.payment-brand-artwork img { display: block; }
+.payment-provider-fallback { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; font-weight: 600; }
+.payment-entry { border-top: 1px solid #e1e5ec; margin-top: 32px; padding-top: 26px; }
+.payment-entry h2 { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; margin-bottom: 24px; }
+.payment-mobile-field { margin-bottom: 22px; }
+.payment-field-feedback { font-size: 12px; color: #65718a; margin-top: 10px; line-height: 1.7; }
+.payment-field-feedback.is-error { color: #b91c1c; }
+.payment-form input[aria-invalid=true] { border-color: #b91c1c; }
+.payment-optional { margin-top: 22px; font-size: 13px; color: #65718a; }
+.payment-optional summary { cursor: pointer; }
+.payment-optional > div { margin-top: 18px; }
+@media (max-width: 599px) { .payment-form .payment-method { padding: 20px; min-height: 104px; } .payment-method .payment-brand-artwork { --brand-height: 50px; } .payment-methods-first legend,.payment-entry h2 { font-size: 14px; } .payment-currency-row { justify-content: flex-start; } }
+/* Decorative ribbons must not make focused inputs scroll the card sideways. */
+.payment-page,.payment-sheet { overflow: clip; }
