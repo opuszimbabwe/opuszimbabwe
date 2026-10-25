@@ -272,3 +272,27 @@ Latest services request: services overview follows reference split hero/image gr
   system fallback; missing device fallback fonts must not block receipt export.
 - New browser fixture script scripts/test-workspace-refresh.cjs covers controls,
   responsive layout, artwork visibility, receipts, native share and reversals.
+
+## RGBA gradients / independent service media — 2026-10-25
+- Shared strict colour/gradient parser supports RGBA alpha0–1, RGB0–255, transparent,
+  hex3/4/6/8 and 2–12 gradient stops/positions. Common visual editor adds/removes/
+  reorders stops with per-stop alpha, angle and raw CSS. Renderers canonicalize full
+  linear-gradient wrappers for live previews too. No arbitrary CSS/URL functions.
+- Hero background_rotation none/static/slides is independent of foreground rotation.
+  Timers, pause, hover pause and reduced motion cover both layers. Legacy normalizer
+  preserves the previously displayed first background and background-only rotation.
+- All upload buttons use a browse/drop/paste dialog. Direct drop/paste image zones
+  share existing target-aware, concurrent-safe R2 upload flow. Uploads remain drafts
+  until saved; local files never navigate the editor away. Max5MB/one file per target.
+- service_presentations settings namespace separates home/overview/detail hero/
+  detail showcase/detail illustration media, colours/gradients, overlays and text.
+  Individual service save validates first and commits a single D1 batch, merging
+  only that service ID so other services' settings cannot be overwritten.
+- Snapshot legacy media defaults before deployment with the initializer documented
+  in docs/ADMIN-DESIGN-CONTROLS.md; existing placement settings win. This also freezes
+  copied showcase slides so changing project screenshots cannot alter service pages.
+- Graphic category uploads/styles remain separate. Its removed post-hero showcase
+  remains hidden and has no ineffective editor option. No payment/registrar changes.
+- Tests: strict RGBA/gradient safety and roundtrips; isolated SQLite atomicity and
+  namespace preservation; browser fixtures for stop editing, simultaneous/static
+  background modes, pause, drop/paste/direct/modal uploads and responsive controls.

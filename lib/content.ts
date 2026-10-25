@@ -1,3 +1,4 @@
+import {normalizePresentations,type ServicePresentations} from './service-presentations';
 import {parseGraphicDesign,type GraphicClassDesign} from './graphic-design';
 import { DEFAULT_HERO_DESIGN, normalizeHeroDesign, type HeroDesign } from './hero-design';
 import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN, normalizeDesign, type SectionDesign } from './section-design';
@@ -165,6 +166,7 @@ export type HomeSectionsConfig = {
 
 export type SiteSettings = {
   hero_design: HeroDesign;
+  service_presentations:ServicePresentations;
   cta_design: SectionDesign;
   contact_hero_design: SectionDesign;
   hero_background: string;
@@ -753,6 +755,7 @@ export const DEFAULT_SERVICE_PAGES: Record<string, ServicePageDetails> = {
 // Defaults for the site-wide settings row.
 export const DEFAULT_SETTINGS: SiteSettings = {
   hero_design: DEFAULT_HERO_DESIGN,
+  service_presentations:{home:{},services:{},detail_hero:{},detail_showcase:{},detail_visual:{}},
   cta_design: DEFAULT_CTA_DESIGN,
   contact_hero_design: DEFAULT_CONTACT_DESIGN,
   hero_background: '/images/hero-bg.jpg',
@@ -1312,7 +1315,7 @@ function normalizeExtras(raw: any): ServiceExtras | null {
     hero_background: str(raw.hero_background, '').slice(0, 500),
     visual_background: str(raw.visual_background, staticExtras[String(raw.service_id)]?.visual_background || '').slice(0, 500),
     hero_background_kind: kind,
-    hero_gradient: str(raw.hero_gradient, '160deg,#1a1a1a,#454545').slice(0, 200),
+    hero_gradient: str(raw.hero_gradient, '160deg,#1a1a1a,#454545').slice(0, 2000),
     why_items: why,
     related_items: related,
   };
@@ -1465,24 +1468,24 @@ function normalizeHomeSections(raw: unknown, fallback: HomeSectionsConfig): Home
   return {
     hero_headline_main: str(s.hero_headline_main, fallback.hero_headline_main).slice(0, 300),
     hero_headline_accent: str(s.hero_headline_accent, fallback.hero_headline_accent).slice(0, 300),
-    hero_bg: str(s.hero_bg, fallback.hero_bg).slice(0, 20),
+    hero_bg: str(s.hero_bg, fallback.hero_bg).slice(0, 100),
     payment_label: str(s.payment_label, fallback.payment_label).slice(0, 200),
     services_heading: str(s.services_heading, fallback.services_heading).slice(0, 300),
-    services_bg: str(s.services_bg, fallback.services_bg).slice(0, 20),
+    services_bg: str(s.services_bg, fallback.services_bg).slice(0, 100),
     partners_heading: str(s.partners_heading, fallback.partners_heading).slice(0, 300),
     partners_subheading: str(s.partners_subheading, fallback.partners_subheading).slice(0, 500),
-    partners_bg: str(s.partners_bg, fallback.partners_bg).slice(0, 20),
+    partners_bg: str(s.partners_bg, fallback.partners_bg).slice(0, 100),
     how_it_works_heading: str(s.how_it_works_heading, fallback.how_it_works_heading).slice(0, 300),
-    how_it_works_bg: str(s.how_it_works_bg, fallback.how_it_works_bg).slice(0, 20),
+    how_it_works_bg: str(s.how_it_works_bg, fallback.how_it_works_bg).slice(0, 100),
     projects_heading: str(s.projects_heading, fallback.projects_heading).slice(0, 300),
-    projects_bg: str(s.projects_bg, fallback.projects_bg).slice(0, 20),
+    projects_bg: str(s.projects_bg, fallback.projects_bg).slice(0, 100),
     why_heading: str(s.why_heading, fallback.why_heading).slice(0, 300),
-    why_bg: str(s.why_bg, fallback.why_bg).slice(0, 20),
+    why_bg: str(s.why_bg, fallback.why_bg).slice(0, 100),
     faq_heading: str(s.faq_heading, fallback.faq_heading).slice(0, 300),
-    faq_bg: str(s.faq_bg, fallback.faq_bg).slice(0, 20),
+    faq_bg: str(s.faq_bg, fallback.faq_bg).slice(0, 100),
     cta_heading: str(s.cta_heading, fallback.cta_heading).slice(0, 300),
     cta_subheading: str(s.cta_subheading, fallback.cta_subheading).slice(0, 500),
-    cta_bg: str(s.cta_bg, fallback.cta_bg).slice(0, 20),
+    cta_bg: str(s.cta_bg, fallback.cta_bg).slice(0, 100),
   };
 }
 
@@ -1576,6 +1579,7 @@ export function normalizeContent(raw: any): SiteContent | null {
   const rawSettings = raw.settings && typeof raw.settings === 'object' ? raw.settings : {};
   const hero = str((rawSettings as any).hero_background, '');
   const settings: SiteSettings = {
+    service_presentations:normalizePresentations((rawSettings as any).service_presentations,services,extras,projects),
     hero_design: normalizeHeroDesign((rawSettings as any).hero_design),
     cta_design: normalizeDesign((rawSettings as any).cta_design, DEFAULT_CTA_DESIGN),
     contact_hero_design: normalizeDesign((rawSettings as any).contact_hero_design, DEFAULT_CONTACT_DESIGN),

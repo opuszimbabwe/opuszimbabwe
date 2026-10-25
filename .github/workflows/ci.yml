@@ -28,9 +28,11 @@ jobs:
 
       - name: Payment gateway and security checks (isolated mocks)
         run: |
-          node_modules/.bin/esbuild functions/api/payments/create.ts functions/api/payments/status.ts functions/api/payments/webhook.ts functions/api/payments/config.ts functions/api/domains/orders.ts functions/api/domains/catalogue.ts functions/api/domains/check.ts functions/_lib/domains.ts --outbase=functions --outdir=/tmp/opus-payments-test --bundle --platform=node --format=cjs
+          node_modules/.bin/esbuild functions/api/payments/create.ts functions/api/payments/status.ts functions/api/payments/webhook.ts functions/api/payments/config.ts functions/api/domains/orders.ts functions/api/domains/catalogue.ts functions/api/domains/check.ts functions/_lib/domains.ts functions/api/admin/services.ts --outbase=functions --outdir=/tmp/opus-payments-test --bundle --platform=node --format=cjs
           node scripts/test-payments.cjs
           node scripts/test-domains.cjs
+          node_modules/.bin/esbuild lib/service-presentations.ts --bundle --platform=node --format=cjs --outfile=/tmp/opus-service-presentations-lib.cjs
+          node scripts/test-service-presentations.cjs
           node_modules/.bin/esbuild scripts/test-content-settings.ts --bundle --platform=node --format=cjs --outfile=/tmp/opus-content-settings-test.cjs
           node --test /tmp/opus-content-settings-test.cjs
 

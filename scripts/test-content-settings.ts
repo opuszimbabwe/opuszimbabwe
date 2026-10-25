@@ -125,3 +125,12 @@ test('graphic design class controls survive admin saves and public normalization
  for(const bad of [{image:'javascript:alert(1)'},{overlay_gradient:'url(https://evil.example)'},{radius:500},{title_weight:725},{body_size:2},{shape:'unsafe'},{text_color:'red'}])assert.equal(sanitizeSetting('service_pages',{'graphic-design':{...page,what_items:[{title:'Brand identity',body:'',design:{...design,...bad}}]}}),null);
  const cleared=sanitizeSetting('service_pages',{'graphic-design':{...page,what_items:[{title:'Brand identity',body:'',design:{...design,image:''}}]}});assert.ok(cleared);assert.equal(JSON.parse(cleared)['graphic-design'].what_items[0].design.image,'');
 });
+
+test('RGBA and multi-stop gradients retain per-colour alpha safely',()=>{
+ const gradient='125.5deg,rgba(0, 0, 0, 0) 0%,rgba(232, 93, 42, 0.3) 25%,#ff660080 50%,rgb(255, 255, 255) 75%,transparent 100%';
+ const stored=sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,background_color:'rgba(0, 0, 0, 0)',overlay_color:'rgba(20, 30, 40, 0.75)',overlay_kind:'gradient',overlay_gradient:gradient});assert.ok(stored);assert.equal(JSON.parse(stored).overlay_gradient,gradient);
+ const pages=normalizeContent(raw({cta_design:JSON.parse(stored),home_sections:{hero_bg:'rgba(25, 35, 45, 0.1234)'}}));assert.ok(pages);assert.equal(pages.settings.cta_design.background_color,'rgba(0, 0, 0, 0)');assert.equal(pages.settings.home_sections.hero_bg,'rgba(25, 35, 45, 0.1234)');
+ for(const colour of ['rgba(256,0,0,0)','rgba(0,0,0,-1)','rgba(0,0,0,1.1)','var(--secret)','url(https://evil.example)','rgb(0,0,Infinity)'])assert.equal(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_color:colour}),null);
+ for(const gradient of ['90deg,rgba(0,0,0,0),url(https://evil.example)','90deg,#fff,rgba(0,0,0,2)','90deg,#fff,#000);color:red'])assert.equal(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:gradient}),null);
+ const many='90deg,'+Array.from({length:12},(_,i)=>`rgba(${i}, 0, 0, ${i/12})`).join(',');assert.ok(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:many}));assert.equal(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:many+',#fff'}),null);
+});

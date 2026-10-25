@@ -1,4 +1,5 @@
 'use client';
+import {gradientCss} from '@/lib/colors';
 import Link from 'next/link';
 import SolutionFinder from '@/components/SolutionFinder';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
@@ -45,12 +46,15 @@ function RotatingServiceWords({ words, index, animate }: { words: string[]; inde
 
 export function HomeHeroView({ design, sections, cycles, loading = false, preview = false }: { design: HeroDesign; sections: HomeSectionsConfig; cycles: HeroCycle[]; loading?: boolean; preview?: boolean }) {
   const [index, setIndex] = useState(0);
+  const [backgroundIndex,setBackgroundIndex]=useState(0);
   const [hovered, setHovered] = useState(false);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const items = cycles.length ? cycles : DEFAULT_HERO_CYCLES;
-  const backgrounds = design.backgrounds.length ? design.backgrounds : design.background.background_image ? [{ id: 'single', image: design.background.background_image }] : [];
-  const count = design.rotation === 'services' ? items.length : design.rotation === 'backgrounds' ? backgrounds.length : 1;
+  const backgrounds = design.background_rotation==='none'?[]:design.background_rotation==='slides'&&design.backgrounds.length?design.backgrounds:design.background.background_image?[{id:'single',image:design.background.background_image}]:design.backgrounds.slice(0,1);
+  const backgroundCount=design.background_rotation==='slides'?backgrounds.length:1;
+  const activeBackground=backgroundCount?backgroundIndex%backgroundCount:0;
+  const count = design.rotation === 'services' ? items.length : 1;
   const activeIndex = count ? index % count : 0;
   const activeService = design.rotation === 'services' ? activeIndex : 0;
   const stopped = paused || reducedMotion || (design.pause_on_hover && hovered);
@@ -65,6 +69,8 @@ export function HomeHeroView({ design, sections, cycles, loading = false, previe
     const timer = window.setInterval(() => setIndex(i => (i + 1) % count), design.interval_ms);
     return () => window.clearInterval(timer);
   }, [loading, stopped, count, design.rotation, design.interval_ms, preview]);
+  useEffect(()=>{setBackgroundIndex(0)},[design.background_rotation,backgroundCount]);
+  useEffect(()=>{if(loading||stopped||backgroundCount<2||preview)return;const timer=window.setInterval(()=>setBackgroundIndex(i=>(i+1)%backgroundCount),design.interval_ms);return()=>clearInterval(timer)},[loading,stopped,backgroundCount,design.interval_ms,preview]);
   const showMedia = design.show_media && design.layout !== 'full_bleed';
   const Heading = preview ? 'h2' : 'h1';
   const style = {
@@ -81,8 +87,8 @@ export function HomeHeroView({ design, sections, cycles, loading = false, previe
   const panelStyle = design.text_panel ? { padding: design.panel_padding, borderRadius: design.panel_radius } : {};
   return <section className={`home-hero-shell${preview ? ' hero-editor-preview' : ''}`} data-panel={design.text_panel} data-layout={design.layout} data-media={showMedia} data-position={design.text_position} data-vertical={design.vertical_align} data-animation={design.animation} data-headline-mode={design.headline_mode} style={style} onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)}>
     <div className="home-hero-surface" style={{ borderRadius: corners }}>
-      <div className="home-hero-backgrounds" aria-hidden="true">{backgrounds.map((slide, i) => <img key={slide.id} src={slide.image} alt="" fetchPriority={i === 0 && !preview ? 'high' : 'auto'} className="home-hero-background" data-active={design.rotation === 'backgrounds' ? i === activeIndex : i === 0} style={{ objectPosition: `${design.background_x}% ${design.background_y}%` }} />)}</div>
-      <div className="home-hero-overlay" aria-hidden="true" data-placement={design.overlay_placement} style={{ background: design.background.overlay_kind === 'gradient' ? `linear-gradient(${design.background.overlay_gradient})` : design.background.overlay_color, opacity: design.background.overlay_opacity, width: design.overlay_placement === 'full' ? '100%' : `${design.overlay_width}%` }} />
+      <div className="home-hero-backgrounds" aria-hidden="true">{backgrounds.map((slide, i) => <img key={slide.id} src={slide.image} alt="" fetchPriority={i === 0 && !preview ? 'high' : 'auto'} className="home-hero-background" data-active={i===activeBackground} style={{ objectPosition: `${design.background_x}% ${design.background_y}%` }} />)}</div>
+      <div className="home-hero-overlay" aria-hidden="true" data-placement={design.overlay_placement} style={{ background: design.background.overlay_kind === 'gradient' ? gradientCss(design.background.overlay_gradient) : design.background.overlay_color, opacity: design.background.overlay_opacity, width: design.overlay_placement === 'full' ? '100%' : `${design.overlay_width}%` }} />
       <div className="home-hero-grid">
         <div className="home-hero-text" style={{ textAlign: design.text_align, color: design.body_color }}>
           <div className="home-hero-copy" style={panelStyle}>
@@ -105,7 +111,7 @@ export function HomeHeroView({ design, sections, cycles, loading = false, previe
           </div>)}</div>
         </div>}
       </div>
-      {count > 1 && design.rotation !== 'none' && !preview && <button type="button" className="hero-rotation-control" onClick={() => setPaused(v => !v)} aria-label={paused ? 'Play hero rotation' : 'Pause hero rotation'} aria-pressed={paused}>{paused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}{paused ? 'Play' : 'Pause'}</button>}
+      {(count>1||backgroundCount>1) && !preview && <button type="button" className="hero-rotation-control" onClick={() => setPaused(v => !v)} aria-label={paused ? 'Play hero rotation' : 'Pause hero rotation'} aria-pressed={paused}>{paused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}{paused ? 'Play' : 'Pause'}</button>}
     </div>
   </section>;
 }

@@ -1,5 +1,8 @@
 'use client';
 import { HomeHeroView } from '@/components/HomeHero';
+import ColorControl from './ColorControl';
+import GradientControl from './GradientControl';
+import UploadDropZone from './UploadDropZone';
 import ValueSlider from '@/components/admin/ValueSlider';
 import { DEFAULT_HERO_DESIGN, heroPreset, validHeroDesign, type HeroDesign } from '@/lib/hero-design';
 import type { HeroCycle, HomeSectionsConfig } from '@/lib/content';
@@ -13,12 +16,10 @@ function Text({ label, value, onChange, multiline = false }: { label: string; va
 function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return <label className="flex items-center gap-3 text-sm font-medium"><input className="accent-[#E85D2A]" type="checkbox" checked={value} onChange={e => onChange(e.target.checked)} />{label}</label>;
 }
-function Color({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return <label className="flex items-center justify-between gap-3 text-sm font-medium">{label}<input aria-label={label} type="color" value={value} onChange={e => onChange(e.target.value)} className="h-10 w-16" /></label>;
-}
+const Color=ColorControl;
 export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave, busy, sections, cycles }: { value: HeroDesign; onChange: (value: HeroDesign) => void; onUpload: (target: string) => void; onSave: () => void; busy: boolean; sections: HomeSectionsConfig; cycles: HeroCycle[] }) {
   const patch = (v: Partial<HeroDesign>) => onChange({ ...d, ...v });
-  const set = (key: keyof HeroDesign, value: unknown) => patch({ [key]: value });
+  const set = (key: keyof HeroDesign, value: unknown) => patch({[key]:value,...(key==='rotation'&&value==='backgrounds'?{background_rotation:'slides' as const}:{})});
   const range = (key: keyof HeroDesign, label: string, min: number, max: number, step = 1) => <ValueSlider defaultValue={DEFAULT_HERO_DESIGN[key] as number} key={key} label={label} value={d[key] as number} min={min} max={max} step={step} onChange={v => set(key, v)} />;
   const color = (key: keyof HeroDesign, label: string) => <Color key={key} label={label} value={d[key] as string} onChange={v => set(key, v)} />;
   const select = (key: keyof HeroDesign, label: string, choices: [string, string][]) => <Select label={label} value={String(d[key])} choices={choices} onChange={v => set(key, (key === 'heading_weight' || key === 'caption_weight') ? Number(v) : v)} />;
@@ -26,7 +27,7 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
     <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-xl font-bold">Home Hero Design Studio</h2><p className="mt-2 text-sm text-black/60">Choose a starting point, adjust the controls, then save. Poppins stays consistent across every layout.</p></div><button disabled={busy || !validHeroDesign(d)} onClick={onSave} className="rounded-full bg-[#E85D2A] px-6 py-3 text-sm font-semibold text-white disabled:opacity-50">Save hero design</button></div>
     <p className="text-sm text-black/60">1. Choose a preset → 2. Adjust the sections below → 3. Review the layout → 4. Save hero design.</p>
     <div className="flex flex-wrap gap-2" aria-label="Hero presets">{([['current', 'Zimbabwe services — images left'], ['classic', 'Classic split'], ['campaign', 'Campaign banner'], ['full_bleed', 'Full-bleed centred'], ['centered_card', 'Centred card']] as const).map(([name, label]) => <button type="button" key={name} onClick={() => onChange(heroPreset(name))} className="rounded-full border border-black/20 bg-white px-4 py-2 text-sm font-medium hover:border-[#E85D2A]">{label}</button>)}</div>
-    <p className="text-sm text-black/60">The campaign preset provides a McAfee-style background banner with fixed text and two actions. Use your own images and wording. Background rotation never changes the service text.</p>
+    <p className="text-sm text-black/60">The campaign preset provides a McAfee-style background banner with fixed text and two actions. Use your own images and wording. Background images can rotate alongside service words and foreground images. Each layer is controlled separately.</p>
     <details open className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Layout & spacing</summary><div className="mt-5 grid gap-5 md:grid-cols-2">
       {select('layout', 'Hero layout', [['split', 'Current split layout'], ['full_bleed', 'Full-bleed background'], ['card', 'Inset hero card']])}
       {select('text_align', 'Text alignment', [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']])}
@@ -63,16 +64,13 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       {d.secondary_action === 'link' && <Text label="Secondary button URL" value={d.secondary_href} onChange={v => patch({ secondary_href: v })} />}
     </div></details>
     <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Background & overlay</summary><div className="mt-5 grid gap-5 md:grid-cols-2">
+      {select('background_rotation','Background image motion',[['none','No background image'],['static','Static background image'],['slides','Rotating background images']])}
       <Toggle label="Use existing homepage background colour" value={d.use_existing_background} onChange={v => patch({ use_existing_background: v })} />
       <Color label="Hero background colour" value={d.background.background_color} onChange={v => patch({ use_existing_background: false, background: { ...d.background, background_color: v } })} />
-      <div><Text label="Static background image URL" value={d.background.background_image} onChange={v => patch({ background: { ...d.background, background_image: v } })} /><button type="button" disabled={busy} onClick={() => onUpload('heroimage:background')} className="mt-2 rounded-full border px-4 py-2 text-sm disabled:opacity-50">Upload hero background</button></div>
+      <div><Text label="Static background image URL" value={d.background.background_image} onChange={v => patch({ background: { ...d.background, background_image: v } })} /><UploadDropZone onSelect={()=>onUpload('heroimage:background')}><button type="button" disabled={busy} onClick={() => onUpload('heroimage:background')} className="mt-2 rounded-full border px-4 py-2 text-sm disabled:opacity-50">Upload hero background</button></UploadDropZone></div>
       <Select label="Hero overlay type" value={d.background.overlay_kind} choices={[["solid", "Plain colour"], ["gradient", "Gradient"]]} onChange={v => patch({ background: { ...d.background, overlay_kind: v as 'solid' | 'gradient' } })} />
       <Color label="Hero overlay colour" value={d.background.overlay_color} onChange={v => patch({ background: { ...d.background, overlay_color: v } })} />
-      {d.background.overlay_kind === 'gradient' && <div className="space-y-4">
-        <ValueSlider defaultValue={160} label="Hero gradient angle (degrees)" value={parseInt(d.background.overlay_gradient) || 0} min={0} max={360} onChange={angle => patch({ background: { ...d.background, overlay_gradient: `${angle}deg,${d.background.overlay_gradient.split(',').slice(1).join(',')}` } })} />
-        {d.background.overlay_gradient.split(',').slice(1).map((colour, i) => <Color key={i} label={`Hero gradient colour ${i + 1}`} value={colour.trim()} onChange={colour => { const parts = d.background.overlay_gradient.split(','); parts[i + 1] = colour; patch({ background: { ...d.background, overlay_gradient: parts.join(',') } }); }} />)}
-        <Text label="Hero overlay gradient (angledeg,#colour,#colour)" value={d.background.overlay_gradient} onChange={v => patch({ background: { ...d.background, overlay_gradient: v } })} />
-      </div>}
+      {d.background.overlay_kind==='gradient'&&<GradientControl label="Hero overlay gradient" value={d.background.overlay_gradient} onChange={overlay_gradient=>patch({background:{...d.background,overlay_gradient}})}/>}
       <ValueSlider defaultValue={DEFAULT_HERO_DESIGN.background.overlay_opacity} label="Hero overlay opacity" value={d.background.overlay_opacity} min={0} max={1} step={0.05} onChange={v => patch({ background: { ...d.background, overlay_opacity: v } })} />
       {select('overlay_placement', 'Overlay position', [['full', 'Whole hero'], ['left', 'Left'], ['center', 'Centre'], ['right', 'Right']])}
       {range('overlay_width', 'Overlay width (%)', 10, 100)}{range('background_x', 'Background horizontal focal point (%)', 0, 100)}{range('background_y', 'Background vertical focal point (%)', 0, 100)}
@@ -81,7 +79,7 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
     </div></details>
     <details className="rounded-2xl border bg-white p-5"><summary className="cursor-pointer font-semibold">Foreground image</summary><div className="mt-5 grid gap-5 md:grid-cols-2">
       <Toggle label="Show foreground image in split/card layouts" value={d.show_media} onChange={v => patch({ show_media: v })} />
-      <div><Text label="Foreground image override URL" value={d.media_image} onChange={v => patch({ media_image: v })} /><button type="button" disabled={busy} onClick={() => onUpload('heroimage:foreground')} className="mt-2 rounded-full border px-4 py-2 text-sm disabled:opacity-50">Upload foreground image</button></div>
+      <div><Text label="Foreground image override URL" value={d.media_image} onChange={v => patch({ media_image: v })} /><UploadDropZone onSelect={()=>onUpload('heroimage:foreground')}><button type="button" disabled={busy} onClick={() => onUpload('heroimage:foreground')} className="mt-2 rounded-full border px-4 py-2 text-sm disabled:opacity-50">Upload foreground image</button></UploadDropZone></div>
       {select('media_fit', 'Foreground image fit', [['contain', 'Fit whole image'], ['cover', 'Fill and crop']])}{range('media_height', 'Foreground image height (px)', 200, 700)}
       {range('caption_gap', 'Image-to-description gap (px)', 0, 48)}{range('caption_size', 'Image description size (px)', 14, 28)}
       {select('caption_weight', 'Poppins image description weight', [['300', 'Light'], ['400', 'Regular'], ['500', 'Medium'], ['600', 'Semibold'], ['700', 'Bold']])}
@@ -91,10 +89,10 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       {select('animation', 'Transition style', [['fade', 'Fade'], ['slide', 'Slide'], ['zoom', 'Zoom'], ['none', 'Instant change']])}
       {range('interval_ms', 'Time per slide (ms)', 3000, 30000, 500)}{range('transition_ms', 'Transition duration (ms)', 0, 2000, 50)}
       <Toggle label="Pause rotation while hovering the hero" value={d.pause_on_hover} onChange={v => patch({ pause_on_hover: v })} />
-    </div><p className="mt-5 text-sm text-black/60">Add background slides below. With none, the static background image is used. Service cycles are managed in Hero & Sections. Visitors can pause rotation; reduced-motion users see a static slide.</p>
+    </div><p className="mt-5 text-sm text-black/60">Add background slides below and choose Rotating background images. The foreground service carousel can keep rotating at the same time. Service cycles are managed in Hero & Sections. Visitors can pause rotation; reduced-motion users see a static slide.</p>
       <div className="mt-4 space-y-4">{d.backgrounds.map((slide, index) => <div key={slide.id} className="rounded-xl border p-4">
         <Text label={`Background slide ${index + 1} URL`} value={slide.image} onChange={image => patch({ backgrounds: d.backgrounds.map(s => s.id === slide.id ? { ...s, image } : s) })} />
-        <div className="mt-3 flex flex-wrap gap-2"><button type="button" disabled={busy} className="rounded-full border px-3 py-2 text-sm disabled:opacity-50" onClick={() => onUpload(`heroslide:${slide.id}`)}>Upload slide {index + 1}</button>
+        <div className="mt-3 flex flex-wrap gap-2"><UploadDropZone onSelect={()=>onUpload(`heroslide:${slide.id}`)}><button type="button" disabled={busy} className="rounded-full border px-3 py-2 text-sm disabled:opacity-50" onClick={() => onUpload(`heroslide:${slide.id}`)}>Upload slide {index + 1}</button></UploadDropZone>
           <button type="button" disabled={index === 0} className="rounded-full border px-3 py-2 text-sm disabled:opacity-40" onClick={() => { const backgrounds = [...d.backgrounds]; [backgrounds[index - 1], backgrounds[index]] = [backgrounds[index], backgrounds[index - 1]]; patch({ backgrounds }); }}>Move up</button>
           <button type="button" disabled={index === d.backgrounds.length - 1} className="rounded-full border px-3 py-2 text-sm disabled:opacity-40" onClick={() => { const backgrounds = [...d.backgrounds]; [backgrounds[index + 1], backgrounds[index]] = [backgrounds[index], backgrounds[index + 1]]; patch({ backgrounds }); }}>Move down</button>
           <button type="button" className="rounded-full border px-3 py-2 text-sm text-red-700" onClick={() => patch({ backgrounds: d.backgrounds.filter(s => s.id !== slide.id) })}>Remove slide {index + 1}</button>

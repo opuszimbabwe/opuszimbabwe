@@ -51,7 +51,7 @@ export const onRequestPut: PagesHandler = async (context) => {
     const url = str(partner?.url, 500).trim();
     if (url && !/^https:\/\/[^\s]+$/i.test(url)) return json({ error: 'invalid_partner_url', name }, 400);
 
-    const rawBg = str(partner?.bg_color, 20).trim() || '#ffffff';
+    const rawBg = str(partner?.bg_color, 100).trim() || '#ffffff';
     const bg_color = isHexColor(rawBg) ? rawBg : '#ffffff';
 
     cleaned.push({

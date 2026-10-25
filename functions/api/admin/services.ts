@@ -1,3 +1,4 @@
+import {parsePresentations,PRESENTATION_SCOPES} from '../../../lib/service-presentations';
 // PATCH /api/admin/services — update fields of one service card, including its
 // bottom text section background colour (`card_bg_color`), service-page hero
 // (image or gradient), "Why Opus" cards and related links (Cloudflare Access
@@ -89,8 +90,9 @@ export const onRequestPatch: PagesHandler = async (context) => {
     values.push(body.icon);
   }
   if (typeof body.gradient === 'string') {
+    if(!isGradient(body.gradient))return json({error:'invalid_gradient'},400);
     sets.push('gradient = ?');
-    values.push(str(body.gradient, 120, '160deg,#1a1a1a,#454545'));
+    values.push(str(body.gradient, 2000, '160deg,#1a1a1a,#454545'));
   }
   if (typeof body.card_bg_color === 'string') {
     const bgColor = body.card_bg_color.trim();
@@ -151,7 +153,7 @@ export const onRequestPatch: PagesHandler = async (context) => {
     if (typeof extras.hero_gradient === 'string') {
       if (!isGradient(extras.hero_gradient)) return json({ error: 'invalid_hero_gradient' }, 400);
       extraSets.push('hero_gradient = ?');
-      extraValues.push(str(extras.hero_gradient, 200).trim());
+      extraValues.push(str(extras.hero_gradient, 2000).trim());
     }
     if (extras.why_items !== undefined) {
       const items = pairs(extras.why_items, [{ key: 'title', max: 200 }, { key: 'body', max: 600 }], 12);
@@ -167,41 +169,21 @@ export const onRequestPatch: PagesHandler = async (context) => {
     }
   }
 
+  const presentations=body.presentations===undefined?undefined:parsePresentations(body.presentations);
+  if(body.presentations!==undefined&&!presentations)return json({error:'invalid_service_presentations',message:'Check the selected image URLs, RGB/RGBA colours (alpha 0–1), and gradients with 2–12 colour stops. No changes were saved.'},400);
   const db = context.env.DB;
 
   try {
-    if (sets.length > 0) {
-      const updateSets = [...sets, "updated_at = datetime('now')"];
-      const result = await db
-        .prepare(`UPDATE services SET ${updateSets.join(', ')} WHERE id = ?`)
-        .bind(...values, id)
-        .run();
-      const changed = (result as any)?.meta?.changes ?? 0;
-      if (!changed) return json({ error: 'service_not_found', id }, 404);
-    }
-
-    if (extraSets.length > 0) {
-      if (sets.length === 0) {
-        // Extras-only save: make sure the service itself exists.
-        const exists = await db.prepare('SELECT 1 AS ok FROM services WHERE id = ?').bind(id).first();
-        if (!exists) return json({ error: 'service_not_found', id }, 404);
-      }
-      const columns = ['service_id', ...extraSets.map((s) => s.split(' = ')[0])];
-      const placeholders = columns.map(() => '?').join(', ');
-      const updates = extraSets.join(', ');
-      // Values are bound twice: once for the INSERT, once for the DO UPDATE set.
-      await db
-        .prepare(
-          `INSERT INTO service_extras (${columns.join(', ')}) VALUES (${placeholders})
-           ON CONFLICT(service_id) DO UPDATE SET ${updates}, updated_at = datetime('now')`
-        )
-        .bind(id, ...extraValues, ...extraValues)
-        .run();
-    }
-
-    if (sets.length === 0 && extraSets.length === 0) return json({ error: 'no_fields_to_update' }, 400);
-
-    return json({ ok: true, id, updated: sets.length, extras_updated: extraSets.length });
+    const exists=await db.prepare('SELECT 1 AS ok FROM services WHERE id=?').bind(id).first();if(!exists)return json({error:'service_not_found',id},404);
+    const statements=[];
+    if(sets.length)statements.push(db.prepare(`UPDATE services SET ${[...sets,"updated_at=datetime('now')"].join(', ')} WHERE id=?`).bind(...values,id));
+    if(extraSets.length){const columns=['service_id',...extraSets.map(s=>s.split(' = ')[0])];statements.push(db.prepare(`INSERT INTO service_extras (${columns.join(', ')}) VALUES (${columns.map(()=>'?').join(', ')}) ON CONFLICT(service_id) DO UPDATE SET ${extraSets.join(', ')},updated_at=datetime('now')`).bind(id,...extraValues,...extraValues));}
+    if(presentations){const paths:string[]=[],bindings:unknown[]=[];for(const scope of PRESENTATION_SCOPES){if(presentations[scope][id]){paths.push('?,json(?)');bindings.push(`$.${scope}."${id}"`,JSON.stringify(presentations[scope][id]));}}
+      if(paths.length){const expression=`json_set(COALESCE((SELECT value FROM settings WHERE key='service_presentations'),'{}'),${paths.join(',')})`;statements.push(db.prepare(`INSERT INTO settings(key,value,updated_at) VALUES('service_presentations',${expression},datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at`).bind(...bindings));}}
+    if(!statements.length)return json({error:'no_fields_to_update'},400);
+    statements.push(db.prepare("INSERT INTO settings(key,value,updated_at) VALUES('content_revision','1',datetime('now')) ON CONFLICT(key) DO UPDATE SET value=CAST(settings.value AS INTEGER)+1,updated_at=datetime('now')"));
+    await db.batch(statements);
+    return json({ok:true,id,updated:sets.length,extras_updated:extraSets.length});
   } catch (err) {
     return json({ error: 'database_error' }, 500);
   }

@@ -68,6 +68,13 @@ import { useAdminSession } from '@/components/admin/AdminAccessBoundary';
 import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
 import DomainManager from '@/components/admin/DomainManager';
 import PaymentLedger from '@/components/admin/PaymentLedger';
+import ServicePresentationEditor from './ServicePresentationEditor';
+import type {PresentationScope} from '@/lib/service-presentations';
+import ColorControl from './ColorControl';
+import GradientControl from './GradientControl';
+import {ImageUploadContext} from './UploadDropZone';
+import UploadDropZone from './UploadDropZone';
+import ImageUploadDialog from './ImageUploadDialog';
 import EditorFinder from '@/components/admin/EditorFinder';
 import GraphicClassEditor from '@/components/admin/GraphicClassEditor';
 import {DEFAULT_GRAPHIC_DESIGN} from '@/lib/graphic-design';
@@ -239,64 +246,8 @@ function Field({
   );
 }
 
-function ColorSwatchField({
-  label,
-  value,
-  onChange,
-  presets,
-  hint,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  presets?: { label: string; value: string }[];
-  hint?: string;
-}) {
-  const safeHex = /^#[0-9a-fA-F]{6}$/.test(value) ? value : '#ffffff';
-  return (
-    <div>
-      <span className="block text-[.72rem] font-semibold uppercase tracking-widest text-[#525252] mb-1.5">
-        {label}
-      </span>
-      <div className="flex items-center gap-2.5">
-        <input
-          type="color"
-          value={safeHex}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-10 w-12 shrink-0 cursor-pointer rounded-xl border border-[#e2e4e8] bg-white p-1"
-        />
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="#ffffff"
-          className="w-full rounded-xl border border-[#e2e4e8] bg-[#f8f9fb] px-3.5 py-2 text-[.88rem] text-[#0d0d0d] outline-none focus:border-[#E85D2A] focus:bg-white"
-        />
-      </div>
-      {presets && presets.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {presets.map((p) => (
-            <button
-              key={p.value}
-              type="button"
-              onClick={() => onChange(p.value)}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[.72rem] font-medium transition-colors ${
-                value.toLowerCase() === p.value.toLowerCase()
-                  ? 'border-[#E85D2A] bg-[#fff8f4] text-[#0d0d0d]'
-                  : 'border-[#e2e4e8] bg-white text-[#525252] hover:border-[#0d0d0d]/30'
-              }`}
-            >
-              <span
-                className="h-3 w-3 rounded-full border border-black/15"
-                style={{ backgroundColor: p.value }}
-              />
-              {p.label}
-            </button>
-          ))}
-        </div>
-      )}
-      {hint && <span className="block text-[.72rem] text-[#6b7280] mt-1">{hint}</span>}
-    </div>
-  );
+function ColorSwatchField({label,value,onChange,presets,hint}:{label:string;value:string;onChange:(v:string)=>void;presets?:{label:string;value:string}[];hint?:string}){
+ return <div><ColorControl label={label} value={value} onChange={onChange}/>{presets&&<div className="mt-2 flex flex-wrap gap-2">{presets.map(p=><button type="button" key={p.value} className="rounded-full border px-3 py-1 text-xs" onClick={()=>onChange(p.value)}>{p.label}</button>)}</div>}{hint&&<p className="mt-2 text-xs text-black/50">{hint}</p>}</div>;
 }
 
 function Banner({ kind, children }: { kind: 'ok' | 'err' | 'info'; children: React.ReactNode }) {
@@ -372,78 +323,7 @@ function ListEditor<T>({
   );
 }
 
-function parseGradient(value: string): { angle: number; colors: string[] } {
-  const parts = (value || '')
-    .split(',')
-    .map((p) => p.trim())
-    .filter(Boolean);
-  const angle = parseFloat(parts[0] || '160');
-  const colors = parts.slice(1).filter((p) => p.startsWith('#'));
-  return { angle: Number.isFinite(angle) ? angle : 160, colors: colors.length ? colors : ['#1a1a1a', '#454545'] };
-}
-
-function GradientBuilder({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const { angle, colors } = parseGradient(value);
-  const setAngle = (next: number) => onChange(`${next}deg,${colors.join(',')}`);
-  const setColor = (index: number, color: string) => {
-    const next = colors.map((c, i) => (i === index ? color : c));
-    onChange(`${angle}deg,${next.join(',')}`);
-  };
-
-  return (
-    <div className="rounded-xl border border-[#e2e4e8] bg-[#f8f9fb] p-3">
-      <div
-        className="h-20 w-full rounded-lg"
-        style={{ backgroundImage: `linear-gradient(${angle}deg,${colors.join(',')})` }}
-      />
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-[.78rem] font-semibold text-[#0d0d0d]">
-          Angle
-          <input
-            type="number"
-            min={0}
-            max={360}
-            step="0.01"
-            value={angle}
-            onChange={(e) => setAngle(Math.max(0, Math.min(360, Number(e.target.value) || 0)))}
-            className="w-20 rounded-lg border border-[#e2e4e8] bg-white px-2 py-1 text-[.85rem]"
-          />
-        </label>
-        {colors.map((color, i) => (
-          <label key={i} className="flex items-center gap-1.5 text-[.78rem] font-semibold text-[#0d0d0d]">
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(i, e.target.value)}
-              className="h-8 w-10 rounded border border-[#e2e4e8] bg-white"
-            />
-            <span className="font-normal text-[#525252]">{color}</span>
-          </label>
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {GRADIENT_PRESETS.map((preset) => (
-          <button
-            key={preset}
-            type="button"
-            title={preset}
-            onClick={() => onChange(preset)}
-            className={`h-7 w-14 rounded-md border-2 ${
-              preset === `${angle}deg,${colors.join(',')}` ? 'border-[#E85D2A]' : 'border-white'
-            }`}
-            style={{ backgroundImage: `linear-gradient(${preset})` }}
-          />
-        ))}
-      </div>
-      <input
-        aria-label="Gradient CSS"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-3 w-full rounded-lg border border-[#e2e4e8] bg-white px-2.5 py-1.5 text-[.8rem] text-[#0d0d0d] outline-none focus:border-[#E85D2A]"
-      />
-    </div>
-  );
-}
+const GradientBuilder=GradientControl;
 
 function ImageField({
   label,
@@ -461,7 +341,7 @@ function ImageField({
   previewBg?: string;
 }) {
   return (
-    <div>
+    <UploadDropZone onSelect={onUpload}>
       <span className="block text-[.72rem] font-semibold uppercase tracking-widest text-[#525252] mb-1.5">
         {label}
       </span>
@@ -490,7 +370,7 @@ function ImageField({
           <img src={value} alt="" className="max-h-full max-w-full object-contain" />
         </div>
       )}
-    </div>
+    </UploadDropZone>
   );
 }
 
@@ -580,6 +460,7 @@ function IconPicker({
 
 export default function AdminDashboard() {
   const { content, status } = useSiteContent();
+  const [uploadOpen,setUploadOpen]=useState(false);
   const [toolQuery,setToolQuery]=useState('');
   const toolSearch=useRef<HTMLInputElement>(null);
   useEffect(()=>{const handler=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();toolSearch.current?.focus()}if(event.key==='Escape')setToolQuery('')};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[]);
@@ -666,7 +547,7 @@ export default function AdminDashboard() {
     try {
       await api('/api/admin/services', {
         method: 'PATCH',
-        body: JSON.stringify({ ...s, extras: extras?.[s.id] || null }),
+        body: JSON.stringify({ ...s, extras: extras?.[s.id] || null, presentations:settings?.service_presentations }),
       });
       setMessage({ kind: 'ok', text: `Saved “${s.name}” (card, colour, icon, hero, visual & links).` });
     } catch (e: any) {
@@ -742,13 +623,13 @@ export default function AdminDashboard() {
   const pickFile = (target: string) => {
     if (busy || uploadInFlight.current) return;
     uploadTarget.current = target;
-    fileInput.current?.click();
+    setUploadOpen(true);
   };
 
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
+  const onFile = (e:React.ChangeEvent<HTMLInputElement>)=>{const file=e.target.files?.[0];e.target.value='';if(file)void uploadSelectedFile(file)};
+  const uploadSelectedFile = async (file:File) => {
     if (!file || uploadInFlight.current) return;
+    setUploadOpen(false);
     uploadInFlight.current = true;
     const target = uploadTarget.current;
     setBusy(true);
@@ -781,6 +662,10 @@ export default function AdminDashboard() {
       } else if (target === 'favicon_icon') {
         patchSettings({ favicon_icon: url });
         setMessage({ kind: 'ok', text: `Uploaded browser favicon to R2: ${url} — press Save branding to apply.` });
+      } else if(target?.startsWith('presentation:')){
+        const [,scope,id,slot]=target.split(':');
+        setSettings(prev=>{if(!prev)return prev;const namespace=scope as PresentationScope;const d=prev.service_presentations[namespace]?.[id];if(!d)return prev;return {...prev,service_presentations:{...prev.service_presentations,[namespace]:{...prev.service_presentations[namespace],[id]:slot==='image'?{...d,image:url}:{...d,slides:d.slides.map((image,i)=>String(i)===slot?url:image)}}}}});
+        setMessage({kind:'ok',text:'Placement image uploaded. Save this service to publish. Other placements have not changed.'});
       } else if(target?.startsWith('graphicclass:')){
         const index=Number(target.slice('graphicclass:'.length));
         setSettings(prev=>{if(!prev)return prev;const pages=prev.service_pages||DEFAULT_SERVICE_PAGES;const page=pages['graphic-design'];return {...prev,service_pages:{...pages,'graphic-design':{...page,what_items:page.what_items.map((item,i)=>i===index?{...item,design:{...DEFAULT_GRAPHIC_DESIGN,...item.design,image:url}}:item)}}}});
@@ -977,7 +862,7 @@ export default function AdminDashboard() {
   const homeSections = settings?.home_sections || DEFAULT_HOME_SECTIONS;
 
   return (
-    <main className="admin-studio min-h-screen pb-24 text-[#0f0928]">
+    <ImageUploadContext.Provider value={{accept:file=>void uploadSelectedFile(file),busy}}><ImageUploadDialog open={uploadOpen} onClose={()=>setUploadOpen(false)} onBrowse={()=>fileInput.current?.click()} onFile={file=>void uploadSelectedFile(file)}/><main className="admin-studio min-h-screen pb-24 text-[#0f0928]" onDragOver={e=>{if(e.dataTransfer.types.includes('Files'))e.preventDefault()}} onDrop={e=>{if(e.dataTransfer.files.length){e.preventDefault();setMessage({kind:'info',text:'Drop the image onto its image control, or choose Upload first.'})}}} onPaste={e=>{if(e.clipboardData.files.length){e.preventDefault();setMessage({kind:'info',text:'Select an image upload area or choose Upload, then paste your image.'})}}}>
       <input
         ref={fileInput}
         type="file"
@@ -1561,7 +1446,7 @@ export default function AdminDashboard() {
                         title={s.name}
                         hint={`Homepage card + /services/${s.slug} page settings`}
                         action={
-                          <div className="flex items-center gap-4">
+                          <div className="flex flex-wrap items-center gap-4">
                             <label className="flex items-center gap-2 text-[.82rem] font-semibold text-[#0d0d0d]">
                               <input
                                 type="checkbox"
@@ -1603,25 +1488,14 @@ export default function AdminDashboard() {
                           />
 
                           <div className="space-y-4">
-                            <ImageField
-                              label="Card Image"
-                              value={s.image}
-                              onChange={(v) => patchService(s.id, { image: v })}
-                              onUpload={() => pickFile(`card:${s.id}`)}
-                            />
+
                             <IconPicker
                               label="Service Icon (Lucide name or Upload custom icon)"
                               value={s.icon}
                               onChange={(v) => patchService(s.id, { icon: v })}
                               onUpload={() => pickFile(`serviceicon:${s.id}`)}
                             />
-                            <ColorSwatchField
-                              label="Card Bottom Text Section Background Colour"
-                              value={s.card_bg_color || '#ffffff'}
-                              onChange={(v) => patchService(s.id, { card_bg_color: v })}
-                              presets={CARD_BG_PRESETS}
-                              hint="Independently controls the bottom text section background of this homepage card."
-                            />
+
                           </div>
                         </div>
 
@@ -1656,62 +1530,10 @@ export default function AdminDashboard() {
                             />
                           </div>
 
-                          <div className="mt-4 grid gap-4 md:grid-cols-2">
-                            <div>
-                              <span className="block text-[.72rem] font-semibold uppercase tracking-widest text-[#525252] mb-1.5">
-                                Hero Background Kind
-                              </span>
-                              <div className="flex gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => patchExtras(s.id, { hero_background_kind: 'image' })}
-                                  className={`flex-1 rounded-xl px-3 py-2 text-[.82rem] font-semibold border ${
-                                    !isGradient
-                                      ? 'border-[#E85D2A] bg-white text-[#0d0d0d]'
-                                      : 'border-[#e2e4e8] bg-[#f8f9fb] text-[#525252]'
-                                  }`}
-                                >
-                                  Image
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => patchExtras(s.id, { hero_background_kind: 'gradient' })}
-                                  className={`flex-1 rounded-xl px-3 py-2 text-[.82rem] font-semibold border ${
-                                    isGradient
-                                      ? 'border-[#E85D2A] bg-white text-[#0d0d0d]'
-                                      : 'border-[#e2e4e8] bg-[#f8f9fb] text-[#525252]'
-                                  }`}
-                                >
-                                  Gradient
-                                </button>
-                              </div>
-                              <div className="mt-3">
-                                {isGradient ? (
-                                  <GradientBuilder
-                                    value={extra.hero_gradient}
-                                    onChange={(v) => patchExtras(s.id, { hero_gradient: v })}
-                                  />
-                                ) : (
-                                  <ImageField
-                                    label="Hero Image"
-                                    value={extra.hero_background}
-                                    onChange={(v) => patchExtras(s.id, { hero_background: v })}
-                                    onUpload={() => pickFile(`service:${s.id}`)}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <ImageField
-                                label="Section 2 Supporting Image (optional)"
-                                value={extra.visual_background}
-                                onChange={(v) => patchExtras(s.id, { visual_background: v })}
-                                onUpload={() => pickFile(`visual:${s.id}`)}
-                              />
-                            </div>
-                          </div>
                         </div>
 
+
+                        {settings&&<ServicePresentationEditor service={s} value={settings.service_presentations} onChange={service_presentations=>patchSettings({service_presentations})} onUpload={pickFile}/>}
                         <div className="mt-6 flex justify-end">
                           <button
                             disabled={busy}
@@ -2688,6 +2510,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    </main>
+    </main></ImageUploadContext.Provider>
   );
 }

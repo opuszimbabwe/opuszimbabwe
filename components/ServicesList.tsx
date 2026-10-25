@@ -1,4 +1,5 @@
 'use client';
+import {presentationBackground,presentationOverlay} from '@/lib/service-presentations';
 import Link from 'next/link';
 import { ArrowDown, ArrowUpRight } from 'lucide-react';
 import { staticServices, DEFAULT_HOME_SECTIONS, type ServiceRecord } from '@/lib/content';
@@ -28,10 +29,10 @@ export default function ServicesList() {
     </section>
     {services.length > 0 && <>
       <section id="all-services" className="site-frame services-index-featured" aria-labelledby="services-featured-heading"><h2 id="services-featured-heading" className="sr-only">Our services</h2>
-        <div className="services-index-grid">{services.map((service, index) => <Link key={service.id} href={`/services/${service.slug}/`} className={`services-index-card ${index % 3 === 0 ? 'services-index-card-tall' : 'services-index-card-wide'} ${index === 2 || index === 4 ? 'services-index-card-full-image' : ''}`} style={{ backgroundColor: surfaceFor(service, index), color: index === 2 || index === 4 ? '#ffffff' : inkFor(surfaceFor(service, index)) }}>
-          <div className="services-index-card-copy"><h3>{service.name}</h3><div className="services-index-card-description">{service.page_description}</div><span className="services-index-card-link">Explore service <ArrowUpRight size={18} aria-hidden="true" /></span></div>
-          <div className="services-index-card-image"><img src={service.image} alt="" loading="lazy" /></div>
-        </Link>)}</div>
+        <div className="services-index-grid">{services.map((service,index)=>{const d=content?.settings.service_presentations.services[service.id];const full=d?d.image_layout==='background':index===2||index===4;return <Link key={service.id} href={`/services/${service.slug}/`} data-custom-surface={Boolean(d)} className={`services-index-card ${index%3===0?'services-index-card-tall':'services-index-card-wide'} ${full?'services-index-card-full-image':''}`} style={{background:d?presentationBackground(d):surfaceFor(service,index),color:d?d.text_color:full?'#ffffff':inkFor(surfaceFor(service,index)),textAlign:d?.text_align}}>
+          <div className="services-index-card-copy"><h3 style={{color:d?.title_color}}>{service.name}</h3><div className="services-index-card-description">{service.page_description}</div><span className="services-index-card-link">Explore service <ArrowUpRight size={18} aria-hidden="true" /></span></div>
+          <div className="services-index-card-image">{(d?d.image:service.image)&&<img src={d?d.image:service.image} alt="" loading="lazy" style={d?{objectFit:d.image_fit}:undefined}/>}</div>{d&&<div className="service-presentation-overlay" aria-hidden="true" style={{background:presentationOverlay(d),opacity:d.overlay_opacity}}/>}
+        </Link>})}</div>
       </section>
       <section className="site-frame services-capabilities-frame" aria-labelledby="services-capabilities-heading"><div className="services-capabilities"><h2 id="services-capabilities-heading">One team.<br /><span className="textured-accent">Built around you.</span></h2>
         <div className="services-capability-list">{services.map(service => { const Icon = resolveIcon(service.icon); return <article key={service.id} className="services-capability-row"><div className="services-capability-name"><Icon size={56} aria-hidden="true" /><h3><Link href={`/services/${service.slug}/`}>{service.name}<ArrowUpRight size={22} aria-hidden="true" /></Link></h3></div><ul className="services-capability-tags" aria-label={`${service.name} capabilities`}>{service.items.map((item, i) => <li key={`${i}-${item}`}>{item}</li>)}</ul></article>; })}</div>

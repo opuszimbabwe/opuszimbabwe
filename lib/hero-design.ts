@@ -1,3 +1,4 @@
+import {isCssColor} from './colors';
 import { validDesign, parseSectionDesign, type SectionDesign } from './section-design';
 export type HeroSlide = { id: string; image: string };
 export type HeroDesign = {
@@ -8,6 +9,7 @@ export type HeroDesign = {
   text_position: 'left' | 'center' | 'right';
   vertical_align: 'top' | 'center' | 'bottom';
   rotation: 'services' | 'backgrounds' | 'none';
+  background_rotation:'none'|'static'|'slides';
   animation: 'fade' | 'slide' | 'zoom' | 'none';
   interval_ms: number; transition_ms: number; pause_on_hover: boolean;
   use_existing_background: boolean; show_accent: boolean;
@@ -31,7 +33,7 @@ export type HeroDesign = {
 export const DEFAULT_HERO_DESIGN: HeroDesign = {
   headline_mode: 'service_words', caption_gap: 10, caption_size: 18, caption_weight: 500,
   layout: 'split', text_align: 'left', text_position: 'right', vertical_align: 'top',
-  rotation: 'services', animation: 'fade', interval_ms: 4500, transition_ms: 600, pause_on_hover: true,
+  rotation: 'services', background_rotation:'static', animation: 'fade', interval_ms: 4500, transition_ms: 600, pause_on_hover: true,
   use_existing_background: true, show_accent: true,
   use_reference_gutters: true, edge_spacing: 40, frame_width: 1440, card_inset: 24, border_radius: 32,
   corner_mode: 'layout', top_left_radius: 0, top_right_radius: 0, bottom_left_radius: 0, bottom_right_radius: 0,
@@ -46,7 +48,6 @@ export const DEFAULT_HERO_DESIGN: HeroDesign = {
   background: { background_color: '#ffffff', background_image: '', overlay_kind: 'solid', overlay_color: '#0d0d0d', overlay_gradient: '90deg,#0d0d0d,#E85D2A', overlay_opacity: 0 },
   backgrounds: [],
 };
-const hex = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
 const safeImage = (v: unknown) => typeof v === 'string' && v.length <= 500 && (!v || /^(\/(?!\/)[^\s]*|https:\/\/[^\s]+)$/.test(v));
 const safeLink = (v: unknown) => safeImage(v) || (typeof v === 'string' && v.length <= 500 && /^(#[A-Za-z][\w-]*|mailto:[^\s]+|tel:[+\d\s-]+)$/.test(v));
 const numeric: Partial<Record<keyof HeroDesign, [number, number]>> = {
@@ -64,7 +65,7 @@ export function validHeroDesign(value: unknown): value is HeroDesign {
   const enums: Partial<Record<keyof HeroDesign, readonly unknown[]>> = {
     headline_mode: ['static', 'service_words'], caption_weight: [300, 400, 500, 600, 700],
     corner_mode: ['layout', 'uniform', 'individual'], secondary_action: ['link', 'guide'],
-    layout: ['split', 'full_bleed', 'card'], text_align: ['left', 'center', 'right'], text_position: ['left', 'center', 'right'],
+    background_rotation:['none','static','slides'], layout: ['split', 'full_bleed', 'card'], text_align: ['left', 'center', 'right'], text_position: ['left', 'center', 'right'],
     vertical_align: ['top', 'center', 'bottom'], rotation: ['services', 'backgrounds', 'none'], animation: ['fade', 'slide', 'zoom', 'none'],
     media_fit: ['contain', 'cover'], overlay_placement: ['full', 'left', 'center', 'right'], heading_weight: [400, 500, 600, 700, 800, 900],
   };
@@ -72,7 +73,7 @@ export function validHeroDesign(value: unknown): value is HeroDesign {
   if (Object.entries(numeric).some(([k, [min, max]]) => { const n = v[k as keyof HeroDesign]; return typeof n !== 'number' || !Number.isFinite(n) || n < min || n > max; })) return false;
   if (v.transition_ms > v.interval_ms / 2) return false;
   for (const k of ['pause_on_hover', 'use_reference_gutters', 'use_existing_background', 'show_accent', 'show_media', 'text_panel'] as const) if (typeof v[k] !== 'boolean') return false;
-  for (const k of ['heading_color', 'accent_color', 'body_color', 'button_color', 'button_text_color', 'panel_color'] as const) if (!hex.test(v[k])) return false;
+  for (const k of ['heading_color', 'accent_color', 'body_color', 'button_color', 'button_text_color', 'panel_color'] as const) if (!isCssColor(v[k])) return false;
   for (const [k, max] of [['eyebrow', 160], ['headline', 300], ['headline_accent', 300], ['description', 1500], ['button_label', 100], ['secondary_label', 100]] as const) if (typeof v[k] !== 'string' || v[k].length > max) return false;
   if (!safeImage(v.media_image) || !safeLink(v.button_href) || !safeLink(v.secondary_href) || !validDesign(v.background)) return false;
   return Array.isArray(v.backgrounds) && v.backgrounds.length <= 20 && new Set(v.backgrounds.map(x => x?.id)).size === v.backgrounds.length
@@ -83,9 +84,10 @@ export function upgradeHeroDesign(value: unknown): HeroDesign | null {
   const raw = value as Partial<HeroDesign>;
   if (raw.background !== undefined && (!raw.background || typeof raw.background !== 'object' || Array.isArray(raw.background))) return null;
   const secondaryAction = raw.secondary_action ?? (raw.secondary_label ? 'link' : DEFAULT_HERO_DESIGN.secondary_action);
-  const upgraded = { ...structuredClone(DEFAULT_HERO_DESIGN), ...raw, headline_mode: raw.headline_mode ?? 'static', caption_gap: raw.caption_gap ?? 20, caption_size: raw.caption_size ?? 16, caption_weight: raw.caption_weight ?? 300, secondary_action: secondaryAction, background: { ...DEFAULT_HERO_DESIGN.background, ...raw.background } };
+  const upgraded = { ...structuredClone(DEFAULT_HERO_DESIGN), ...raw, background_rotation:raw.background_rotation??(raw.rotation==='backgrounds'?'slides':'static'), headline_mode: raw.headline_mode ?? 'static', caption_gap: raw.caption_gap ?? 20, caption_size: raw.caption_size ?? 16, caption_weight: raw.caption_weight ?? 300, secondary_action: secondaryAction, background: { ...DEFAULT_HERO_DESIGN.background, ...raw.background } };
   const background = parseSectionDesign(upgraded.background); if (!background) return null;
   upgraded.background = background;
+  if(raw.background_rotation===undefined&&raw.rotation!=='backgrounds'&&raw.backgrounds?.length)upgraded.background.background_image=raw.backgrounds[0].image;
   return validHeroDesign(upgraded) ? upgraded : null;
 }
 export function normalizeHeroDesign(value: unknown): HeroDesign {
@@ -97,7 +99,7 @@ export function heroPreset(name: 'current' | 'classic' | 'campaign' | 'full_blee
   if (name === 'classic') return { ...d, headline_mode: 'static', headline: '', text_position: 'left', vertical_align: 'top', heading_size: 72, media_height: 440, caption_gap: 20, caption_size: 16, caption_weight: 300 };
   d.headline_mode = 'static'; d.headline = 'Built for your next chapter.'; d.show_accent = false;
   d.use_existing_background = false;
-  d.rotation = 'backgrounds'; d.animation = 'fade'; d.show_media = false; d.secondary_label = 'Help me choose'; d.button_label = 'Discuss my project'; d.button_href = '/contact/';
+  d.rotation = 'backgrounds'; d.background_rotation='slides'; d.animation = 'fade'; d.show_media = false; d.secondary_label = 'Help me choose'; d.button_label = 'Discuss my project'; d.button_href = '/contact/';
   d.description = 'Websites, software, AI and automation built around the way your organisation works.';
   d.background.background_image = '/images/hero-bg.jpg'; d.background.overlay_opacity = 0.65;
   d.heading_color = '#ffffff'; d.body_color = '#ffffff'; d.accent_color = '#ffffff';

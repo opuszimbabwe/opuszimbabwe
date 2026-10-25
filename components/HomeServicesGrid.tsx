@@ -5,8 +5,9 @@ import { staticServices, type ServiceRecord } from '@/lib/content';
 import { useSiteContent } from '@/lib/use-site-content';
 
 function ServiceRail({ services }: { services: ServiceRecord[] }) {
+  const {content}=useSiteContent();
   const [active, setActive] = useState<string | null>(services[services.length - 1]?.id ?? null);
-  return <div className="service-rail">{services.map(service => <ServiceCard key={service.id} service={service} expanded={active === service.id} onExpand={open => setActive(open ? service.id : null)} />)}</div>;
+  return <div className="service-rail">{services.map(service => <ServiceCard design={content?.settings.service_presentations.home[service.id]} key={service.id} service={service} expanded={active === service.id} onExpand={open => setActive(open ? service.id : null)} />)}</div>;
 }
 export default function HomeServicesGrid() {
   const { content } = useSiteContent();

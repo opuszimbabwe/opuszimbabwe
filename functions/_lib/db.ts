@@ -1,3 +1,5 @@
+import {parsePresentations} from '../../lib/service-presentations';
+import {cleanGradient,isCssColor} from '../../lib/colors';
 import {parseGraphicDesign} from '../../lib/graphic-design';
 import { upgradeHeroDesign } from '../../lib/hero-design';
 import { parseSectionDesign } from '../../lib/section-design';
@@ -74,6 +76,7 @@ export const URL_SETTINGS = ['hero_background', 'navbar_logo', 'favicon_icon', '
 export const TEXT_SETTINGS = ['browser_title'] as const;
 export const JSON_SETTINGS = [
   'hero_design',
+  'service_presentations',
   'cta_design',
   'contact_hero_design',
   'hero_cycles',
@@ -247,6 +250,7 @@ export async function readAllContent(db: D1Database) {
     extras,
     settings: {
       hero_background: settingsMap.hero_background || '',
+      service_presentations:parseJsonUnknown(settingsMap.service_presentations),
       hero_design: parseJsonUnknown(settingsMap.hero_design),
       cta_design: parseJsonUnknown(settingsMap.cta_design),
       contact_hero_design: parseJsonUnknown(settingsMap.contact_hero_design),
@@ -281,18 +285,8 @@ export function isSafeLink(value: string): boolean {
   return /^(mailto:|tel:)/i.test(value);
 }
 
-const GRADIENT_PATTERN = /^\d{1,3}deg\s*,\s*(#[0-9a-fA-F]{3,8}\s*,\s*){0,3}#[0-9a-fA-F]{3,8}$/;
-const HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
-
-export function isGradient(value: string): boolean {
-  if (!value || value.length > 200) return false;
-  return GRADIENT_PATTERN.test(value.trim());
-}
-
-export function isHexColor(value: string): boolean {
-  if (!value || value.length > 20) return false;
-  return HEX_COLOR_PATTERN.test(value.trim());
-}
+export function isGradient(value:string){return cleanGradient(value)!==null;}
+export function isHexColor(value:string){return isCssColor(value);}
 
 function text(v: unknown, max: number): string {
   return typeof v === 'string' ? v.slice(0, max) : '';
@@ -366,6 +360,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
       if (cleaned.length !== value.length || value.some(x => (x?.cta_href !== undefined && typeof x.cta_href !== 'string') || (typeof x?.cta_href === 'string' && x.cta_href && !isSafeLink(x.cta_href)))) return null;
       return JSON.stringify(cleaned);
     }
+    case 'service_presentations': {const result=parsePresentations(value);return result?JSON.stringify(result):null;}
     case 'service_pages': {
       if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
       const out: Record<string, any> = {};
@@ -438,7 +433,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
       if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
       const s = value as Record<string, unknown>;
       const color = (v: unknown, def: string) => {
-        const c = text(v, 20).trim();
+        const c = text(v, 100).trim();
         return isHexColor(c) ? c : def;
       };
       return JSON.stringify({
