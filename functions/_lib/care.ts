@@ -123,10 +123,11 @@ export async function draftReport(env:Env,month:unknown,actor:string,refresh=tru
  const bounds=period(month),p=await project(env);
  const old=await env.DB.prepare("SELECT id,state FROM care_reports WHERE project_id='opus' AND month=?").bind(bounds.month).first<{id:string;state:string}>();
  if(old&&(!refresh||old.state!=='DRAFT'))return old.id;
- const [stats,incidents,events]=await Promise.all([
+ const [stats,incidents,events,incidentDetails]=await Promise.all([
   env.DB.prepare("SELECT target,COUNT(*) AS checks,SUM(ok) AS successful,ROUND(AVG(latency_ms)) AS average_ms FROM care_checks WHERE project_id='opus' AND checked_at>=? AND checked_at<? GROUP BY target").bind(bounds.start,bounds.end).all<{target:string;checks:number;successful:number;average_ms:number}>(),
   env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN resolved_at IS NULL OR resolved_at>=? THEN 1 ELSE 0 END) AS open FROM care_incidents WHERE project_id='opus' AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?)").bind(bounds.end,bounds.end,bounds.start).first<{total:number;open:number}>(),
   env.DB.prepare("SELECT category,title,note,created_at FROM care_events WHERE project_id='opus' AND category IN ('maintenance','deployment','backup','note') AND created_at>=? AND created_at<? ORDER BY created_at DESC LIMIT 8").bind(bounds.start,bounds.end).all<CareEvent>(),
+  env.DB.prepare("SELECT target,opened_at,resolved_at,detail FROM care_incidents WHERE project_id='opus' AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?) ORDER BY opened_at DESC LIMIT 12").bind(bounds.end,bounds.start).all<Pick<CareIncident,'target'|'opened_at'|'resolved_at'|'detail'>>(),
  ]);
  const checks=stats.results.reduce((n,x)=>n+x.checks,0),successful=stats.results.reduce((n,x)=>n+x.successful,0);
  const expected=Math.max(0,Math.floor((Date.parse(bounds.end)-Date.parse(bounds.start))/300000))*CARE_TARGETS.length;
@@ -134,7 +135,7 @@ export async function draftReport(env:Env,month:unknown,actor:string,refresh=tru
  if((incidents?.open||0)>0)actions.push('Investigate unresolved service checks.');
  if(!checks||checks<expected*.95)actions.push('Review monitoring coverage and any gaps.');
  actions.push('Connect a backup verification source before reporting backup protection.');
- const snapshot:CareSnapshot={project:p.name,month:bounds.month,generated_at:nowISO(),period_start:bounds.start,period_end:bounds.end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,targets:CARE_TARGETS.map(t=>({name:t.name,...(stats.results.find(s=>s.target===t.id)||{checks:0,successful:0,average_ms:null})})),incidents:incidents?.total||0,open_incidents:incidents?.open||0,maintenance:events.results,backup_status:'Not connected — no automated backup verification.',actions:actions.slice(0,3)};
+ const snapshot:CareSnapshot={project:p.name,month:bounds.month,generated_at:nowISO(),period_start:bounds.start,period_end:bounds.end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,targets:CARE_TARGETS.map(t=>({name:t.name,...(stats.results.find(s=>s.target===t.id)||{checks:0,successful:0,average_ms:null})})),incidents:incidents?.total||0,open_incidents:incidents?.open||0,incident_details:incidentDetails.results,maintenance:events.results,backup_status:'Not connected — no automated backup verification.',actions:actions.slice(0,3)};
  const id=old?.id||crypto.randomUUID(),now=nowISO();
  await env.DB.prepare("INSERT INTO care_reports(id,project_id,month,snapshot,created_at,updated_at) VALUES(?,'opus',?,?,?,?) ON CONFLICT(project_id,month) DO UPDATE SET snapshot=excluded.snapshot,updated_at=excluded.updated_at WHERE care_reports.state='DRAFT'").bind(id,bounds.month,JSON.stringify(snapshot),now,now).run();
  await event(env,'report','Report draft prepared',`${bounds.month}; admin review required.`,actor);

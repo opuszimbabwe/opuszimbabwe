@@ -23,7 +23,7 @@ Only four fixed GET targets can be checked: public home, checkout, content API a
 
 Three adjacent failed slots open an incident; two adjacent successful slots close it. Missing slots interrupt the sequence. One admin alert attempt per incident uses Resend with idempotency. At most five alert attempts per UTC day; further open incidents stay pending and remain visible in admin. Provider acceptance is not delivery. Uncertain sends are never automatically replayed. Failed alerts are visible for manual investigation. Sending-domain configuration must be complete for mail.
 
-Admin defaults: alert recipient `support@opuszim.co.zw`; report recipient empty until explicitly entered. Admin can pause checks, change recipients/plan, run a check and append timestamped maintenance/deployment/backup/note records. Records are append-only. Current views show the newest 60 events and 40 incidents; monthly drafts keep up to eight recent maintenance notes, with three concise entries in the PDF. This pilot does not yet import deployment events, provider logs or verify backups automatically.
+Admin defaults: alert recipient `support@opuszim.co.zw`; report recipient empty until explicitly entered. Admin can pause checks, change recipients/plan, run a check and append timestamped maintenance/deployment/backup/note records. Records are append-only. Current views show the newest 60 events and 40 incidents; monthly drafts keep up to eight recent maintenance notes, with their detailed notes in the PDF. This pilot does not yet import deployment events, provider logs or verify backups automatically.
 
 Raw checks/run slots are retained 90 days. Events, incidents and approved report snapshots are retained. No request/response bodies, payment credentials, PINs or visitor data are logged by these checks.
 
@@ -34,7 +34,7 @@ Monitoring shares Cloudflare infrastructure with the monitored site. A total Pag
 At the start of a new Harare month, the scheduler creates a previous-month draft if the project was monitored that month. Admin can prepare/refresh a current-month draft. Closed/approved snapshots cannot be silently overwritten. The report uses recorded sample pass rate and expected time slots separately; no data produces “No data”, never 100%. The expected period includes pre-monitoring gaps. Backup status stays unverified even when a human adds a backup note.
 
 1. Set the authorised report recipient in monitoring settings.
-2. Prepare/open a draft and preview/download its one-page Poppins PDF.
+2. Prepare/open a draft and preview/download its branded Poppins PDF with an overview and detailed evidence.
 3. Approve the PDF. The browser generates the PDF, avoiding a paid renderer and Workers PDF CPU cost. The authenticated approval stores its hash, actor and private R2 object. The submitted PDF must be under 250 KB.
 4. Choose Send explicitly. The server verifies the stored PDF hash and attaches that exact approved file. Recipient and delivery status are recorded. Atomic reservation and provider idempotency prevent duplicate sends.
 5. Check delivery to distinguish accepted/delivered/bounced/failed. A definite provider rejection without an accepted email reference can be explicitly prepared for retry after correction; ambiguous sends require checking Resend and are never blindly retried.
