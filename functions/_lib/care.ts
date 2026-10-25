@@ -1,4 +1,4 @@
-import {CARE_TARGETS, type CareCheck, type CareEvent, type CareIncident, type CareProject, type CareReport, type CareSnapshot} from '../../lib/care';
+import {CARE_TARGETS,CARE_PDF_VERSION, type CareCheck, type CareEvent, type CareIncident, type CareProject, type CareReport, type CareSnapshot} from '../../lib/care';
 import {receiptEmail} from '../../lib/receipt-contact';
 import {CheckoutError,hash} from './payments';
 import type {Env} from './types';
@@ -6,7 +6,7 @@ import {emailConfigured} from './receipts';
 
 const nowISO=()=>new Date().toISOString();
 const safe=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-const reportColumns='id,month,snapshot,state,approved_by,approved_at,delivery_status,delivery_error,delivery_attempt,recipient,provider_id,pdf_key,updated_at';
+const reportColumns='id,month,snapshot,state,approved_by,approved_at,delivery_status,delivery_error,delivery_attempt,recipient,provider_id,pdf_key,revision,pdf_version,updated_at';
 type StoredReport=Omit<CareReport,'snapshot'>&{snapshot:string;pdf_hash:string|null;delivery_attempt:number};
 export async function project(env:Env){
  const p=await env.DB.prepare("SELECT * FROM care_projects WHERE id='opus'").first<CareProject>();
@@ -17,15 +17,16 @@ export async function event(env:Env,category:string,title:string,note:string,act
  await env.DB.prepare('INSERT INTO care_events(id,project_id,category,title,note,actor,created_at) VALUES(?,?,?,?,?,?,?)').bind(crypto.randomUUID(),'opus',category,title,note,actor,at).run();
 }
 export async function careState(env:Env){
- const [p,checks,incidents,events,reports,plans]=await Promise.all([
+ const [p,checks,incidents,events,reports,plans,editions]=await Promise.all([
   project(env),
   env.DB.prepare("SELECT * FROM care_checks WHERE project_id='opus' AND slot=(SELECT MAX(slot) FROM care_checks WHERE project_id='opus') ORDER BY target").all<CareCheck>(),
   env.DB.prepare("SELECT * FROM care_incidents WHERE project_id='opus' ORDER BY opened_at DESC LIMIT 40").all<CareIncident>(),
   env.DB.prepare("SELECT * FROM care_events WHERE project_id='opus' ORDER BY created_at DESC LIMIT 60").all<CareEvent>(),
   env.DB.prepare(`SELECT ${reportColumns} FROM care_reports WHERE project_id='opus' ORDER BY month DESC LIMIT 24`).all<StoredReport>(),
   env.DB.prepare('SELECT * FROM care_plans ORDER BY price_usd').all<{features:string}>(),
+  env.DB.prepare("SELECT e.report_id,e.revision,e.approved_at,e.delivery_status FROM care_report_editions e JOIN care_reports r ON r.id=e.report_id WHERE r.project_id='opus' ORDER BY e.revision DESC").all<{report_id:string;revision:number;approved_at:string;delivery_status:string}>(),
  ]);
- return {project:p,checks:checks.results,incidents:incidents.results,events:events.results,reports:reports.results.map(r=>({...r,snapshot:JSON.parse(r.snapshot)})),plans:plans.results.map(r=>({...r,features:JSON.parse(r.features)})),email_configured:emailConfigured(env),scheduler_configured:Boolean(env.MAINTENANCE_CRON_SECRET),targets:CARE_TARGETS};
+ return {project:p,checks:checks.results,incidents:incidents.results,events:events.results,reports:reports.results.map(r=>({...r,snapshot:JSON.parse(r.snapshot),editions:editions.results.filter(e=>e.report_id===r.id)})),plans:plans.results.map(r=>({...r,features:JSON.parse(r.features)})),email_configured:emailConfigured(env),scheduler_configured:Boolean(env.MAINTENANCE_CRON_SECRET),targets:CARE_TARGETS,pdf_version:CARE_PDF_VERSION};
 }
 
 async function probe(target:typeof CARE_TARGETS[number],slot:number):Promise<CareCheck>{
@@ -123,11 +124,12 @@ export async function draftReport(env:Env,month:unknown,actor:string,refresh=tru
  const bounds=period(month),p=await project(env);
  const old=await env.DB.prepare("SELECT id,state FROM care_reports WHERE project_id='opus' AND month=?").bind(bounds.month).first<{id:string;state:string}>();
  if(old&&(!refresh||old.state!=='DRAFT'))return old.id;
- const [stats,incidents,events,incidentDetails]=await Promise.all([
+ const [stats,incidents,events,incidentDetails,latestChecks]=await Promise.all([
   env.DB.prepare("SELECT target,COUNT(*) AS checks,SUM(ok) AS successful,ROUND(AVG(latency_ms)) AS average_ms FROM care_checks WHERE project_id='opus' AND checked_at>=? AND checked_at<? GROUP BY target").bind(bounds.start,bounds.end).all<{target:string;checks:number;successful:number;average_ms:number}>(),
   env.DB.prepare("SELECT COUNT(*) AS total,SUM(CASE WHEN resolved_at IS NULL OR resolved_at>=? THEN 1 ELSE 0 END) AS open FROM care_incidents WHERE project_id='opus' AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?)").bind(bounds.end,bounds.end,bounds.start).first<{total:number;open:number}>(),
   env.DB.prepare("SELECT category,title,note,created_at FROM care_events WHERE project_id='opus' AND category IN ('maintenance','deployment','backup','note') AND created_at>=? AND created_at<? ORDER BY created_at DESC LIMIT 8").bind(bounds.start,bounds.end).all<CareEvent>(),
   env.DB.prepare("SELECT target,opened_at,resolved_at,detail FROM care_incidents WHERE project_id='opus' AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?) ORDER BY opened_at DESC LIMIT 12").bind(bounds.end,bounds.start).all<Pick<CareIncident,'target'|'opened_at'|'resolved_at'|'detail'>>(),
+  env.DB.prepare("SELECT target,checked_at,ok,status,latency_ms,detail FROM (SELECT target,checked_at,ok,status,latency_ms,detail,ROW_NUMBER() OVER(PARTITION BY target ORDER BY slot DESC) AS n FROM care_checks WHERE project_id='opus' AND checked_at>=? AND checked_at<?) WHERE n=1").bind(bounds.start,bounds.end).all<CareCheck>(),
  ]);
  const checks=stats.results.reduce((n,x)=>n+x.checks,0),successful=stats.results.reduce((n,x)=>n+x.successful,0);
  const expected=Math.max(0,Math.floor((Date.parse(bounds.end)-Date.parse(bounds.start))/300000))*CARE_TARGETS.length;
@@ -135,7 +137,7 @@ export async function draftReport(env:Env,month:unknown,actor:string,refresh=tru
  if((incidents?.open||0)>0)actions.push('Investigate unresolved service checks.');
  if(!checks||checks<expected*.95)actions.push('Review monitoring coverage and any gaps.');
  actions.push('Connect a backup verification source before reporting backup protection.');
- const snapshot:CareSnapshot={project:p.name,month:bounds.month,generated_at:nowISO(),period_start:bounds.start,period_end:bounds.end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,targets:CARE_TARGETS.map(t=>({name:t.name,...(stats.results.find(s=>s.target===t.id)||{checks:0,successful:0,average_ms:null})})),incidents:incidents?.total||0,open_incidents:incidents?.open||0,incident_details:incidentDetails.results,maintenance:events.results,backup_status:'Not connected — no automated backup verification.',actions:actions.slice(0,3)};
+ const snapshot:CareSnapshot={project:p.name,month:bounds.month,generated_at:nowISO(),period_start:bounds.start,period_end:bounds.end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,targets:CARE_TARGETS.map(t=>({name:t.name,...(stats.results.find(s=>s.target===t.id)||{checks:0,successful:0,average_ms:null})})),incidents:incidents?.total||0,open_incidents:incidents?.open||0,latest_checks:latestChecks.results,incident_details:incidentDetails.results,maintenance:events.results,backup_status:'Not connected — no automated backup verification.',actions:actions.slice(0,3)};
  const id=old?.id||crypto.randomUUID(),now=nowISO();
  await env.DB.prepare("INSERT INTO care_reports(id,project_id,month,snapshot,created_at,updated_at) VALUES(?,'opus',?,?,?,?) ON CONFLICT(project_id,month) DO UPDATE SET snapshot=excluded.snapshot,updated_at=excluded.updated_at WHERE care_reports.state='DRAFT'").bind(id,bounds.month,JSON.stringify(snapshot),now,now).run();
  await event(env,'report','Report draft prepared',`${bounds.month}; admin review required.`,actor);
@@ -148,7 +150,8 @@ export async function reportById(env:Env,id:unknown){
  if(!r)throw new CheckoutError(404,'Report not found.');
  return {...r,snapshot:JSON.parse(r.snapshot) as CareSnapshot};
 }
-export async function approveReport(env:Env,id:unknown,updated:unknown,base64:unknown,actor:string){
+export async function approveReport(env:Env,id:unknown,updated:unknown,base64:unknown,actor:string,version:unknown){
+ if(version!==CARE_PDF_VERSION)throw new CheckoutError(409,'A newer PDF design is available. Reload the admin page before approving.');
  const r=await reportById(env,id);
  if(r.state!=='DRAFT'||r.updated_at!==updated)throw new CheckoutError(409,'The report changed. Reload it before approving.');
  if(typeof base64!=='string'||base64.length>350000||!/^[A-Za-z0-9+/]+={0,2}$/.test(base64))throw new CheckoutError(400,'A report PDF under 250 KB is required.');
@@ -157,9 +160,21 @@ export async function approveReport(env:Env,id:unknown,updated:unknown,base64:un
  if(bytes.length>250000||new TextDecoder().decode(bytes.slice(0,5))!=='%PDF-')throw new CheckoutError(400,'A valid report PDF under 250 KB is required.');
  const key=`care_private_${r.id}_${crypto.randomUUID()}.pdf`,digest=await hash(base64);
  await env.MEDIA.put(key,bytes.buffer as ArrayBuffer,{httpMetadata:{contentType:'application/pdf'}});
- const saved=await env.DB.prepare("UPDATE care_reports SET state='APPROVED',approved_by=?,approved_at=?,pdf_key=?,pdf_hash=?,updated_at=? WHERE id=? AND state='DRAFT' AND updated_at=? RETURNING id").bind(actor,nowISO(),key,digest,nowISO(),r.id,updated).first();
+ const saved=await env.DB.prepare("UPDATE care_reports SET state='APPROVED',pdf_version=3,approved_by=?,approved_at=?,pdf_key=?,pdf_hash=?,updated_at=? WHERE id=? AND state='DRAFT' AND updated_at=? RETURNING id").bind(actor,nowISO(),key,digest,nowISO(),r.id,updated).first();
  if(!saved)throw new CheckoutError(409,'The report changed. Reload it before approving.');
  await event(env,'report','Report approved',`${r.month}; PDF stored privately.`,actor);
+}
+export async function reviseReport(env:Env,id:unknown,updated:unknown,actor:string){
+ const r=await reportById(env,id);
+ if(r.state!=='APPROVED'||r.updated_at!==updated||['SENDING','UNCONFIRMED'].includes(r.delivery_status))throw new CheckoutError(409,'Reload the report. An email in progress or with uncertain acceptance must be checked before revising.');
+ const now=nowISO();
+ await env.DB.batch([
+  env.DB.prepare("INSERT OR IGNORE INTO care_report_editions SELECT id,revision,month,snapshot,pdf_key,pdf_hash,pdf_version,approved_by,approved_at,recipient,provider_id,delivery_status,delivery_error,? FROM care_reports WHERE id=? AND state='APPROVED' AND updated_at=? AND delivery_status NOT IN ('SENDING','UNCONFIRMED')").bind(now,r.id,updated),
+  env.DB.prepare("UPDATE care_reports SET revision=revision+1,state='DRAFT',pdf_key=NULL,pdf_hash=NULL,approved_by=NULL,approved_at=NULL,recipient=NULL,provider_id=NULL,delivery_status='NOT_SENT',delivery_error=NULL,delivery_attempt=delivery_attempt+1,pdf_version=0,updated_at=? WHERE id=? AND state='APPROVED' AND updated_at=? AND delivery_status NOT IN ('SENDING','UNCONFIRMED')").bind(now,r.id,updated),
+ ]);
+ const fresh=await reportById(env,r.id);
+ if(fresh.state!=='DRAFT'||fresh.revision!==r.revision+1)throw new CheckoutError(409,'The report changed. Reload it.');
+ await event(env,'report','New report edition prepared',`${r.month}; previous approved file and delivery record preserved.`,actor);
 }
 export async function sendReport(env:Env,id:unknown,actor:string){
  const r=await reportById(env,id),p=await project(env);
@@ -176,7 +191,7 @@ export async function sendReport(env:Env,id:unknown,actor:string){
  const locked=await env.DB.prepare("UPDATE care_reports SET delivery_status='SENDING',recipient=?,updated_at=? WHERE id=? AND delivery_status='NOT_SENT' RETURNING id").bind(p.email,nowISO(),r.id).first();
  if(!locked)return {status:'Already processing'};
  try{
-  const response=await fetch('https://api.resend.com/emails',{method:'POST',redirect:'manual',signal:AbortSignal.timeout(15000),headers:{authorization:`Bearer ${env.RESEND_API_KEY}`,'content-type':'application/json','Idempotency-Key':`opus-care-report-${r.id}-${r.delivery_attempt}`},body:JSON.stringify({from:env.RECEIPT_FROM_EMAIL,to:[p.email],reply_to:'support@opuszim.co.zw',subject:`${p.name} — ${r.month} care report`,text:`Your reviewed monthly care report is attached.\n${r.snapshot.checks} checks recorded. ${r.snapshot.incidents} incidents.\nQuestions: support@opuszim.co.zw`,html:`<div style="font-family:Poppins,sans-serif;color:#0f0928"><h1>${safe(p.name)}</h1><p>Your ${safe(r.month)} care report is attached.</p><p>${r.snapshot.checks} checks recorded · ${r.snapshot.incidents} incidents</p><p>Questions? support@opuszim.co.zw</p></div>`,attachments:[{filename:`Opus-care-${r.month}.pdf`,content:base64}]})});
+  const response=await fetch('https://api.resend.com/emails',{method:'POST',redirect:'manual',signal:AbortSignal.timeout(15000),headers:{authorization:`Bearer ${env.RESEND_API_KEY}`,'content-type':'application/json','Idempotency-Key':`opus-care-report-${r.id}-${r.delivery_attempt}`},body:JSON.stringify({from:env.RECEIPT_FROM_EMAIL,to:[p.email],reply_to:'support@opuszim.co.zw',subject:`${p.name} — ${r.month} care report`,text:`Your reviewed monthly care report is attached.\n${r.snapshot.checks} checks recorded. ${r.snapshot.incidents} incidents.\nQuestions: support@opuszim.co.zw`,html:`<div style="font-family:Poppins,sans-serif;color:#0f0928"><h1>${safe(p.name)}</h1><p>Your ${safe(r.month)} care report is attached.</p><p>${r.snapshot.checks} checks recorded · ${r.snapshot.incidents} incidents</p><p>Questions? support@opuszim.co.zw</p></div>`,attachments:[{filename:`Opus-care-${r.month}-edition-${r.revision}.pdf`,content:base64}]})});
   const body=await response.json().catch(()=>null) as {id?:string}|null;
   const accepted=response.ok&&typeof body?.id==='string';
   const status=accepted?'ACCEPTED':([400,401,403,422,429].includes(response.status)?'FAILED':'UNCONFIRMED');

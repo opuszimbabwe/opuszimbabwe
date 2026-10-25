@@ -1,5 +1,5 @@
 import {requireAdmin,json} from '../../_lib/auth';
-import {careState,runCare,event,draftReport,approveReport,sendReport,reportDelivery} from '../../_lib/care';
+import {careState,runCare,event,draftReport,approveReport,sendReport,reportDelivery,reviseReport} from '../../_lib/care';
 import {receiptEmail} from '../../../lib/receipt-contact';
 import {trustedOrigin,CheckoutError,limitAttempts} from '../../_lib/payments';
 import type {PagesHandler} from '../../_lib/types';
@@ -33,7 +33,8 @@ export const onRequestPost:PagesHandler=async c=>{
    const title=text(b.title,120),note=text(b.note,1000);if(!title)throw new CheckoutError(400,'A log title is required.');
    await event(c.env,String(b.category),title,note,actor);
   }else if(b.action==='draft')await draftReport(c.env,b.month,actor);
-  else if(b.action==='approve')await approveReport(c.env,b.id,b.updated_at,b.pdf,actor);
+  else if(b.action==='approve')await approveReport(c.env,b.id,b.updated_at,b.pdf,actor,b.pdf_version);
+  else if(b.action==='revise')await reviseReport(c.env,b.id,b.updated_at,actor);
   else if(b.action==='send')return json(await sendReport(c.env,b.id,actor));
   else if(b.action==='delivery')return json(await reportDelivery(c.env,b.id));
   else if(b.action==='retry'){

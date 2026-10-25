@@ -48,3 +48,9 @@ Apply `0022_maintenance_pilot.sql` after a private D1 backup, then build/deploy 
 Check the admin's last completed run, four current results and actual Worker Cron trigger. A configured secret alone does not mean the scheduler is running. Manual checks share the same five-minute lock. No real payment is required for verification.
 
 `scripts/test-care.cjs` covers authentication, fixed targets, duplicate prevention, incident/recovery thresholds, gaps, Harare periods, report approval/privacy, recipient checks and email deduplication with fake providers. `scripts/test-care-ui.cjs` verifies the actual Poppins PDF and desktop/mobile views with mocked writes/emails.
+
+## PDF design revisions
+
+Design 3 includes the real admin-selected Opus logo, rounded summary cards, shaded tables, status badges and a final result based on the snapshot's evidence. Passed/recovered checks use green; failed checks use red. Missing or incomplete evidence is neutral/amber, never a fabricated success.
+
+Approved PDFs are immutable editions. The design upgrade preserves earlier files and email references in `care_report_editions`, and opens an unsent draft of the revised edition. Admin can view earlier approved editions or explicitly create a revised edition later. A new edition needs review/approval and a separate send action. Sending/uncertain email attempts must be resolved before revising. Stale clients cannot approve an obsolete template: the server checks `CARE_PDF_VERSION`.
