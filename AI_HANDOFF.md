@@ -296,3 +296,23 @@ Latest services request: services overview follows reference split hero/image gr
 - Tests: strict RGBA/gradient safety and roundtrips; isolated SQLite atomicity and
   namespace preservation; browser fixtures for stop editing, simultaneous/static
   background modes, pause, drop/paste/direct/modal uploads and responsive controls.
+
+## Admin verified receipts — 2026-10-25
+- User authorised Resend for admin-issued receipt emails. Async setup request asks
+  owner to verify sender and add encrypted RESEND_API_KEY + RECEIPT_FROM_EMAIL in
+  Production. Do not claim live delivery until configured. Never paste/read keys.
+- Migration0021 adds domain receipt email/optional WhatsApp and private receipt
+  drafts/delivery records. Receipt contacts do not change registry legal contacts.
+- Admin receipt composer available from successful payment rows and paid domains:
+  fresh strict Pesepay verification, preview, recipient confirmation, explicit email
+  send, PNG download/native sharing, optional WhatsApp draft, delivery/history.
+- Strict receipt reconciliation validates current SUCCESS/ref/amount/currency and
+  explicitly skips domain fulfilment. Default payment reconciliation is unchanged.
+- Resend uses fixed HTTPS endpoints, redirect:manual, bounded timeouts, send lock,
+  idempotency, acceptance/delivery distinction, no blind replay after uncertainty.
+- Email contains branded HTML + private90day receipt link; customer receipt page
+  verifies token hash + payment again, supports PNG/share/print PDF, no legal address,
+  payer email, WhatsApp or payment capability exposed. Reply-to support@opuszim.co.zw.
+- No real test emails or payment requests authorised/sent. All send/provider tests
+  use mocks. Broader project logs/reports/automations must be discussed and questions
+  asked AFTER receipt work, before implementation. Do not start that system yet.

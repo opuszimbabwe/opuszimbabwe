@@ -4,7 +4,7 @@ import { trustedOrigin, readPaymentJson, CheckoutError, fail, findPayment, recon
 import type { PagesHandler } from '../../_lib/types';
 export const onRequestGet: PagesHandler = async context => {
  const auth=await requireAdmin(context);if(auth instanceof Response)return auth;
- try {return json({pricing:await pricing(context.env),orders:(await context.env.DB.prepare('SELECT id,domain_name,retail_minor,supplier_cost_minor,state,payment_id,last_error,created_at,updated_at FROM domain_orders ORDER BY created_at DESC LIMIT 100').all()).results},200,{'cache-control':'no-store'});}catch(error){return fail(error);}
+ try {return json({pricing:await pricing(context.env),orders:(await context.env.DB.prepare(`SELECT o.id,o.domain_name,o.retail_minor,o.supplier_cost_minor,o.state,o.payment_id,o.last_error,o.created_at,o.updated_at,COALESCE(o.receipt_email,json_extract(o.contact_json,'$.email')) AS receipt_email,o.receipt_whatsapp,p.status AS payment_status FROM domain_orders o LEFT JOIN customer_payments p ON p.id=o.payment_id ORDER BY o.created_at DESC LIMIT 100`).all()).results},200,{'cache-control':'no-store'});}catch(error){return fail(error);}
 };
 export const onRequestPut: PagesHandler = async context => {
  const auth=await requireAdmin(context);if(auth instanceof Response)return auth;

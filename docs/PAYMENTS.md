@@ -75,3 +75,48 @@ attach it. Cancelling native sharing does not send a message or initiate payment
 Print receipt remains available, including the watermark, for printing/save-as-PDF.
 The downloaded receipt is a static record; subsequent reversals are checked on
 live status/export. No external message is automatically sent by these controls.
+
+### Admin receipt email and domain receipt contacts — 25 October 2026
+
+Domain checkout now records a receipt email and optional WhatsApp number separately
+from legal registrant details and the mobile-money authorisation number. The
+customer can use the registrant email or choose a different receipt email. Contact
+information is private; it does not appear in public catalogue responses or shared
+receipt data. Existing orders fall back to their recorded email for admin review.
+
+Admin → Customer Payments or Domains & Pricing → Verified receipt prepares a new
+receipt only after a fresh, strict Pesepay reference/amount/currency/status check.
+Receipt verification does not initiate registration or another payment. The admin
+reviews/changes the recipient, then explicitly clicks Send verified receipt by
+email. Download/share uses the existing stamped Poppins PNG. WhatsApp opens a
+customer-addressed draft; it does not automatically send a message.
+
+Email uses Resend. Configure these encrypted Production Pages secrets:
+
+- `RESEND_API_KEY`: sending and sent-email status read access.
+- `RECEIPT_FROM_EMAIL`: e.g. `Opus Zimbabwe <receipts@opuszim.co.zw>`.
+
+Verify the sending domain in Resend first, following its provided DNS records.
+Keep the existing receiving inbox/Zoho MX records. Replies go to
+support@opuszim.co.zw. The site does not use Zoho Mail SMTP for transactional email.
+No API key is entered in browser forms or committed to Git.
+
+The email includes the canonical branded receipt and a private 90-day receipt link.
+The browser receipt uses Poppins and a grey Opus Verified watermark; recipients can
+download/share PNG or print/save PDF. Email clients render the HTML stamp according
+to their supported typography/CSS. The receipt link is a hashed-capability grant,
+separate from the original payment capability. Tokens are removed from the browser
+URL when session storage works, never embedded in the receipt image, and never
+stored in plaintext in D1. Each view/export re-verifies the payment; a reversal or
+mismatch blocks the verified receipt. Payment success and domain registration
+state are shown separately.
+
+Resend acceptance is recorded as ACCEPTED, not as inbox delivery. Admin can read
+the provider's current status (DELIVERED, BOUNCED, etc.). Receipt recipient, issuing
+admin, timestamps, provider reference and recent email history are recorded.
+A conditional D1 send lock plus provider idempotency key prevents duplicate sends
+for the same receipt attempt. Ambiguous send outcomes become UNCONFIRMED and are
+not retried automatically; check the provider before preparing another email.
+A draft never sends by itself. Missing sender configuration disables the send
+button and fails closed on the server. This receipt-specific record is separate
+from the proposed project maintenance/log/report system, which remains unbuilt.

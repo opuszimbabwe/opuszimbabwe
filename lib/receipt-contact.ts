@@ -1,0 +1,2 @@
+export function receiptEmail(value:unknown){if(typeof value!=='string')return null;const v=value.trim().toLowerCase();return v.length<=254&&/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?\.[a-z]{2,63}$/.test(v)?v:null;}
+export function receiptWhatsApp(value:unknown){if(value===undefined||value==='')return '';if(typeof value!=='string'||value.length>30)return null;let v=value.replace(/[\s().-]/g,'');if(/^0\d{9}$/.test(v))v='+263'+v.slice(1);if(v.startsWith('00'))v='+'+v.slice(2);return /^\+[1-9]\d{6,14}$/.test(v)?v:null;}

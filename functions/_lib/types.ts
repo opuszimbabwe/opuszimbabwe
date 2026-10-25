@@ -28,6 +28,8 @@ export interface R2Bucket {
 }
 
 export interface Env {
+  RESEND_API_KEY?:string;
+  RECEIPT_FROM_EMAIL?:string;
   CLOUDFLARE_REGISTRAR_TOKEN?: string;
   CLOUDFLARE_REGISTRAR_ACCOUNT_ID?: string;
   PESEPAY_INTEGRATION_KEY?: string;

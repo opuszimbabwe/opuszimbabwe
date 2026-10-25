@@ -634,3 +634,16 @@ textarea.contact-field-control { resize: vertical; min-height: 160px; }
 .service-presentation-editor input,.service-presentation-editor select,.gradient-control input { max-width:100%; }
 .admin-editor-content .grid > * { min-width:0; }
 @media(max-width:767px){.admin-editor-content .grid{grid-template-columns:minmax(0,1fr)}}
+.opus-email-receipt { font-family:var(--font-poppins),sans-serif!important; }
+.admin-receipt-dialog { position:fixed; inset:0; width:min(1200px,96vw); max-height:92dvh; border:1px solid #e3dfe9; border-radius:24px; padding:0; color:#0f0928; background:#fff; }
+.admin-receipt-dialog::backdrop { background:#0f092875; backdrop-filter:blur(4px); }
+.admin-receipt-heading { position:sticky; top:0; z-index:2; background:white; border-bottom:1px solid #e7e3eb; display:flex; justify-content:space-between; align-items:center; padding:20px 24px; gap:20px; }
+.admin-receipt-heading h2 { font-weight:700; font-size:20px; }
+.admin-receipt-heading p { font-size:12px; margin-top:5px; color:#81798a; }
+.admin-receipt-layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); }
+.admin-receipt-preview { min-width:0; }
+.admin-receipt-controls { padding:24px; }
+.admin-receipt-controls > .flex button,.admin-receipt-controls > .flex a { display:inline-flex; align-items:center; gap:7px; font-size:12px; padding:10px 12px; border:1px solid #e3dfe9; border-radius:999px; }
+.shared-receipt-page { min-height:100dvh; background:#f1f3f6; padding-bottom:32px; }
+@media(max-width:767px){.admin-receipt-layout{grid-template-columns:minmax(0,1fr)}.admin-receipt-heading{padding:16px}.admin-receipt-heading h2{font-size:17px}.opus-email-receipt{padding:12px!important}}
+@media print{.shared-receipt-page{background:white;padding:0}.shared-receipt-page .opus-email-receipt{padding:0!important;background:white!important}.shared-receipt-page .opus-email-receipt > div{padding:12px!important}}
