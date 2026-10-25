@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { sanitizeSetting } from '../functions/_lib/db';
-import { normalizeContent } from '../lib/content';
+import { normalizeContent, DEFAULT_SERVICE_PAGES } from '../lib/content';
 import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN } from '../lib/section-design';
 
 const raw = (settings = {}, partners: unknown[] = []) => ({ services: [], pricing: [], partners, settings });
@@ -115,4 +115,13 @@ test('section design saves accept editor decimal angles, alpha hex and inactive 
  const stored=sanitizeSetting('cta_design',decimal);assert.ok(stored);const design=JSON.parse(stored);assert.equal(design.background_color,'#ffffff');assert.equal(design.overlay_gradient,'135.25deg,#0d0d0d80 0%,#E85D2A 100%');
  assert.ok(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:''}));
  for(const gradient of ['url(https://evil.example)','450deg,#fff,#000','90deg,#fff -1%,#000','90deg,#fff 101%,#000','90deg,#fff,#000);background:url(https://evil.example)'])assert.equal(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:gradient}),null);
+});
+
+test('graphic design class controls survive admin saves and public normalization',()=>{
+ const design={image:'/images/service-graphic.png',shape:'arch',radius:40,aspect:'portrait',overlay_kind:'gradient',overlay_color:'#0f0928',overlay_gradient:'120deg,#0f092800,#E85D2A',overlay_opacity:.72,text_color:'#ffffff',title_size:38,title_weight:800,body_size:18,body_weight:500,align:'center',position:'bottom',text_overlay:true};
+ const page={...DEFAULT_SERVICE_PAGES['graphic-design'],what_items:[{title:'Brand identity',body:'Our actual design work.',design}]};
+ const stored=sanitizeSetting('service_pages',{'graphic-design':page});assert.ok(stored);assert.deepEqual(JSON.parse(stored)['graphic-design'].what_items[0].design,design);
+ const content=normalizeContent(raw({service_pages:JSON.parse(stored)}));assert.ok(content);assert.deepEqual(content.settings.service_pages['graphic-design'].what_items[0].design,design);
+ for(const bad of [{image:'javascript:alert(1)'},{overlay_gradient:'url(https://evil.example)'},{radius:500},{title_weight:725},{body_size:2},{shape:'unsafe'},{text_color:'red'}])assert.equal(sanitizeSetting('service_pages',{'graphic-design':{...page,what_items:[{title:'Brand identity',body:'',design:{...design,...bad}}]}}),null);
+ const cleared=sanitizeSetting('service_pages',{'graphic-design':{...page,what_items:[{title:'Brand identity',body:'',design:{...design,image:''}}]}});assert.ok(cleared);assert.equal(JSON.parse(cleared)['graphic-design'].what_items[0].design.image,'');
 });

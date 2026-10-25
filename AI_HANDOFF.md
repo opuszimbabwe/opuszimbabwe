@@ -247,3 +247,28 @@ Latest services request: services overview follows reference split hero/image gr
 - CTA/contact section saves canonicalise decimal gradient angles, transparent hex,
   whitespace and inactive blank controls; unsafe CSS is still rejected. No live
   customer design settings were overwritten by the release.
+
+## Admin workspace, artwork and shareable receipts — 2026-10-25
+- Admin is a standalone authenticated workspace with the same privileges: sidebar,
+  real inventory shortcuts, searchable tools (Ctrl/Cmd K), a control finder that
+  opens collapsed sections, and searchable payment/domain ledgers. No fake tasks,
+  calendars, notifications, users or additional access privileges were introduced.
+- Shared ValueSlider supports drag, numeric entry, double-click value reset and a
+  keyboard-accessible restore button. Hero and overlay controls use it.
+- Graphic design alone omits the immediate post-hero showcase. Each what_items
+  entry can hold a validated design: uploaded artwork, container shape/proportions,
+  overlay/gradient, text positioning, colour, size and weight, or text below artwork.
+  Missing/failed images hide the public class. No invented client portfolio images
+  were populated; admin must add their actual work. Old content remains compatible.
+- Services overview has an inset white hero card. The dark capabilities block is
+  white with #0f0928 text. Problem paragraphs are centred, navy and slightly smaller.
+- Process icons are 80px containers/30px artwork, progressively morph on viewport
+  entry, and respect reduced motion. Project screenshot containers are 16:9, cover.
+- Successful payment receipts have a grey Opus Verified watermark. Download/share
+  rechecks payment status, then creates a Poppins PNG locally. Native file sharing
+  opens supported apps; unsupported browsers download for manual attachment.
+  Existing print receipt also includes the watermark. No new live charge was sent.
+- PNG generation loads the actual bundled Poppins face, excluding Next's optional
+  system fallback; missing device fallback fonts must not block receipt export.
+- New browser fixture script scripts/test-workspace-refresh.cjs covers controls,
+  responsive layout, artwork visibility, receipts, native share and reversals.

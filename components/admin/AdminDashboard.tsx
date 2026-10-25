@@ -28,6 +28,8 @@ import {
   Palette,
   Plus,
   RefreshCw,
+  Search,
+  ArrowUpRight,
   Sparkles,
   Tag,
   Trash2,
@@ -66,6 +68,10 @@ import { useAdminSession } from '@/components/admin/AdminAccessBoundary';
 import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
 import DomainManager from '@/components/admin/DomainManager';
 import PaymentLedger from '@/components/admin/PaymentLedger';
+import EditorFinder from '@/components/admin/EditorFinder';
+import GraphicClassEditor from '@/components/admin/GraphicClassEditor';
+import {DEFAULT_GRAPHIC_DESIGN} from '@/lib/graphic-design';
+import ValueSlider from '@/components/admin/ValueSlider';
 import SectionBackdrop from '@/components/SectionBackdrop';
 import type { SectionDesign } from '@/lib/section-design';
 
@@ -495,7 +501,7 @@ function SectionDesignEditor({ value, onChange, onUpload }: { value: SectionDesi
     <ColorSwatchField label="Background colour" value={value.background_color} onChange={v => patch({ background_color: v })} presets={SECTION_BG_PRESETS} />
     <label className="block text-sm font-semibold">Overlay type<select className="ml-3 rounded-lg border p-2" value={value.overlay_kind} onChange={e => patch({ overlay_kind: e.target.value as SectionDesign['overlay_kind'] })}><option value="solid">Plain colour</option><option value="gradient">Gradient</option></select></label>
     {value.overlay_kind === 'solid' ? <ColorSwatchField label="Overlay colour" value={value.overlay_color} onChange={v => patch({ overlay_color: v })} presets={SECTION_BG_PRESETS} /> : <GradientBuilder value={value.overlay_gradient} onChange={v => patch({ overlay_gradient: v })} />}
-    <label className="block text-sm font-semibold">Overlay opacity: {Math.round(value.overlay_opacity * 100)}%<input className="mt-2 block w-full" type="range" min="0" max="1" step="0.05" value={value.overlay_opacity} onChange={e => patch({ overlay_opacity: Number(e.target.value) })} /></label>
+    <ValueSlider label="Overlay opacity" value={value.overlay_opacity} min={0} max={1} step={0.01} defaultValue={0.65} onChange={v=>patch({overlay_opacity:v})}/>
     <SectionBackdrop design={value} className="rounded-xl p-8 text-center text-white"><p className="mx-auto font-semibold">Live background preview</p><p className="mx-auto text-sm">Check that your text remains readable.</p></SectionBackdrop>
   </div>;
 }
@@ -574,6 +580,9 @@ function IconPicker({
 
 export default function AdminDashboard() {
   const { content, status } = useSiteContent();
+  const [toolQuery,setToolQuery]=useState('');
+  const toolSearch=useRef<HTMLInputElement>(null);
+  useEffect(()=>{const handler=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();toolSearch.current?.focus()}if(event.key==='Escape')setToolQuery('')};window.addEventListener('keydown',handler);return()=>window.removeEventListener('keydown',handler)},[]);
   const [tab, setTab] = useState<Tab>('home');
   const [activeServiceId, setActiveServiceId] = useState<string>('web-design');
   const [activePageId, setActivePageId] = useState<string>('web-design');
@@ -772,6 +781,10 @@ export default function AdminDashboard() {
       } else if (target === 'favicon_icon') {
         patchSettings({ favicon_icon: url });
         setMessage({ kind: 'ok', text: `Uploaded browser favicon to R2: ${url} — press Save branding to apply.` });
+      } else if(target?.startsWith('graphicclass:')){
+        const index=Number(target.slice('graphicclass:'.length));
+        setSettings(prev=>{if(!prev)return prev;const pages=prev.service_pages||DEFAULT_SERVICE_PAGES;const page=pages['graphic-design'];return {...prev,service_pages:{...pages,'graphic-design':{...page,what_items:page.what_items.map((item,i)=>i===index?{...item,design:{...DEFAULT_GRAPHIC_DESIGN,...item.design,image:url}}:item)}}}});
+        setMessage({kind:'ok',text:'Class artwork uploaded. Review the preview, then save service page content.'});
       } else if (target && target.startsWith('toollogo:')) {
         const [, serviceId, indexRaw] = target.split(':');
         const index = Number(indexRaw);
@@ -964,7 +977,7 @@ export default function AdminDashboard() {
   const homeSections = settings?.home_sections || DEFAULT_HOME_SECTIONS;
 
   return (
-    <main className="min-h-screen bg-[#f4f5f7] pb-24 text-[#0d0d0d]">
+    <main className="admin-studio min-h-screen pb-24 text-[#0f0928]">
       <input
         ref={fileInput}
         type="file"
@@ -974,12 +987,12 @@ export default function AdminDashboard() {
       />
 
       {/* Top Admin Header */}
-      <section className="border-b border-[#e5e7eb] bg-[#0d0d0d] text-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-6">
+      <section className="admin-studio-header">
+        <div className="admin-studio-header-inner">
           <div>
             <div className="flex items-center gap-2.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E85D2A]/20 px-3 py-1 text-[.72rem] font-semibold uppercase tracking-wider text-[#E85D2A]">
-                Opus Zimbabwe CMS
+                Opus Zimbabwe · Workspace
               </span>
               {checkedSession && session && (
                 <span className="inline-flex items-center gap-1 text-[.78rem] text-emerald-400">
@@ -987,9 +1000,9 @@ export default function AdminDashboard() {
                 </span>
               )}
             </div>
-            <h1 className="mt-2 text-2xl font-bold md:text-3xl">Content admin</h1>
+            <h1 className="mt-2 text-2xl font-bold md:text-3xl">Your control centre.</h1>
             <p className="mt-1 text-[.85rem] text-white/70">
-              Full control over hero cycles, white &amp; warm sections, local payments, partner backgrounds, live work, icons, services and branding.
+              Design, content and business tools. Everything you already manage, in one workspace.
             </p>
           </div>
 
@@ -1011,16 +1024,17 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-6 pt-6">
+      <div className="admin-studio-body">
         {message && (
           <div className="mb-5">
             <Banner kind={message.kind}>{message.text}</Banner>
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[260px_1fr] items-start">
+        <div className="admin-studio-grid">
           {/* Organised Sidebar Navigation */}
-          <aside className="rounded-[24px] border border-[#e8eaed] bg-white p-4 shadow-[0_6px_24px_rgba(0,0,0,0.03)] lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto">
+          <aside className="admin-studio-sidebar">
+            <div className="admin-sidebar-brand"><img src="/images/logo-full.png" alt="Opus Zimbabwe"/><div className="admin-account-avatar">O</div><strong>Opus workspace</strong><span>{session?.email}</span></div>
             <div className="space-y-5">
               {navGroups.map((group) => (
                 <div key={group.group}>
@@ -1066,7 +1080,11 @@ export default function AdminDashboard() {
           </aside>
 
           {/* Main Editor Area */}
-          <div className="space-y-6 min-w-0">
+          <div className="admin-studio-editor min-w-0">
+            <div className="admin-workspace-toolbar"><div><span className="admin-workspace-eyebrow">Workspace / {navGroups.find(g=>g.items.some(i=>i.id===tab))?.group}</span><h2>{navGroups.flatMap(g=>g.items).find(i=>i.id===tab)?.label}</h2></div><div className="admin-command"><Search size={17}/><label htmlFor="admin-tool-search" className="sr-only">Search admin tools</label><input ref={toolSearch} id="admin-tool-search" value={toolQuery} onChange={e=>setToolQuery(e.target.value)} placeholder="Search your tools…" onKeyDown={e=>{if(e.key==='Enter'&&toolQuery.trim()){e.preventDefault();const item=navGroups.flatMap(g=>g.items).find(i=>i.label.toLowerCase().includes(toolQuery.toLowerCase()));if(item){setTab(item.id);setToolQuery('')}}}}/><kbd>⌘ / Ctrl K</kbd>{toolQuery.trim()&&<ul className="admin-command-results" aria-label="Matching admin tools">{navGroups.flatMap(g=>g.items).filter(i=>i.label.toLowerCase().includes(toolQuery.toLowerCase())).map(item=><li key={item.id}><button type="button" onClick={()=>{setTab(item.id);setToolQuery('')}}>{item.label}<ArrowUpRight size={15}/></button></li>)}{!navGroups.flatMap(g=>g.items).some(i=>i.label.toLowerCase().includes(toolQuery.toLowerCase()))&&<li className="p-4 text-sm">No matching tools.</li>}</ul>}</div></div>
+            <div className="admin-workspace-shortcuts">{([{label:'Services',count:services?.length||0,target:'services'},{label:'Live work',count:projects?.filter(p=>p.visible).length||0,target:'projects'},{label:'Partners',count:partners?.filter(p=>p.visible).length||0,target:'partners'}] as const).map(item=><button type="button" key={item.target} onClick={()=>setTab(item.target)}><span>{item.label}<ArrowUpRight size={16}/></span><strong>{item.count.toString().padStart(2,'0')}</strong><small>Manage {item.label.toLowerCase()}</small></button>)}</div>
+            <EditorFinder key={tab}/>
+            <div className="admin-editor-content space-y-6">
             {tab === 'transactions' && <PaymentLedger />}
             {tab === 'domains' && <DomainManager />}
             {/* TAB 1: HERO & HOMEPAGE SECTIONS */}
@@ -2090,7 +2108,8 @@ export default function AdminDashboard() {
                           </div>
                           <div className="space-y-3">
                             {page.what_items.map((item, idx) => (
-                              <div key={idx} className="rounded-xl border border-[#e8eaed] bg-white p-3 space-y-2">
+                              <details key={`${activePageId}-${idx}`} open={idx===0} className="admin-offering-editor rounded-xl border border-[#e8eaed] bg-white">
+                                <summary><span>{item.title||`Item ${idx+1}`}</span><small>{activePageId==='graphic-design'?(item.design?.image?'Artwork configured':'Hidden · add artwork'):'Edit offering'}</small></summary><div className="p-4 space-y-3">
                                 <div className="flex items-center justify-between">
                                   <span className="text-[.72rem] font-semibold uppercase tracking-wider text-[#6b7280]">
                                     Item {idx + 1}
@@ -2124,7 +2143,8 @@ export default function AdminDashboard() {
                                   }
                                   rows={2}
                                 />
-                              </div>
+                                {activePageId==='graphic-design'&&<GraphicClassEditor title={item.title} body={item.body} value={item.design} onUpload={()=>pickFile(`graphicclass:${idx}`)} onChange={design=>patch({what_items:page.what_items.map((x,j)=>j===idx?{...x,design}:x)})}/>}
+                              </div></details>
                             ))}
                           </div>
                           <button
@@ -2664,6 +2684,7 @@ export default function AdminDashboard() {
                 </Card>
               </>
             )}
+            </div>
           </div>
         </div>
       </div>

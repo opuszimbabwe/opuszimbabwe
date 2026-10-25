@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { PricingSection } from '@/components/PricingCard';
+import GraphicClassCard from '@/components/GraphicClassCard';
 import ServiceHero from '@/components/ServiceHero';
 import ServiceShowcase from '@/components/ServiceShowcase';
 import OpusApproach from '@/components/OpusApproach';
@@ -43,13 +44,15 @@ export default function ServicePageTemplate({
     DEFAULT_SERVICE_PAGES[data.serviceId] ||
     DEFAULT_SERVICE_PAGES['web-design'];
 
+  const isGraphicDesign=data.serviceId==='graphic-design';
+  const hasGraphicWork=page.what_items.some(item=>Boolean(item.design?.image));
   const isWebDesign = data.serviceId === 'web-design';
   const isDomainsHosting = data.serviceId === 'domains-hosting';
 
   return (
     <main className="bg-[#ffffff] text-[#0d0d0d]">
       <ServiceHero serviceId={data.serviceId} serviceName={data.eyebrow} domainCta={data.domainCta} fallback={{ eyebrow: data.eyebrow, headline: data.headline, intro: data.intro, cta: data.cta, background: data.image }} />
-      <ServiceShowcase data={data} />
+      {!isGraphicDesign&&<ServiceShowcase data={data} />}
 
       {/* Section 1 — The problem */}
       {!isWebDesign && <section className="site-frame service-context">
@@ -61,7 +64,7 @@ export default function ServicePageTemplate({
       {isWebDesign && <section className="site-frame service-conversion-story"><h2 className="service-conversion-heading"><span className="textured-accent">Trust, branding, UX.</span><br />Built to turn visits into business.</h2><div><p>{page.what_intro}</p><p>{page.problem_text}</p></div></section>}
 
       {/* Section 2 — What we build / design / provide / integrate (White section) */}
-      <section className="site-frame service-conversion">
+      {(!isGraphicDesign||hasGraphicWork)&&<section className={`site-frame service-conversion ${isGraphicDesign?'graphic-design-showcase':''}`}>
         <div>
           <h2 className="font-poppins text-3xl font-bold tracking-tight text-[#0d0d0d] md:text-4xl">
             {page.what_heading}
@@ -71,9 +74,9 @@ export default function ServicePageTemplate({
               {page.what_intro}
             </p>
           )}
-          <div className={isWebDesign ? 'service-offering-list' : 'mt-10 grid gap-5 md:grid-cols-2'}>
+          <div className={isWebDesign ? 'service-offering-list' : 'mt-10 grid gap-6 md:grid-cols-2'}>
             {page.what_items.map((item, idx) => (
-              isWebDesign ? <details key={`${item.title}-${idx}`} className="service-offering"><summary>{item.title}<span aria-hidden="true">+</span></summary>{item.body && <p>{item.body}</p>}</details> : <div
+              isGraphicDesign?<GraphicClassCard key={`${item.title}-${idx}`} title={item.title} body={item.body} design={item.design}/>:isWebDesign ? <details key={`${item.title}-${idx}`} className="service-offering"><summary>{item.title}<span aria-hidden="true">+</span></summary>{item.body && <p>{item.body}</p>}</details> : <div
                 key={`${item.title}-${idx}`}
                 className="rounded-[24px] border border-[#ebebea] bg-[#ffffff] p-7 transition-all hover:bg-[#ffffff]"
               >
@@ -88,8 +91,8 @@ export default function ServicePageTemplate({
           </div>
 
         </div>
-        <div className="service-conversion-art"><ServiceVisual serviceId={data.serviceId} fallback={data.image} /></div>
-      </section>
+        {!isGraphicDesign&&<div className="service-conversion-art"><ServiceVisual serviceId={data.serviceId} fallback={data.image} /></div>}
+      </section>}
 
       {/* Section 3 — Pricing */}
       <section id="pricing" className="bg-[#ffffff] py-20 sm:py-24">

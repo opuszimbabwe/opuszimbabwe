@@ -20,8 +20,8 @@ export default function ServicesList() {
   const services = (content ? content.services : staticServices).filter(service => service.visible);
   const sections = content?.settings.home_sections || DEFAULT_HOME_SECTIONS;
   return <>
-    <section className="services-index-hero">
-      <div className="site-frame services-index-intro">
+    <section className="services-index-hero site-frame">
+      <div className="services-index-intro services-overview-hero-card">
         <div className="services-index-heading"><h1>What we <span className="textured-accent">build</span><br />for you.</h1></div>
         <div className="services-index-intro-copy"><p>Websites, software, AI and automation, branding, domains, hosting and integrations. One team in Zimbabwe, building around the way your business works.</p><p>Clear pricing, fast turnaround and support that continues after launch.</p><Link href="/contact/" className="get-started-gradient services-index-action">Discuss your project <ArrowUpRight size={22} aria-hidden="true" /></Link>{services.length > 0 && <a href="#all-services" className="services-index-jump">Explore our services <ArrowDown size={16} aria-hidden="true" /></a>}</div>
       </div>

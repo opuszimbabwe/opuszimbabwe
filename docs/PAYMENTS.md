@@ -60,3 +60,18 @@ in the authenticated Customer Payments ledger. Ambiguous responses never cause a
 automatic second charge. Domain orders use server-owned USD amounts and legal
 customer identities; successful verification starts the separately tracked registrar
 workflow. Payment success alone is never shown as proof of domain registration.
+
+### Shareable receipts
+
+A successful receipt displays a grey Opus Verified stamp. Download receipt and
+Share receipt first request the protected, no-store payment status endpoint; only
+SUCCESS can generate a stamped image. Export uses the actual bundled Poppins font,
+Opus branding, paid amount, payer when supplied, reference and Africa/Harare time.
+No email address, phone, access token or domain-owner address is embedded.
+
+The PNG can be attached to WhatsApp/Messenger. Browsers supporting native file
+sharing can open their share sheet; others download the image and explain how to
+attach it. Cancelling native sharing does not send a message or initiate payment.
+Print receipt remains available, including the watermark, for printing/save-as-PDF.
+The downloaded receipt is a static record; subsequent reversals are checked on
+live status/export. No external message is automatically sent by these controls.

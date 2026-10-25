@@ -1,3 +1,4 @@
+import {parseGraphicDesign} from '../../lib/graphic-design';
 import { upgradeHeroDesign } from '../../lib/hero-design';
 import { parseSectionDesign } from '../../lib/section-design';
 // Shared D1 helpers for reading and validating site content.
@@ -371,8 +372,9 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
       for (const [id, raw] of Object.entries(value as Record<string, any>)) {
         if (!raw || typeof raw !== 'object') continue;
         const whatItems = entries(raw.what_items, 30)
-          .map((x) => ({ title: text(x.title, 200).trim(), body: text(x.body, 800).trim() }))
+          .map((x) => ({ title: text(x.title, 200).trim(), body: text(x.body, 800).trim(), ...(x.design!==undefined ? {design:parseGraphicDesign(x.design)}: {}) }))
           .filter((x) => x.title);
+        if(entries(raw.what_items,30).some(x=>x.design!==undefined&&!parseGraphicDesign(x.design)))return null;
         const processSteps = entries(raw.process_steps, 20)
           .map((x) => ({ title: text(x.title, 200).trim(), body: text(x.body, 800).trim() }))
           .filter((x) => x.title);

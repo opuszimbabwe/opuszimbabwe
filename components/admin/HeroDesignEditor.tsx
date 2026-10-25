@@ -1,6 +1,7 @@
 'use client';
 import { HomeHeroView } from '@/components/HomeHero';
-import { heroPreset, validHeroDesign, type HeroDesign } from '@/lib/hero-design';
+import ValueSlider from '@/components/admin/ValueSlider';
+import { DEFAULT_HERO_DESIGN, heroPreset, validHeroDesign, type HeroDesign } from '@/lib/hero-design';
 import type { HeroCycle, HomeSectionsConfig } from '@/lib/content';
 
 function Select({ label, value, choices, onChange }: { label: string; value: string; choices: [string, string][]; onChange: (value: string) => void }) {
@@ -8,9 +9,6 @@ function Select({ label, value, choices, onChange }: { label: string; value: str
 }
 function Text({ label, value, onChange, multiline = false }: { label: string; value: string; onChange: (value: string) => void; multiline?: boolean }) {
   return <label className="block text-sm font-medium">{label}{multiline ? <textarea aria-label={label} value={value} onChange={e => onChange(e.target.value)} rows={3} className="mt-2 block w-full rounded-xl border bg-white p-3" /> : <input aria-label={label} value={value} onChange={e => onChange(e.target.value)} className="mt-2 block w-full rounded-xl border bg-white p-3" />}</label>;
-}
-function Range({ label, value, min, max, step = 1, onChange }: { label: string; value: number; min: number; max: number; step?: number; onChange: (v: number) => void }) {
-  return <label className="block text-sm font-medium">{label}: {value}<input className="mt-3 block w-full accent-[#E85D2A]" type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(Number(e.target.value))} /></label>;
 }
 function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return <label className="flex items-center gap-3 text-sm font-medium"><input className="accent-[#E85D2A]" type="checkbox" checked={value} onChange={e => onChange(e.target.checked)} />{label}</label>;
@@ -21,7 +19,7 @@ function Color({ label, value, onChange }: { label: string; value: string; onCha
 export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave, busy, sections, cycles }: { value: HeroDesign; onChange: (value: HeroDesign) => void; onUpload: (target: string) => void; onSave: () => void; busy: boolean; sections: HomeSectionsConfig; cycles: HeroCycle[] }) {
   const patch = (v: Partial<HeroDesign>) => onChange({ ...d, ...v });
   const set = (key: keyof HeroDesign, value: unknown) => patch({ [key]: value });
-  const range = (key: keyof HeroDesign, label: string, min: number, max: number, step = 1) => <Range key={key} label={label} value={d[key] as number} min={min} max={max} step={step} onChange={v => set(key, v)} />;
+  const range = (key: keyof HeroDesign, label: string, min: number, max: number, step = 1) => <ValueSlider defaultValue={DEFAULT_HERO_DESIGN[key] as number} key={key} label={label} value={d[key] as number} min={min} max={max} step={step} onChange={v => set(key, v)} />;
   const color = (key: keyof HeroDesign, label: string) => <Color key={key} label={label} value={d[key] as string} onChange={v => set(key, v)} />;
   const select = (key: keyof HeroDesign, label: string, choices: [string, string][]) => <Select label={label} value={String(d[key])} choices={choices} onChange={v => set(key, (key === 'heading_weight' || key === 'caption_weight') ? Number(v) : v)} />;
   return <div className="space-y-6">
@@ -71,11 +69,11 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       <Select label="Hero overlay type" value={d.background.overlay_kind} choices={[["solid", "Plain colour"], ["gradient", "Gradient"]]} onChange={v => patch({ background: { ...d.background, overlay_kind: v as 'solid' | 'gradient' } })} />
       <Color label="Hero overlay colour" value={d.background.overlay_color} onChange={v => patch({ background: { ...d.background, overlay_color: v } })} />
       {d.background.overlay_kind === 'gradient' && <div className="space-y-4">
-        <Range label="Hero gradient angle (degrees)" value={parseInt(d.background.overlay_gradient) || 0} min={0} max={360} onChange={angle => patch({ background: { ...d.background, overlay_gradient: `${angle}deg,${d.background.overlay_gradient.split(',').slice(1).join(',')}` } })} />
+        <ValueSlider defaultValue={160} label="Hero gradient angle (degrees)" value={parseInt(d.background.overlay_gradient) || 0} min={0} max={360} onChange={angle => patch({ background: { ...d.background, overlay_gradient: `${angle}deg,${d.background.overlay_gradient.split(',').slice(1).join(',')}` } })} />
         {d.background.overlay_gradient.split(',').slice(1).map((colour, i) => <Color key={i} label={`Hero gradient colour ${i + 1}`} value={colour.trim()} onChange={colour => { const parts = d.background.overlay_gradient.split(','); parts[i + 1] = colour; patch({ background: { ...d.background, overlay_gradient: parts.join(',') } }); }} />)}
         <Text label="Hero overlay gradient (angledeg,#colour,#colour)" value={d.background.overlay_gradient} onChange={v => patch({ background: { ...d.background, overlay_gradient: v } })} />
       </div>}
-      <Range label="Hero overlay opacity" value={d.background.overlay_opacity} min={0} max={1} step={0.05} onChange={v => patch({ background: { ...d.background, overlay_opacity: v } })} />
+      <ValueSlider defaultValue={DEFAULT_HERO_DESIGN.background.overlay_opacity} label="Hero overlay opacity" value={d.background.overlay_opacity} min={0} max={1} step={0.05} onChange={v => patch({ background: { ...d.background, overlay_opacity: v } })} />
       {select('overlay_placement', 'Overlay position', [['full', 'Whole hero'], ['left', 'Left'], ['center', 'Centre'], ['right', 'Right']])}
       {range('overlay_width', 'Overlay width (%)', 10, 100)}{range('background_x', 'Background horizontal focal point (%)', 0, 100)}{range('background_y', 'Background vertical focal point (%)', 0, 100)}
       <Toggle label="Show a coloured panel behind the text" value={d.text_panel} onChange={v => patch({ text_panel: v })} />

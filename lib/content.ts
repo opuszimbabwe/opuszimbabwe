@@ -1,3 +1,4 @@
+import {parseGraphicDesign,type GraphicClassDesign} from './graphic-design';
 import { DEFAULT_HERO_DESIGN, normalizeHeroDesign, type HeroDesign } from './hero-design';
 import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN, normalizeDesign, type SectionDesign } from './section-design';
 import homepageCopy from './homepage-copy.json';
@@ -62,7 +63,7 @@ export type ServicePageDetails = {
   problem_text: string;
   what_heading: string;
   what_intro: string;
-  what_items: WhyItem[];
+  what_items: (WhyItem & {design?:GraphicClassDesign})[];
   price_range: string;
   price_summary: string;
   price_note: string;
@@ -1411,7 +1412,7 @@ function normalizeServicePages(
     const base = fallback[id];
     if (!base || !val || typeof val !== 'object') continue;
     const whatItems = objectArray(val.what_items, 30)
-      .map((x) => ({ title: str(x.title, '').slice(0, 200), body: str(x.body, '').slice(0, 800) }))
+      .map((x) => ({ title: str(x.title, '').slice(0, 200), body: str(x.body, '').slice(0, 800), ...(x.design && parseGraphicDesign(x.design) ? {design:parseGraphicDesign(x.design)!}: {}) }))
       .filter((x) => x.title);
     const processSteps = objectArray(val.process_steps, 20)
       .map((x) => ({ title: str(x.title, '').slice(0, 200), body: str(x.body, '').slice(0, 800) }))
