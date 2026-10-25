@@ -52,8 +52,8 @@ export async function carePDF(data:CareSnapshot):Promise<Uint8Array>{
  function nextPage(){page=pdf.addPage([595.28,841.89]);header();txt('Service detail',42,720,23,true);y=687;}
  function ensure(height:number){if(y-height<80)nextPage();}
  function paragraph(text:string,size=9.5){for(const row of lines(text,511,size)){ensure(size+5);txt(row,42,y,size,false,muted);y-=size+5;}y-=7;}
- function section(title:string){ensure(48);y-=12;txt(title.toUpperCase(),42,y,10,true);page.drawLine({start:{x:42,y:y-10},end:{x:553,y:y-10},thickness:.6,color:grey});y-=31;}
- function label(text:string){const rows=lines(text,511,10);ensure(rows.length*15+20);for(const row of rows){txt(row,42,y,10,true);y-=15;}y-=3;}
+ function section(title:string){ensure(100);y-=12;txt(title.toUpperCase(),42,y,10,true);page.drawLine({start:{x:42,y:y-10},end:{x:553,y:y-10},thickness:.6,color:grey});y-=31;}
+ function label(text:string){const rows=lines(text,511,10);ensure(rows.length*15+45);for(const row of rows){txt(row,42,y,10,true);y-=15;}y-=3;}
  const percentage=(n:number)=>n>0&&n<.1?'<0.1%':`${n.toFixed(1)}%`;
  header();
  txt(data.project,42,711,26,true);txt('Monthly performance & maintenance',42,686,12,false,muted);
