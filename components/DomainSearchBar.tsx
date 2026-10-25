@@ -1,36 +1,11 @@
 'use client';
-
 import Link from 'next/link';
-import { Search } from 'lucide-react';
-import { useState } from 'react';
-import { contactHref } from '@/lib/content';
-
-const SERVICE = 'Domain Registration & Web Hosting';
-// A registration enquiry must identify a full domain, rather than a search word.
-const DOMAIN = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
-
-export default function DomainSearchBar() {
-  const [q, setQ] = useState('');
-  const [requested, setRequested] = useState('');
-  const [error, setError] = useState('');
-  return <div className="max-w-2xl">
-    <form onSubmit={event => {
-      event.preventDefault();
-      const domain = q.trim().toLowerCase();
-      if (!DOMAIN.test(domain)) {
-        setRequested('');
-        setError('Enter a full domain name, for example yourbusiness.co.zw or yourbusiness.com.');
-        return;
-      }
-      setError(''); setRequested(domain);
-    }} className="flex items-center overflow-hidden rounded-full bg-white p-1.5 shadow-xl">
-      <Search className="ml-4 shrink-0 text-muted-fg" size={20} aria-hidden="true" />
-      <label htmlFor="domain-search" className="sr-only">Domain name</label>
-      <input id="domain-search" value={q} onChange={event => { setQ(event.target.value); setRequested(''); setError(''); }} placeholder="yourbusiness.co.zw" autoCapitalize="none" autoCorrect="off" spellCheck={false} aria-invalid={Boolean(error)} aria-describedby={error ? 'domain-search-error' : 'domain-search-help'} className="min-w-0 flex-1 bg-transparent px-3 py-3 font-semibold outline-none placeholder:font-normal" />
-      <button type="submit" className="shrink-0 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white">Check domain</button>
-    </form>
-    <p id="domain-search-help" className="mt-3 text-sm leading-6 text-muted-fg">Our team confirms availability and pricing before registration.</p>
-    {error && <p id="domain-search-error" role="alert" className="mt-3 text-sm leading-6 text-red-700">{error}</p>}
-    <div role="status" aria-live="polite">{requested && <div className="mt-3 rounded-2xl border border-[#e5e7eb] bg-white p-4 text-sm leading-6 text-dark"><p>Request an availability check for <strong>{requested}</strong>.</p><Link href={contactHref(SERVICE, requested)} className="mt-2 inline-flex font-semibold text-primary hover:underline">Ask us about this domain →</Link></div>}</div>
-  </div>;
+import {Search} from 'lucide-react';
+import {useRef,useState} from 'react';
+import {contactHref} from '@/lib/content';
+import {normaliseDomain,type DomainQuote} from '@/lib/domains';
+export default function DomainSearchBar(){
+ const [q,setQ]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<DomainQuote|null>(null);const generation=useRef(0);
+ async function check(event:React.FormEvent){event.preventDefault();const domain=normaliseDomain(q);if(!domain){setError('Enter a full domain name, for example yourbusiness.com.');return;}const current=++generation.current;setError('');setResult(null);setBusy(true);try{if(/\.(?:co|org|ac)\.zw$/.test(domain)){setResult({domain,extension:domain.split('.').slice(1).join('.'),registrable:false,assisted:true,reason:'local_domain'});return;}const r=await fetch('/api/domains/check',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({domain}),signal:AbortSignal.timeout(30000)});const b=await r.json();if(!r.ok)throw Error(b.error);if(current===generation.current)setResult(b);}catch(e){if(current===generation.current)setError(e instanceof Error?e.message:'Availability could not be checked.');}finally{if(current===generation.current)setBusy(false);}}
+ return <div className="max-w-2xl"><form onSubmit={check} className="flex items-center rounded-full border border-gray-200 bg-white p-1.5 shadow-sm"><Search className="ml-3 shrink-0 text-muted-fg" size={20}/><label htmlFor="domain-search" className="sr-only">Domain name</label><input id="domain-search" value={q} onChange={e=>{generation.current++;setBusy(false);setQ(e.target.value);setResult(null);setError('')}} placeholder="yourbusiness.com" autoCapitalize="none" autoCorrect="off" spellCheck={false} className="min-w-0 flex-1 bg-transparent px-3 py-3 outline-none"/><button disabled={busy} className="shrink-0 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{busy?'Checking…':'Check domain'}</button></form><p className="mt-3 text-sm leading-6 text-muted-fg">Live checks for international domains. Zimbabwean domains are arranged with our team.</p>{error&&<p role="alert" className="mt-3 text-red-700">{error}</p>}<div aria-live="polite">{result&&<div className="mt-4 rounded-2xl border p-5"><strong>{result.domain}</strong>{result.registrable?<><p className="mt-2">Available now · US${((result.registration_minor||0)/100).toFixed(2)} for one year{result.renewal_minor!==undefined?` · renewal US$${(result.renewal_minor/100).toFixed(2)}/year`:''}</p><Link href={'/domains/register/?domain='+encodeURIComponent(result.domain)} className="mt-3 inline-flex font-bold text-primary">Register this domain →</Link></>:<><p className="mt-2">{result.assisted?'This domain needs a personalised availability, pricing or eligibility check.':'This domain is currently unavailable for registration. Please try another name.'}</p>{result.assisted&&<Link href={contactHref('Domain Registration & Web Hosting',result.domain)} className="mt-3 inline-flex font-semibold text-primary">Ask our team →</Link>}</>}</div>}</div></div>;
 }

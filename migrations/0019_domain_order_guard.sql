@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS domain_order_active_name ON domain_orders(domain_name) WHERE state IN ('PAYMENT_PENDING','PAID','REGISTERING','UNCONFIRMED','REGISTERED');

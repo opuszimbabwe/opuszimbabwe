@@ -1,5 +1,5 @@
 import { upgradeHeroDesign } from '../../lib/hero-design';
-import { validDesign } from '../../lib/section-design';
+import { parseSectionDesign } from '../../lib/section-design';
 // Shared D1 helpers for reading and validating site content.
 
 import { D1Database } from './types';
@@ -321,7 +321,7 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
       { const design = upgradeHeroDesign(value); return design ? JSON.stringify(design) : null; }
     case 'cta_design':
     case 'contact_hero_design':
-      return validDesign(value) ? JSON.stringify(value) : null;
+      { const design = parseSectionDesign(value); return design ? JSON.stringify(design) : null; }
     case 'hero_cycles': {
       const cleaned = entries(value, 16)
         .map((x) => ({

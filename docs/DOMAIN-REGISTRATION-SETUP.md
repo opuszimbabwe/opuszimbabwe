@@ -39,3 +39,58 @@ Cloudflare Registrar remains the registrar of record. Using its dashboard/API do
 - Independent registrar accreditation: https://www.icann.org/resources/pages/accreditation-2012-02-25-en
 
 The official guide and API reference currently describe differing beta/extension limits. Use the live extension/check response for the specific requested name; premium and unsupported extensions must not be assumed registrable through the API.
+
+## Website catalogue and automatic registrations (25 October 2026)
+
+The website now lists the 423 extensions returned by the account’s Registrar API.
+407 have a standard USD catalogue price; 16 require an enquiry. Eligibility,
+premium names and live availability are checked separately for every order.
+Local Zimbabwean extensions remain enquiries by email/WhatsApp.
+
+Retail pricing is supplier cost plus 25%, with a minimum US$5 gross markup,
+rounded up to cents, for both initial registration and the current renewal quote.
+Admin → Domains & Pricing controls this rule. This is markup on cost, before
+payment fees and operating costs, not a guaranteed net margin. Existing orders
+retain their agreed quote; new orders recheck supplier and retail prices.
+
+Encrypted Pages runtime secrets `CLOUDFLARE_REGISTRAR_TOKEN` and
+`CLOUDFLARE_REGISTRAR_ACCOUNT_ID` supply account-scoped access. Their values
+must never be committed or included in browser code. Existing Access and Pesepay
+secrets are preserved. Use a dedicated Registrar-only token when rotating access.
+
+Customer flow: live domain check → legal registrant and eligibility details →
+explicit domain/price consent → 15-minute USD quote → local Pesepay payment →
+independent amount/currency/reference verification → once-only registration.
+The inline registrant contact is the customer, not the account’s default owner.
+One year is purchased, auto-renew is off, and eligible contact data is redacted.
+The customer may still need to verify their registrant email or registry eligibility.
+
+A unique active-domain reservation prevents different orders charging for the same
+name concurrently. A conditional D1 lock precedes the one supplier purchase.
+Registrar timeouts are checked using GET registration/status endpoints only;
+there is no automatic repeat purchase. The site distinguishes payment success
+from confirmed registration. Price changes, action-required and failed registration
+need support resolution; they do not prompt another payment. Reversed payments
+are flagged and cannot silently complete another registration.
+
+Renewals are quoted for information and remain managed through the registrar
+account; the current Registrar API beta does not offer automated renewal. This
+integration does not confer ICANN accreditation or formal reseller-program status.
+
+Refresh the catalogue periodically (read-only, no purchases):
+
+```bash
+python3 scripts/refresh-domain-catalogue.py
+npx wrangler d1 execute opuszim-content --remote --file=/tmp/opus-domain-import.sql
+```
+
+The script reads environment credentials and writes private temporary wholesale
+snapshots under `/tmp`; do not publish these. Quotes always check live prices even
+when a catalogue snapshot is older. Domain order/contact records are private;
+public catalogue responses contain retail prices only.
+
+Validation: isolated SQLite/encrypted Pesepay and Registrar mocks cover exact
+prices, ownership, capabilities, consent, tampered payment amounts, no registration
+before verified payment, once-only purchases, ambiguous timeouts and concurrent
+orders. Browser fixtures cover the full catalogue, registration and locked checkout.
+No live domain purchase was made as a test.

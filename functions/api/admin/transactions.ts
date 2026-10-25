@@ -3,7 +3,7 @@ import type { PagesHandler } from '../../_lib/types';
 export const onRequestGet: PagesHandler = async context => {
  const auth = await requireAdmin(context); if (auth instanceof Response) return auth;
  try {
-  const rows = await context.env.DB.prepare('SELECT id, payer_name, payer_email, invoice, amount_minor, currency, method_name, gateway_reference, status, transaction_date, created_at FROM customer_payments ORDER BY created_at DESC LIMIT 100').all();
+  const rows = await context.env.DB.prepare('SELECT id, payer_name, payer_email, invoice, amount_minor, currency, method_name, gateway_reference, status, transaction_date, created_at, gateway_error_code, gateway_error_message FROM customer_payments ORDER BY created_at DESC LIMIT 100').all();
   return json({ payments: rows.results }, 200, { 'cache-control': 'no-store' });
  } catch { return json({ error: 'Payment records could not be loaded.' }, 503, { 'cache-control': 'no-store' }); }
 };

@@ -1,3 +1,4 @@
+import DomainCatalogue from '@/components/DomainCatalogue';
 import Link from 'next/link';
 import DomainSearchBar from '@/components/DomainSearchBar';
 import { contactHref } from '@/lib/content';
@@ -9,12 +10,6 @@ const localDomains = [
   ['.org.zw', '$6/year', 'For NGOs and non-profit organisations'],
   ['.ac.zw', '$6/year', 'For academic and educational institutions'],
 ];
-const intlDomains = [
-  ['.com', '$15/year', 'The global standard'],
-  ['.org', '$15/year', 'International organisations'],
-  ['.net', '$20/year', 'Technology and networks'],
-];
-
 export default function Domains() {
   return (
     <main>
@@ -61,25 +56,7 @@ export default function Domains() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-16">
-
-        <h2 className="mt-2 text-2xl font-bold text-dark">International extensions also available.</h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {intlDomains.map(([ext, price, note]) => (
-            <div key={ext} className="rounded-[20px] border border-[#e8e8e8] bg-[#ffffff] p-6">
-              <h3 className="text-2xl font-bold text-dark">{ext}</h3>
-              <p className="mt-1 text-lg font-bold text-[#0d0d0d]">{price}</p>
-              <p className="mt-2 text-[.85rem] leading-5 text-muted-fg">{note}</p>
-              <Link
-                href={contactHref(SERVICE, ext)}
-                className="mt-5 inline-flex rounded-full border border-dark px-4 py-2 text-sm font-semibold text-dark transition-colors hover:bg-dark hover:text-white"
-              >
-                Register domain
-              </Link>
-            </div>
-          ))}
-        </div>
-      </section>
+      <DomainCatalogue />
 
       <section className="mx-auto max-w-5xl border-b border-[#eeeeee] px-6 py-20">
 

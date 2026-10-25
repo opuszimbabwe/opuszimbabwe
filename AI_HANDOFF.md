@@ -232,3 +232,18 @@ Latest services request: services overview follows reference split hero/image gr
 - User confirmed Cloudflare billing/contact/agreement prerequisites and edited existing token to include Registrar: Domains: Admin, retaining DNS Settings Edit, D1 Read/Edit, Pages Edit, Zero Trust Edit and Account Settings Edit. No secret values were supplied in chat.
 - Read-only live checks now succeed HTTP200: /registrar/extensions/com, /registrar/registrations (zero records), legacy /registrar/domains (zero records), and non-billable POST /registrar/domain-check. Check correctly returns cloudflare.com unavailable and opuszim.co.zw extension_not_supported. Account-level Registrar access is working.
 - Updated docs/DOMAIN-REGISTRATION-SETUP.md to remove obsolete403 blocker. Partner/service-provider route is confirmed: Cloudflare remains registrar of record, Opus registers/manages customer domains; no ICANN accreditation or formal reseller-program approval claimed. Owner billing/legal setup is attested, not tested by a charge. No domain bought/transferred. Existing public site still uses domain enquiries; automated supplier purchase/customer-order integration is not claimed or added by this verification. Exact domain/price confirmation remains required before a billable registration.
+
+## Domain store / verified EcoCash — 2026-10-25
+- Full Cloudflare API catalogue imported: 423 extensions, 407 priced, 16 enquiry.
+- Approved default markup 25% of supplier cost, minimum USD5 gross markup/year;
+  private admin Domains & Pricing changes future catalogue/quotes immediately.
+- Customer legal ownership/eligibility and explicit exact-domain-price consent,
+  fixed USD quote, local payment, automatic registration only after verified SUCCESS.
+- Supplier purchase is once only. Ambiguous outcomes use read-only checks; paid
+  support-resolution states retain the domain reservation. See domain setup docs.
+- Runtime Registrar account/token saved encrypted in Pages, Access/Pesepay unchanged.
+- Owner authorised ONE USD0.10 EcoCash test to number ending6530. Already sent,
+  prompt confirmed by owner and independently verified SUCCESS. DO NOT send another.
+- CTA/contact section saves canonicalise decimal gradient angles, transparent hex,
+  whitespace and inactive blank controls; unsafe CSS is still rejected. No live
+  customer design settings were overwritten by the release.

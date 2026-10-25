@@ -17,6 +17,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   CheckCircle2,
   CreditCard,
+  Globe,
   ExternalLink,
   FileText,
   FolderKanban,
@@ -63,6 +64,7 @@ import { ICON_NAMES, resolveIcon } from '@/lib/icons';
 import { useSiteContent, announceSiteContentChange } from '@/lib/use-site-content';
 import { useAdminSession } from '@/components/admin/AdminAccessBoundary';
 import HeroDesignEditor from '@/components/admin/HeroDesignEditor';
+import DomainManager from '@/components/admin/DomainManager';
 import PaymentLedger from '@/components/admin/PaymentLedger';
 import SectionBackdrop from '@/components/SectionBackdrop';
 import type { SectionDesign } from '@/lib/section-design';
@@ -72,6 +74,7 @@ type Tab =
   | 'home'
   | 'payments'
   | 'transactions'
+  | 'domains'
   | 'services'
   | 'partners'
   | 'projects'
@@ -153,7 +156,7 @@ async function api(path: string, init?: RequestInit): Promise<any> {
   }
   const data = parseJson(await res.text());
   if (!res.ok) {
-    const message = data?.error === 'invalid_value_for_payment_methods' ? 'Payment methods were not saved. Every row needs a name and a valid /images/…, /api/media/… or HTTPS logo URL. No entries were removed.' : (data && (data.error || data.hint)) || `Request failed (HTTP ${res.status})`;
+    const message = data?.message || (data?.error === 'invalid_value_for_payment_methods' ? 'Payment methods were not saved. Every row needs a name and a valid /images/…, /api/media/… or HTTPS logo URL. No entries were removed.' : (data && (data.error || data.hint)) || `Request failed (HTTP ${res.status})`);
     throw new Error(message);
   }
   if (init?.method && init.method !== 'GET') await announceSiteContentChange(data?.content);
@@ -368,7 +371,7 @@ function parseGradient(value: string): { angle: number; colors: string[] } {
     .split(',')
     .map((p) => p.trim())
     .filter(Boolean);
-  const angle = parseInt(parts[0] || '160', 10);
+  const angle = parseFloat(parts[0] || '160');
   const colors = parts.slice(1).filter((p) => p.startsWith('#'));
   return { angle: Number.isFinite(angle) ? angle : 160, colors: colors.length ? colors : ['#1a1a1a', '#454545'] };
 }
@@ -394,6 +397,7 @@ function GradientBuilder({ value, onChange }: { value: string; onChange: (v: str
             type="number"
             min={0}
             max={360}
+            step="0.01"
             value={angle}
             onChange={(e) => setAngle(Math.max(0, Math.min(360, Number(e.target.value) || 0)))}
             className="w-20 rounded-lg border border-[#e2e4e8] bg-white px-2 py-1 text-[.85rem]"
@@ -426,6 +430,7 @@ function GradientBuilder({ value, onChange }: { value: string; onChange: (v: str
         ))}
       </div>
       <input
+        aria-label="Gradient CSS"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="mt-3 w-full rounded-lg border border-[#e2e4e8] bg-white px-2.5 py-1.5 text-[.8rem] text-[#0d0d0d] outline-none focus:border-[#E85D2A]"
@@ -938,7 +943,7 @@ export default function AdminDashboard() {
     },
     {
       group: 'Payments',
-      items: [{ id: 'transactions', label: 'Customer Payments', icon: CreditCard }],
+      items: [{ id: 'transactions', label: 'Customer Payments', icon: CreditCard },{ id: 'domains', label: 'Domains & Pricing', icon: Globe }],
     },
     {
       group: 'Services & Work',
@@ -1063,6 +1068,7 @@ export default function AdminDashboard() {
           {/* Main Editor Area */}
           <div className="space-y-6 min-w-0">
             {tab === 'transactions' && <PaymentLedger />}
+            {tab === 'domains' && <DomainManager />}
             {/* TAB 1: HERO & HOMEPAGE SECTIONS */}
             {tab === 'hero' && settings && <>
               <HeroDesignEditor value={settings.hero_design} onChange={value => patchSettings({ hero_design: value })} onUpload={pickFile} onSave={() => saveSettings(['hero_design'], 'Home hero design saved.')} busy={busy} sections={homeSections} cycles={settings.hero_cycles} />

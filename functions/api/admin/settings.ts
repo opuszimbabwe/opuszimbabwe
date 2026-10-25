@@ -5,6 +5,7 @@
 
 import { json, requireAdmin } from '../../_lib/auth';
 import { ALL_SETTINGS, sanitizeSetting, readContent } from '../../_lib/db';
+import { sectionDesignError } from '../../../lib/section-design';
 import { PagesHandler } from '../../_lib/types';
 
 export const onRequestPut: PagesHandler = async (context) => {
@@ -22,7 +23,7 @@ export const onRequestPut: PagesHandler = async (context) => {
   for (const key of Object.keys(body || {})) {
     if (!ALL_SETTINGS.includes(key)) continue;
     const value = sanitizeSetting(key, body[key]);
-    if (value === null) return json({ error: `invalid_value_for_${key}` }, 400);
+    if (value === null) return json({ error: `invalid_value_for_${key}`, ...(['cta_design','contact_hero_design'].includes(key) ? { message: sectionDesignError() } : {}) }, 400);
     updates.push({ key, value });
   }
   if (updates.length === 0) return json({ error: 'no_valid_settings' }, 400);

@@ -105,7 +105,7 @@ export async function authorisedPayment(context: PagesContext) {
  return row;
 }
 export async function reconcile(env: Env, row: PaymentRow) {
- if (!row.gateway_reference || Date.now() - row.checked_at < 5000) return row;
+ if (!row.gateway_reference || Date.now() - row.checked_at < 5000) { await (await import('./domains')).fulfilDomainPayment(env,row); return row; }
  const started = Date.now();
  const result: PaymentResult = await gateway(env).checkPayment(row.gateway_reference);
  if (result.referenceNumber !== row.gateway_reference) throw new CheckoutError(502, 'Payment confirmation could not be verified. Please contact support@opuszim.co.zw.');
@@ -117,11 +117,11 @@ export async function reconcile(env: Env, row: PaymentRow) {
  const date = result.dateOfTransaction && Number.isFinite(Date.parse(result.dateOfTransaction)) ? new Date(result.dateOfTransaction).toISOString() : null;
  await env.DB.prepare("UPDATE customer_payments SET status = ?, transaction_date = COALESCE(?, transaction_date), amount_paid_minor = COALESCE(?, amount_paid_minor), checked_at = ?, updated_at = ? WHERE id = ? AND checked_at <= ? AND status <> 'REVERSED' AND (status <> 'SUCCESS' OR ? IN ('REVERSED', 'SUCCESS'))")
  .bind(status, date, paidMinor, started, new Date().toISOString(), row.id, started, status).run();
- return (await findPayment(env, row.id))!;
+ const verified=(await findPayment(env,row.id))!;await (await import('./domains')).fulfilDomainPayment(env,verified);return verified;
 }
-export async function limitAttempts(context: PagesContext) {
- const now = Date.now(), bucket = await hash((context.request.headers.get('cf-connecting-ip') || 'local') + ':' + Math.floor(now / 600000));
+export async function limitAttempts(context: PagesContext, scope = 'payment', maximum = 6) {
+ const now = Date.now(), bucket = await hash(scope + ':' + (context.request.headers.get('cf-connecting-ip') || 'local') + ':' + Math.floor(now / 600000));
  const row = await context.env.DB.prepare('INSERT INTO payment_rate_limits (bucket, attempts, expires_at) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET attempts = attempts + 1 RETURNING attempts').bind(bucket, now + 600000).first<{ attempts: number }>();
  await context.env.DB.prepare('DELETE FROM payment_rate_limits WHERE expires_at < ?').bind(now).run();
- if (!row || row.attempts > 6) throw new CheckoutError(429, 'Too many payment attempts. Please wait a few minutes or contact support@opuszim.co.zw.');
+ if (!row || row.attempts > maximum) throw new CheckoutError(429, 'Too many payment attempts. Please wait a few minutes or contact support@opuszim.co.zw.');
 }

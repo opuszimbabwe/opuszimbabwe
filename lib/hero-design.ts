@@ -1,4 +1,4 @@
-import { validDesign, type SectionDesign } from './section-design';
+import { validDesign, parseSectionDesign, type SectionDesign } from './section-design';
 export type HeroSlide = { id: string; image: string };
 export type HeroDesign = {
   headline_mode: 'static' | 'service_words';
@@ -84,6 +84,8 @@ export function upgradeHeroDesign(value: unknown): HeroDesign | null {
   if (raw.background !== undefined && (!raw.background || typeof raw.background !== 'object' || Array.isArray(raw.background))) return null;
   const secondaryAction = raw.secondary_action ?? (raw.secondary_label ? 'link' : DEFAULT_HERO_DESIGN.secondary_action);
   const upgraded = { ...structuredClone(DEFAULT_HERO_DESIGN), ...raw, headline_mode: raw.headline_mode ?? 'static', caption_gap: raw.caption_gap ?? 20, caption_size: raw.caption_size ?? 16, caption_weight: raw.caption_weight ?? 300, secondary_action: secondaryAction, background: { ...DEFAULT_HERO_DESIGN.background, ...raw.background } };
+  const background = parseSectionDesign(upgraded.background); if (!background) return null;
+  upgraded.background = background;
   return validHeroDesign(upgraded) ? upgraded : null;
 }
 export function normalizeHeroDesign(value: unknown): HeroDesign {

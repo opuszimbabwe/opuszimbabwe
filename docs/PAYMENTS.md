@@ -47,3 +47,16 @@ These tests use temporary in-memory SQLite and an encrypted fake gateway. Browse
 After secrets/DNS are configured, verify available methods and the callback/return URLs, then arrange an explicitly authorised small real payment with the merchant/customer. No real charge was made during implementation. Don't report end-to-end merchant acceptance or settlement until a real authorised transaction is confirmed.
 
 Primary contact: support@opuszim.co.zw. Secondary: opuszimbabwe@outlook.com. Direct contact/WhatsApp: 0710 740 387. Support only: 0773 979 162.
+
+### Verified live EcoCash test — 25 October 2026
+
+The owner explicitly authorised exactly one USD0.10 request. Pesepay accepted it,
+the owner confirmed receipt of the trusted phone prompt, and independent gateway
+status subsequently reported SUCCESS. No additional test request was sent.
+No PIN was collected or stored. Private payment access tokens remain outside Git.
+
+Initiation failures now record bounded, secret-redacted diagnostic codes/messages
+in the authenticated Customer Payments ledger. Ambiguous responses never cause an
+automatic second charge. Domain orders use server-owned USD amounts and legal
+customer identities; successful verification starts the separately tracked registrar
+workflow. Payment success alone is never shown as proof of domain registration.

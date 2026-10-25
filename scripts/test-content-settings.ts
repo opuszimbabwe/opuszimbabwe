@@ -109,3 +109,10 @@ test('reason accordion keeps administrator copy, links and payment controls', ()
   const legacy = JSON.parse(sanitizeSetting('why_choose_us', [{ title: 'Local Payments', body: 'Legacy copy' }])!);
   assert.equal(legacy[0].show_payments, true);
 });
+
+test('section design saves accept editor decimal angles, alpha hex and inactive blank controls',()=>{
+ const decimal={...DEFAULT_CTA_DESIGN,background_color:' #ffffff ',overlay_kind:'gradient',overlay_gradient:'linear-gradient( 135.25deg, #0d0d0d80 0%, #E85D2A 100% )',overlay_color:''};
+ const stored=sanitizeSetting('cta_design',decimal);assert.ok(stored);const design=JSON.parse(stored);assert.equal(design.background_color,'#ffffff');assert.equal(design.overlay_gradient,'135.25deg,#0d0d0d80 0%,#E85D2A 100%');
+ assert.ok(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:''}));
+ for(const gradient of ['url(https://evil.example)','450deg,#fff,#000','90deg,#fff -1%,#000','90deg,#fff 101%,#000','90deg,#fff,#000);background:url(https://evil.example)'])assert.equal(sanitizeSetting('cta_design',{...DEFAULT_CTA_DESIGN,overlay_gradient:gradient}),null);
+});
