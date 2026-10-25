@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import CarePlans from './CarePlans';
 import { PricingSection } from '@/components/PricingCard';
 import GraphicClassCard from '@/components/GraphicClassCard';
 import ServiceHero from '@/components/ServiceHero';
@@ -245,6 +246,7 @@ export default function ServicePageTemplate({
         </div>
       </section>
 
+      {isWebDesign&&<CarePlans/>}
       {/* Section 4 — Process (White section) */}
       <section className="bg-white py-20 sm:py-24 service-delivery">
         <div className="site-frame">

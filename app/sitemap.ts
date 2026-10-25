@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '',
     '/services',
     '/domains',
+    '/care',
     '/projects',
     '/faq',
     '/contact',

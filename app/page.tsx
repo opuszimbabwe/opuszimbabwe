@@ -11,6 +11,7 @@ import AccentHeadingText from '@/components/AccentHeadingText';
 import HomeProjects from '@/components/HomeProjects';
 import WhyChooseUs, { DEFAULT_WHY_REASONS } from '@/components/WhyChooseUs';
 import FaqAccordion from '@/components/FaqAccordion';
+import CarePlans from '@/components/CarePlans';
 import { DEFAULT_HOME_SECTIONS, DEFAULT_SETTINGS } from '@/lib/content';
 import { useSiteContent } from '@/lib/use-site-content';
 
@@ -112,6 +113,7 @@ export default function Home() {
         </div>
       </section>
 
+      <CarePlans/>
       {/* 8. FAQ */}
       <section
         style={{ backgroundColor: s.faq_bg }}

@@ -21,6 +21,7 @@ const groups = [
     title: 'Company & Resources',
     links: [
       ['Domains', '/domains'],
+      ['Monthly Project Care', '/care'],
       ['Projects', '/projects'],
       ['FAQ', '/faq'],
       ['Contact / Start a Project', '/contact'],

@@ -32,6 +32,8 @@ jobs:
           node scripts/test-payments.cjs
           node scripts/test-domains.cjs
           node scripts/test-admin-receipts.cjs
+          node_modules/.bin/esbuild functions/_lib/care.ts functions/api/admin/care.ts functions/api/admin/care-pdf.ts functions/api/maintenance/tick.ts functions/api/care-plans.ts --outbase=functions --outdir=/tmp/opus-care-test --bundle --platform=node --format=cjs
+          node scripts/test-care.cjs
           node_modules/.bin/esbuild lib/service-presentations.ts --bundle --platform=node --format=cjs --outfile=/tmp/opus-service-presentations-lib.cjs
           node scripts/test-service-presentations.cjs
           node_modules/.bin/esbuild scripts/test-content-settings.ts --bundle --platform=node --format=cjs --outfile=/tmp/opus-content-settings-test.cjs

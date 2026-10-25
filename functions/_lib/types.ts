@@ -28,6 +28,7 @@ export interface R2Bucket {
 }
 
 export interface Env {
+  MAINTENANCE_CRON_SECRET?:string;
   RESEND_API_KEY?:string;
   RECEIPT_FROM_EMAIL?:string;
   CLOUDFLARE_REGISTRAR_TOKEN?: string;

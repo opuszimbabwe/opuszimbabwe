@@ -34,6 +34,7 @@ export default function Footer(){
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/projects">Projects</Link>
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/faq">FAQ</Link>
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/domains">Domain Registration</Link>
+            <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/care/">Monthly Project Care</Link>
             <Link className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="/contact">Contact Us</Link>
             <a className="block text-[#6b7280] text-sm mt-3 hover:text-primary transition-colors" href="https://payments.opuszim.co.zw/">Make a Payment</a>
           </div>
