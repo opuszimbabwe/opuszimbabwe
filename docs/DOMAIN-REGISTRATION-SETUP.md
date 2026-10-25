@@ -1,15 +1,18 @@
 # Opus Zimbabwe — domain provider setup
 
-Requested goal: sell/register and manage customer domains, with local payments collected through Opus and Zimbabwean domain enquiries handled by support/WhatsApp. The default proposed route is registering through Cloudflare Registrar for the extensions Cloudflare supports, rather than claiming independent ICANN accreditation.
+Requested goal: sell/register and manage customer domains, with local payments collected through Opus and Zimbabwean domain enquiries handled by support/WhatsApp. The chosen route is registering through Cloudflare Registrar for the extensions Cloudflare supports, rather than claiming independent ICANN accreditation.
 
 ## What is already verified
 
 - The existing Cloudflare account/project serves the Opus website and payment checkout.
 - Cloudflare's official September 2026 Registrar API documentation supports domain search, real-time availability/pricing checks and programmatic registration, including an inline customer registrant contact.
-- The available API token returns **403 Authentication error** for both registrar domain listing and extension lookup. Registrar registration/readiness cannot be completed or checked with that token.
+- **Registrar API access verified on 25 October 2026:** extension-schema lookup, registration listing, legacy domain listing and live availability checks all return HTTP 200 with success=true.
+- The owner confirmed completion of the registrant-contact/agreement and supplier-billing prerequisites and added **Registrar: Domains: Admin** without removing the existing permissions. Billing/contact completion is owner-confirmed; no billable registration was used as a test.
+- Read-only verification correctly reports `cloudflare.com` as unavailable and `opuszim.co.zw` as `extension_not_supported`. Zimbabwean domain enquiries remain with Opus by email/WhatsApp.
+- The account currently lists zero domain registrations. Domain registration/management is available through the Cloudflare account; this is not a claim of independent ICANN accreditation or enrolment in a separately contracted reseller programme.
 - No domain has been purchased or transferred as part of this setup. No accreditation or reseller approval has been claimed.
 
-## Owner setup in the Cloudflare account
+## Account prerequisites (owner confirmed complete)
 
 1. Open **Domain Registration → Register Domains** in the account used for the Opus site: https://dash.cloudflare.com/?to=/:account/domains/registrations . Configure the default registrant contact using the business's accurate legal name and physical address, and review/accept the Domain Registration Agreement in the dashboard. Do not use invented legal details.
 2. Under **Billing → Payment info**, configure a valid default payment method. Cloudflare states that this billing setup cannot be completed through the Registrar API. Opus customers paying locally through Pesepay does not itself fund Cloudflare's supplier billing account.
