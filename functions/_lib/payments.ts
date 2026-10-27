@@ -10,6 +10,7 @@ const ORIGINS = new Set(['https://opuszim.co.zw', 'https://www.opuszim.co.zw', '
 const LOCAL = /ecocash|one\s?money|innbucks|zimswitch|zipit|omari|telecash|paygo|bank\s?transfer|rtgs/i;
 export const INTERNATIONAL = /paypal|visa|master\s?card|american\s?express|amex/i;
 export interface PaymentRow {
+ care_order_id?:string|null;
  id: string; token_hash: string; fingerprint: string; payer_name: string; payer_email: string; payer_phone: string;
  invoice: string; amount_minor: number; amount_paid_minor: number | null; currency: string; method_code: string; method_name: string;
  gateway_reference: string | null; redirect_url: string | null; status: string; transaction_date: string | null;
@@ -106,7 +107,7 @@ export async function authorisedPayment(context: PagesContext) {
 }
 export async function reconcile(env: Env, row: PaymentRow, fulfil = true, strictSuccess = false) {
  if(strictSuccess&&(!row.gateway_reference||row.status==='REVERSED'))throw new CheckoutError(409,'This payment cannot be issued as a verified receipt.');
- if (!row.gateway_reference || (!strictSuccess && Date.now() - row.checked_at < 5000)) { if(fulfil)await (await import('./domains')).fulfilDomainPayment(env,row); return row; }
+ if (!row.gateway_reference || (!strictSuccess && Date.now() - row.checked_at < 5000)) { if(fulfil){await (await import('./domains')).fulfilDomainPayment(env,row);if(row.care_order_id)await (await import('./client-care')).fulfilCarePayment(env,row);} return row; }
  const started = Date.now();
  const result: PaymentResult = await gateway(env).checkPayment(row.gateway_reference);
  if (result.referenceNumber !== row.gateway_reference) throw new CheckoutError(502, 'Payment confirmation could not be verified. Please contact support@opuszim.co.zw.');
@@ -118,7 +119,7 @@ export async function reconcile(env: Env, row: PaymentRow, fulfil = true, strict
  const date = result.dateOfTransaction && Number.isFinite(Date.parse(result.dateOfTransaction)) ? new Date(result.dateOfTransaction).toISOString() : null;
  await env.DB.prepare("UPDATE customer_payments SET status = ?, transaction_date = COALESCE(?, transaction_date), amount_paid_minor = COALESCE(?, amount_paid_minor), checked_at = ?, updated_at = ? WHERE id = ? AND checked_at <= ? AND status <> 'REVERSED' AND (status <> 'SUCCESS' OR ? IN ('REVERSED', 'SUCCESS'))")
  .bind(status, date, paidMinor, started, new Date().toISOString(), row.id, started, status).run();
- const verified=(await findPayment(env,row.id))!;if(strictSuccess&&(status!=='SUCCESS'||verified.status!=='SUCCESS'))throw new CheckoutError(409,'Pesepay has not confirmed this payment as successful. A verified receipt cannot be issued.');if(fulfil)await (await import('./domains')).fulfilDomainPayment(env,verified);return verified;
+ const verified=(await findPayment(env,row.id))!;if(strictSuccess&&(status!=='SUCCESS'||verified.status!=='SUCCESS'))throw new CheckoutError(409,'Pesepay has not confirmed this payment as successful. A verified receipt cannot be issued.');if(fulfil){await (await import('./domains')).fulfilDomainPayment(env,verified);if(verified.care_order_id&&(status==='SUCCESS'||status==='REVERSED'||['FAILED','CANCELLED','EXPIRED'].includes(status)))await (await import('./client-care')).fulfilCarePayment(env,verified);}return verified;
 }
 export async function limitAttempts(context: PagesContext, scope = 'payment', maximum = 6) {
  const now = Date.now(), bucket = await hash(scope + ':' + (context.request.headers.get('cf-connecting-ip') || 'local') + ':' + Math.floor(now / 600000));

@@ -28,6 +28,8 @@ export interface R2Bucket {
 }
 
 export interface Env {
+  CARE_RENDER_SECRET?:string;
+  CARE_RENDERER?:{fetch(input:Request|string,init?:RequestInit):Promise<Response>};
   MAINTENANCE_CRON_SECRET?:string;
   RESEND_API_KEY?:string;
   RECEIPT_FROM_EMAIL?:string;

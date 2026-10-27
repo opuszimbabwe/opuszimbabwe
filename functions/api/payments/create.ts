@@ -1,5 +1,6 @@
+import {authorisedCareOrder,claimCarePayment,clientProject} from '../../_lib/client-care';
 import { authorisedOrder, prepareDomainPayment, claimDomainPayment } from '../../_lib/domains';
-import { CheckoutError, configured, fail, gateway, hash, limitAttempts, localMethods, paymentInput, readPaymentJson, receipt, safeRedirect, trustedOrigin, type PaymentRow } from '../../_lib/payments';
+import { CheckoutError, configured, fail, gateway, hash, accessToken, limitAttempts, localMethods, paymentInput, readPaymentJson, receipt, safeRedirect, trustedOrigin, type PaymentRow } from '../../_lib/payments';
 import { mobileNetwork, mobileNumberError } from '../../../lib/payments';
 import { json } from '../../_lib/auth';
 import type { PagesHandler } from '../../_lib/types';
@@ -8,6 +9,13 @@ export const onRequestPost: PagesHandler = async context => {
   const origin = trustedOrigin(context.request);
   if (!configured(context.env)) throw new CheckoutError(503, 'Online payments are being set up. Please contact support@opuszim.co.zw for help paying.');
   const raw = await readPaymentJson(context.request);
+  if(raw.care_order_id!==undefined&&raw.domain_order_id!==undefined)throw new CheckoutError(400,'A payment can cover only one order.');
+  const careOrder=raw.care_order_id!==undefined?await authorisedCareOrder(context.env,raw.care_order_id,raw.care_order_token):null;
+  if(careOrder){
+   const customer=await clientProject(context.env,careOrder.project_id);if(!customer.enabled||!customer.auto_documents)throw new CheckoutError(409,'Maintenance billing is paused for this project. Contact support before paying.');
+   if(raw.currency!=='USD'||raw.amount!=='10.00'||await hash(accessToken(raw.token))!==careOrder.token_hash)throw new CheckoutError(400,'Maintenance payments must match the private USD 10 order.');
+   raw.email=careOrder.recipient;raw.invoice=`CARE ${careOrder.project_id} ${careOrder.period}`;
+  }
   const domainOrder = raw.domain_order_id !== undefined ? await authorisedOrder(context.env,raw.domain_order_id,raw.domain_order_token) : null;
   if(domainOrder){
    if(raw.currency!=='USD'||raw.amount!==(domainOrder.retail_minor/100).toFixed(2)) throw new CheckoutError(400,'Domain payments must match the verified USD quote.');
@@ -15,7 +23,7 @@ export const onRequestPost: PagesHandler = async context => {
   }
   const input = paymentInput(raw);
   const tokenHash = await hash(input.token);
-  const fingerprint = await hash(JSON.stringify({ ...input, token: undefined, ...(domainOrder ? {domain_order_id:domainOrder.id} : {}) }));
+  const fingerprint = await hash(JSON.stringify({ ...input, token: undefined, ...(domainOrder ? {domain_order_id:domainOrder.id} : {}),...(careOrder?{care_order_id:careOrder.id}:{}) }));
   const existing = () => context.env.DB.prepare('SELECT * FROM customer_payments WHERE token_hash = ?').bind(tokenHash).first<PaymentRow>();
   const respond = (row: PaymentRow) => {
    if (row.fingerprint !== fingerprint) throw new CheckoutError(409, 'This payment attempt already exists with different details. Please check its status before starting another.');
@@ -32,10 +40,11 @@ export const onRequestPost: PagesHandler = async context => {
   await limitAttempts(context);
   const id = crypto.randomUUID(), now = new Date().toISOString();
   if(domainOrder)await claimDomainPayment(context.env,domainOrder,id);
+  if(careOrder)await claimCarePayment(context.env,careOrder,id);
   try {
-   await context.env.DB.prepare('INSERT INTO customer_payments (id, token_hash, fingerprint, payer_name, payer_email, payer_phone, invoice, amount_minor, currency, method_code, method_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-   .bind(id, tokenHash, fingerprint, input.name, input.email, network ? input.phone : '', input.invoice, input.minor, input.currency, method.code, method.name, now, now).run();
-  } catch (error) { const concurrent = await existing(); if (concurrent) return respond(concurrent); if(domainOrder)await context.env.DB.prepare("UPDATE domain_orders SET state='QUOTED',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(domainOrder.id,id,id).run();throw error; }
+   await context.env.DB.prepare('INSERT INTO customer_payments (id, token_hash, fingerprint, payer_name, payer_email, payer_phone, invoice, amount_minor, currency, method_code, method_name, created_at, updated_at, care_order_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+   .bind(id, tokenHash, fingerprint, input.name, input.email, network ? input.phone : '', input.invoice, input.minor, input.currency, method.code, method.name, now, now,careOrder?.id||null).run();
+  } catch (error) { const concurrent = await existing(); if (concurrent) return respond(concurrent); if(domainOrder)await context.env.DB.prepare("UPDATE domain_orders SET state='QUOTED',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(domainOrder.id,id,id).run();if(careOrder)await context.env.DB.prepare("UPDATE care_orders SET state='OPEN',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(careOrder.id,id,id).run();throw error; }
   try {
    const client = gateway(context.env, { resultUrl: origin + '/api/payments/webhook', returnUrl: origin + '/payments/?payment=' + id + '&token=' + input.token });
    const request = { amount, currencyCode: input.currency, reasonForPayment: 'Opus Zimbabwe — ' + input.invoice, merchantReference: id, paymentMethodCode: method.code, paymentMetadata: { paymentId: id } };

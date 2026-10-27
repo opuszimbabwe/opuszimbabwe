@@ -64,17 +64,17 @@ async function incidentForCheck(env:Env,check:CareCheck){
 }
 
 async function notifyIncidents(env:Env){
- const p=await project(env);
- if(!emailConfigured(env)||!p.alert_email)return;
+ if(!emailConfigured(env))return;
  const pending=(await env.DB.prepare("SELECT * FROM care_incidents WHERE alert_status='PENDING' AND resolved_at IS NULL ORDER BY opened_at LIMIT 4").all<CareIncident>()).results;
  for(const incident of pending){
+  const p=await env.DB.prepare('SELECT name,alert_email FROM care_projects WHERE id=? AND enabled=1').bind((incident as CareIncident&{project_id:string}).project_id).first<{name:string;alert_email:string}>();if(!p?.alert_email)continue;
   const lock=await env.DB.prepare("UPDATE care_incidents SET alert_status='SENDING' WHERE id=? AND alert_status='PENDING' RETURNING id").bind(incident.id).first();
   if(!lock)continue;
   // At most five operational alert attempts per UTC day, leaving free-tier capacity for receipts.
   const budget=await env.DB.prepare('INSERT INTO care_alert_budget(day,attempts) VALUES(?,1) ON CONFLICT(day) DO UPDATE SET attempts=attempts+1 WHERE attempts<5 RETURNING attempts').bind(nowISO().slice(0,10)).first();
   if(!budget){await env.DB.prepare("UPDATE care_incidents SET alert_status='PENDING',alert_error='Daily alert cap reached; see the incident in admin.' WHERE id=?").bind(incident.id).run();continue;}
   try{
-   const r=await fetch('https://api.resend.com/emails',{method:'POST',redirect:'manual',signal:AbortSignal.timeout(12000),headers:{authorization:`Bearer ${env.RESEND_API_KEY}`,'content-type':'application/json','Idempotency-Key':`opus-care-alert-${incident.id}`},body:JSON.stringify({from:env.RECEIPT_FROM_EMAIL,to:[p.alert_email],reply_to:'support@opuszim.co.zw',subject:`Opus care alert — ${CARE_TARGETS.find(t=>t.id===incident.target)?.name||incident.target}`,text:`Three consecutive checks failed.\nProject: Opus Zimbabwe\nFirst failed check: ${incident.opened_at}\n${incident.detail}\nReview: https://opuszim.co.zw/sysadmin/\nNo repair or payment was attempted automatically.`})});
+   const r=await fetch('https://api.resend.com/emails',{method:'POST',redirect:'manual',signal:AbortSignal.timeout(12000),headers:{authorization:`Bearer ${env.RESEND_API_KEY}`,'content-type':'application/json','Idempotency-Key':`opus-care-alert-${incident.id}`},body:JSON.stringify({from:env.RECEIPT_FROM_EMAIL,to:[p.alert_email],reply_to:'support@opuszim.co.zw',subject:`Opus care alert — ${CARE_TARGETS.find(t=>t.id===incident.target)?.name||incident.target}`,text:`Three consecutive checks failed.\nProject: ${p.name}\nFirst failed check: ${incident.opened_at}\n${incident.detail}\nReview: https://opuszim.co.zw/sysadmin/\nNo repair or payment was attempted automatically.`})});
    const body=await r.json().catch(()=>null) as {id?:string}|null;
    const accepted=r.ok&&typeof body?.id==='string';
    await env.DB.prepare('UPDATE care_incidents SET alert_status=?,alert_error=? WHERE id=?').bind(accepted?'ACCEPTED':([400,401,403,422,429].includes(r.status)?'FAILED':'UNCONFIRMED'),accepted?null:'Alert acceptance could not be confirmed. Check Resend before sending manually.',incident.id).run();

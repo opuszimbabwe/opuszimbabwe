@@ -1,0 +1,4 @@
+export type ClientProject={id:string;name:string;email:string;alert_email:string;site_url:string;plan_usd:number;enabled:number;auto_documents:number;report_policy:string;last_tick:string|null;created_at:string};
+export type ClientOrder={id:string;project_id:string;period:string;recipient:string;amount_minor:number;currency:string;state:string;payment_id:string|null;expires_at:number;created_at:string;updated_at:string};
+export type ClientJob={id:string;kind:string;order_id:string;status:string;attempts:number;next_at:number;lease_until:number;error:string|null;pdf_key:string|null;pdf_hash:string|null;snapshot:string|null;email_status:string;provider_id:string|null;created_at:string;updated_at:string};
+export type PublicCareOrder=Pick<ClientOrder,'id'|'period'|'amount_minor'|'currency'|'state'|'payment_id'|'expires_at'>&{project:string;documents:{kind:string;status:string;email_status:string;available:boolean}[]};
