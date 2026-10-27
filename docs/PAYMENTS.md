@@ -120,3 +120,5 @@ not retried automatically; check the provider before preparing another email.
 A draft never sends by itself. Missing sender configuration disables the send
 button and fails closed on the server. This receipt-specific record is separate
 from the proposed project maintenance/log/report system, which remains unbuilt.
+
+Receipt verification makes at most two read-only status requests when a network failure or HTTP 408/500/502/503/504 occurs. Each read has a maximum 12-second timeout. Redirects, rejected credentials and explicit Retry-After responses are not retried. Payment initiation and email sending are never replayed by this recovery. Verification failures remain fail-closed and emit only a safe error category/status, without provider payloads or customer data.

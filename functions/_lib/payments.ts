@@ -60,9 +60,20 @@ export function paymentInput(raw: Record<string, unknown>) {
 const transport: Transport = async request => {
  const url = new URL(request.url);
  if (url.origin !== new URL(API).origin || !url.pathname.startsWith('/api/payments-engine/')) throw new CheckoutError(502, 'Unexpected payment gateway address.');
- const response = await fetch(url, { method: request.method, headers: request.headers, body: request.body, redirect: 'manual', signal: AbortSignal.timeout(request.timeoutMs) });
- if (response.status >= 300 && response.status < 400) throw new CheckoutError(502, 'Unexpected payment gateway redirect.');
- return { status: response.status, headers: Object.fromEntries(response.headers), body: await response.text(), usedInsecureHttpParser: false };
+ // Status reads may recover once from a transient provider/network failure.
+ // Payment initiation is a POST and must never be automatically replayed.
+ const readOnly = request.method === 'GET' && url.pathname.endsWith('/check-payment');
+ for (let attempt = 0; ; attempt++) {
+  try {
+   const response = await fetch(url, { method: request.method, headers: request.headers, body: request.body, redirect: 'manual', signal: AbortSignal.timeout(readOnly ? Math.min(request.timeoutMs, 12000) : request.timeoutMs) });
+   if (readOnly && attempt === 0 && [408, 500, 502, 503, 504].includes(response.status) && !response.headers.has('retry-after')) { await response.body?.cancel(); continue; }
+   if (response.status >= 300 && response.status < 400) throw new CheckoutError(502, 'Unexpected payment gateway redirect.');
+   return { status: response.status, headers: Object.fromEntries(response.headers), body: await response.text(), usedInsecureHttpParser: false };
+  } catch (error) {
+   if (readOnly && attempt === 0 && !(error instanceof CheckoutError)) continue;
+   throw error;
+  }
+ }
 };
 export function gateway(env: Env, callbacks?: { resultUrl: string; returnUrl: string }) {
  if (!configured(env)) throw new CheckoutError(503, 'Online payments are being set up. Please contact support@opuszim.co.zw for help paying.');
