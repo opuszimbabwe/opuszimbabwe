@@ -56,6 +56,7 @@ export async function fulfilCarePayment(env:Env,payment:PaymentRow){
  if(payment.status!=='SUCCESS')return;
  if(payment.currency!=='USD'||payment.amount_minor!==1000||order.amount_minor!==1000||order.currency!=='USD')throw new CheckoutError(409,'Maintenance payment must match the exact USD 10 order.');
  if(order.state==='REVERSED')return;
+ if(!['PAYMENT_PENDING','PAID'].includes(order.state)){await env.DB.prepare("UPDATE care_orders SET state='ACTION_REQUIRED',updated_at=? WHERE id=?").bind(iso(),order.id).run();await clientEvent(env,order.project_id,'billing','Payment requires reconciliation','A previously closed order received a later success; do not create another charge.','automation');return;}
  await env.DB.prepare("UPDATE care_orders SET state='PAID',updated_at=? WHERE id=? AND state='PAYMENT_PENDING'").bind(iso(),order.id).run();
  const p=await clientProject(env,order.project_id),bounds=monthBounds(order.period),ended=Date.parse(bounds.end)<=Date.now();
  const queue=async(kind:string,next:number)=>{await env.DB.prepare("INSERT OR IGNORE INTO ops_jobs(id,kind,order_id,next_at,created_at,updated_at) VALUES(?,?,?,?,?,?)").bind(`${kind.toLowerCase()}-${order.id}`,kind,order.id,next,iso(),iso()).run();};
