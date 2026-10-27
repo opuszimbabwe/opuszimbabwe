@@ -1,3 +1,4 @@
+import {receiptDate} from './receipt-date';
 import type {PaymentReceipt} from './payments';
 /** A local, shareable receipt image. Call only after fresh gateway verification. */
 export async function receiptImage(receipt:PaymentReceipt):Promise<File>{
@@ -19,7 +20,7 @@ export async function receiptImage(receipt:PaymentReceipt):Promise<File>{
  c.save();c.translate(550,840);c.rotate(-Math.PI/10);c.globalAlpha=.07;c.strokeStyle='#5e6671';c.lineWidth=9;c.beginPath();c.arc(0,0,255,0,Math.PI*2);c.stroke();c.beginPath();c.arc(0,0,235,0,Math.PI*2);c.stroke();text('OPUS',0,-12,96,700,'#5e6671');text('VERIFIED',0,58,48,600,'#5e6671');c.restore();
  c.textAlign='left';line(498);text('PAYMENT RECEIPT',90,550,19,600,'#717786');
  let y=610;
- const rows:[string,string][]=[...(receipt.name?[['Payer',receipt.name] as [string,string]]:[]),['Date & time',receipt.date?new Intl.DateTimeFormat('en-ZW',{timeZone:'Africa/Harare',dateStyle:'medium',timeStyle:'short'}).format(new Date(receipt.date))+' CAT':'Verified by Pesepay'],['Payment method',receipt.method],['Reference',receipt.reference||receipt.id],['Invoice / project',receipt.invoice]];
+ const rows:[string,string][]=[...(receipt.name?[['Payer',receipt.name] as [string,string]]:[]),[receiptDate(receipt).label,receiptDate(receipt).text],['Payment method',receipt.method],['Reference',receipt.reference||receipt.id],['Invoice / project',receipt.invoice]];
  for(const [label,value] of rows){text(label,90,y,19,400,'#717786');y=wrap(value,90,y+37,900,25,600)+55;}
  const panelY=Math.max(1080,y-10);c.fillStyle='#f3f7f4';c.beginPath();c.roundRect(90,panelY,900,116,18);c.fill();text('Amount paid',116,panelY+38,19,400,'#717786');text(`${receipt.currency} ${receipt.amount.toFixed(2)}`,116,panelY+89,42,700);
  c.textAlign='center';text('OPUS VERIFIED  ·  Confirmed through Pesepay',540,panelY+186,19,600,'#7c828a');text('support@opuszim.co.zw  ·  +263 773 979 162',540,panelY+225,18,400,'#717786');
