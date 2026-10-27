@@ -1,11 +1,21 @@
 import type {Env} from './types';
 import {CheckoutError,findPayment,reconcile,receipt,hash,accessToken} from './payments';
+import {PesepayError} from 'pesepay';
 import type {DomainOrder} from './domains';
 import {receiptMarkup} from '../../lib/receipt-template';
 import {receiptEmail} from '../../lib/receipt-contact';
 export type ReceiptRow={id:string;payment_id:string;token_hash:string;expires_at:number;issued_by:string;recipient_email:string;email_status:string;provider_id:string|null;email_error:string|null;sent_at:string|null;created_at:string;updated_at:string};
 export const emailConfigured=(env:Env)=>Boolean(env.RESEND_API_KEY?.trim()&&env.RECEIPT_FROM_EMAIL?.trim()&&!/[\r\n]/.test(env.RECEIPT_FROM_EMAIL));
-export async function verifiedReceipt(env:Env,paymentId:string){const payment=await findPayment(env,paymentId);if(!payment)throw new CheckoutError(404,'Payment not found.');const verified=await reconcile(env,{...payment,checked_at:0},false,true);const order=await env.DB.prepare('SELECT * FROM domain_orders WHERE payment_id=?').bind(paymentId).first<DomainOrder>();return{receipt:receipt(verified),domain:order?{name:order.domain_name,state:order.state}:null,email:order?.receipt_email||verified.payer_email||(order?JSON.parse(order.contact_json).email:'')||'',whatsapp:order?.receipt_whatsapp||''};}
+async function verifyForReceipt(env:Env,payment:NonNullable<Awaited<ReturnType<typeof findPayment>>>){
+ try{return await reconcile(env,{...payment,checked_at:0},false,true);}catch(error){
+  if(error instanceof CheckoutError)throw error;
+  const code=error instanceof PesepayError?error.code:'UNEXPECTED';
+  const status=error instanceof PesepayError&&'status' in error&&typeof error.status==='number'?error.status:null;
+  console.error(JSON.stringify({event:'receipt_verification_failed',code,status}));
+  throw new CheckoutError(503,'The payment gateway could not verify this receipt right now. No email was sent. Please retry shortly; if it persists, contact support@opuszim.co.zw.');
+ }
+}
+export async function verifiedReceipt(env:Env,paymentId:string){const payment=await findPayment(env,paymentId);if(!payment)throw new CheckoutError(404,'Payment not found.');const verified=await verifyForReceipt(env,payment);const order=await env.DB.prepare('SELECT * FROM domain_orders WHERE payment_id=?').bind(paymentId).first<DomainOrder>();return{receipt:receipt(verified),domain:order?{name:order.domain_name,state:order.state}:null,email:order?.receipt_email||verified.payer_email||(order?JSON.parse(order.contact_json).email:'')||'',whatsapp:order?.receipt_whatsapp||''};}
 export async function receiptRow(env:Env,id:unknown){if(typeof id!=='string'||! /^[a-f0-9-]{36}$/.test(id))throw new CheckoutError(400,'Invalid receipt reference.');const row=await env.DB.prepare('SELECT * FROM payment_receipts WHERE id=?').bind(id).first<ReceiptRow>();if(!row)throw new CheckoutError(404,'Receipt not found.');return row;}
 export async function authorisedReceipt(env:Env,id:unknown,rawToken:unknown){const token=accessToken(rawToken),row=await receiptRow(env,id);if(await hash(token)!==row.token_hash||row.expires_at<Date.now())throw new CheckoutError(404,'This receipt link is invalid or has expired. Please contact support@opuszim.co.zw.');return row;}
 export const publicDelivery=(row:ReceiptRow)=>({id:row.id,payment_id:row.payment_id,email:row.recipient_email,status:row.email_status,error:row.email_error,provider_id:row.provider_id,sent_at:row.sent_at});
