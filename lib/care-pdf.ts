@@ -1,3 +1,4 @@
+import {clientCareText,clientActivity} from './care-report-language';
 import {CARE_TARGETS,CARE_PDF_VERSION,careOutcome,careDate,type CareSnapshot} from './care';
 
 // Browser-side rendering keeps branded PDFs off the Workers CPU budget.
@@ -33,7 +34,7 @@ export async function carePDF(data:CareSnapshot,edition=1):Promise<Uint8Array>{
  const navy=rgb(15/255,9/255,40/255),muted=rgb(.4,.42,.48),orange=rgb(.91,.36,.16),grey=rgb(.9,.9,.92),green=rgb(.09,.44,.29),red=rgb(.72,.15,.2),amber=rgb(.6,.36,.07),pale=rgb(.96,.965,.975);
  const tones={passed:{ink:green,fill:rgb(.91,.97,.94)},failed:{ink:red,fill:rgb(1,.93,.93)},review:{ink:amber,fill:rgb(1,.97,.9)},neutral:{ink:muted,fill:pale}};
  let page=pdf.addPage([595.28,841.89]),y=710;
- const clean=(s:string)=>s.replace(/[\u0000-\u001f]/g,' ');
+ const clean=(s:string)=>clientCareText(s).replace(/[\u0000-\u001f]/g,' ');
  const txt=(text:string,x:number,at:number,size=10,weight=false,color=navy)=>page.drawText(clean(text),{x,y:at,size,font:weight?strong:font,color});
  function rounded(x:number,at:number,w:number,h:number,r:number,color:ReturnType<typeof rgb>){
   r=Math.min(r,w/2,h/2);page.drawRectangle({x:x+r,y:at,width:w-2*r,height:h,color});page.drawRectangle({x,y:at+r,width:w,height:h-2*r,color});
@@ -95,6 +96,11 @@ export async function carePDF(data:CareSnapshot,edition=1):Promise<Uint8Array>{
   ensure(45);const color=last?!last.ok?red:green:target.checks===target.successful&&target.checks?green:amber;txt(status,42,y,8.5,true,color);y-=17;
   paragraph(last?`${careDate(last.checked_at)} · HTTP ${last.status??'unavailable'} · ${last.latency_ms} ms. ${last.detail}`:`${target.successful} of ${target.checks} checks passed. Final check details were not captured in this older snapshot.`);
  }
+ if(data.repository_events?.length){
+  section('Website updates & release checks');
+  for(const event of data.repository_events){const activity=clientActivity(event);label(`${careDate(event.occurred_at)} / ${activity.label}`);ensure(30);txt(activity.result,42,y,9,true,event.status==='success'?green:['failure','error'].includes(event.status)?red:muted);y-=20;paragraph(`Record ${event.commit_sha.slice(0,7)}`,8);}
+  paragraph('Software updates and publication results are separate from website availability. Detailed technical records are retained by Opus.',8);
+ }
  section('Maintenance & deployment record');
  if(!data.maintenance.length)paragraph('No maintenance work or deployments were recorded in this report snapshot.');
  for(const item of data.maintenance){ensure(90);txt(`${careDate(item.created_at)} / ${item.category.toUpperCase()}`,42,y,8,true,muted);y-=19;label(item.title);if(item.note)paragraph(item.note);}
@@ -109,7 +115,7 @@ export async function carePDF(data:CareSnapshot,edition=1):Promise<Uint8Array>{
  section('Protection & scope');
  paragraph(`Backups: ${data.backup_status}`);
  paragraph('HTTPS requests validate the certificate chain. Certificate expiry dates, independent backup recovery tests and browser journey checks are not currently collected. A backup note records human activity; it does not establish automated backup verification.');
- paragraph('Monitoring shares Cloudflare infrastructure with the website. A provider outage can interrupt both checks and notifications. Recorded results are evidence of sampled checks, not a continuous uptime or repair guarantee.');
+ paragraph('Monitoring uses shared service infrastructure. A provider outage can interrupt both checks and notifications. Recorded results are evidence of sampled checks, not a continuous uptime or repair guarantee.');
  section('Next actions');for(const [i,action]of data.actions.entries()){label(`0${i+1}`);paragraph(action);}
  const pages=pdf.getPages();for(const [index,p]of pages.entries()){page=p;rounded(32,19,531,33,10,pale);rounded(42,27,3,17,1.5,orange);txt('support@opuszim.co.zw',55,31,8,false,muted);txt(`${index+1} / ${pages.length}`,285,31,8,false,muted);txt('opuszim.co.zw',465,31,8,false,muted);}
  return pdf.save();
