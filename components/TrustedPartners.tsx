@@ -34,7 +34,7 @@ export default function TrustedPartners() {
   if (partners.length === 0) return null;
 
   const tileBase =
-    'rounded-2xl p-5 h-32 flex items-center justify-center border border-[#eeeeee] shadow-[0_4px_16px_rgba(0,0,0,0.05)]';
+    'p-5 h-32 flex items-center justify-center';
 
   return (
     <div
@@ -42,8 +42,11 @@ export default function TrustedPartners() {
       className="mx-auto mt-10 grid max-w-4xl grid-cols-2 items-center gap-6 md:grid-cols-4"
     >
       {partners.map((partner, index) => {
-        const bgColor =
-          partner.bg_color || (partner.id === 'killing-giants' ? '#000000' : '#ffffff');
+        const isKillingGiants = partner.id === 'killing-giants' || /^killing\s+giants$/i.test(partner.name.trim());
+        const tileClass = isKillingGiants
+          ? `${tileBase} rounded-2xl border border-[#eeeeee] shadow-[0_4px_16px_rgba(0,0,0,0.05)]`
+          : tileBase;
+        const bgColor = isKillingGiants ? partner.bg_color || '#000000' : 'transparent';
         const animStyle = {
           transitionDelay: `${index * 100}ms`,
           backgroundColor: bgColor,
@@ -69,12 +72,12 @@ export default function TrustedPartners() {
             rel="noreferrer"
             title={partner.name}
             style={animStyle}
-            className={`${tileBase} ${animClass} hover:shadow-[0_8px_24px_rgba(0,0,0,0.10)]`}
+            className={`${tileClass} ${animClass} ${isKillingGiants ? 'hover:shadow-[0_8px_24px_rgba(0,0,0,0.10)]' : ''}`}
           >
             {logo}
           </a>
         ) : (
-          <div key={partner.id} style={animStyle} className={`${tileBase} ${animClass}`}>
+          <div key={partner.id} style={animStyle} className={`${tileClass} ${animClass}`}>
             {logo}
           </div>
         );
