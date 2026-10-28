@@ -101,6 +101,17 @@ export async function carePDF(data:CareSnapshot,edition=1):Promise<Uint8Array>{
   for(const event of data.repository_events){const activity=clientActivity(event);label(`${careDate(event.occurred_at)} / ${activity.label}`);ensure(30);txt(activity.result,42,y,9,true,event.status==='success'?green:['failure','error'].includes(event.status)?red:muted);y-=20;paragraph(`Record ${event.commit_sha.slice(0,7)}`,8);}
   paragraph('Software updates and publication results are separate from website availability. Detailed technical records are retained by Opus.',8);
  }
+ if(data.release_issue_totals?.total){
+  section('Issues & verified resolutions');
+  for(const issue of data.release_issues||[]){
+   ensure(80);txt('FAILURE RECORDED',42,y,9,true,red);y-=19;paragraph(careDate(issue.opened_at));paragraph(issue.detail);
+   if(issue.resolved_at){ensure(55);txt('RESOLVED',42,y,9,true,green);y-=19;paragraph(`${careDate(issue.resolved_at)} / ${issue.resolution_detail||'A successful publication check was verified.'}`);paragraph(`Verified update ${issue.resolution_commit?.slice(0,7)||''}`,8);}
+   else {ensure(30);txt('NEEDS ATTENTION',42,y,9,true,red);y-=19;paragraph('Successful publication has not yet been verified.');}
+  }
+  paragraph(`Showing ${data.release_issues?.length||0} of ${data.release_issue_totals.total} recorded issues relevant to this period.`,8);
+  label(data.release_issue_totals.open?`${data.release_issue_totals.open} publication issue(s) need attention.`:'All recorded publication issues resolved.');
+  paragraph('Original failures remain in the record. A saved software update alone does not establish successful publication.',8);
+ }
  section('Maintenance & deployment record');
  if(!data.maintenance.length)paragraph('No maintenance work or deployments were recorded in this report snapshot.');
  for(const item of data.maintenance){ensure(90);txt(`${careDate(item.created_at)} / ${item.category.toUpperCase()}`,42,y,8,true,muted);y-=19;label(item.title);if(item.note)paragraph(item.note);}

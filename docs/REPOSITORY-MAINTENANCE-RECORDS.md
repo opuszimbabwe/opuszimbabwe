@@ -15,3 +15,11 @@ Private Vercel build/runtime logs are NOT connected by this integration. This se
 Verification: `scripts/test-project-events.cjs` covers cryptographic authentication, stale tokens, wrong audience/repository/workflow, branch validation, replay deduplication, success/failure evidence, paused projects, links and input bounds. `scripts/test-client-care.cjs` covers unchanged verified-payment delivery. All providers are mocked in these tests.
 
 Client documents use provider-neutral service language: website software updates and publication checks. Source platform names, provider context strings and provider links remain in admin evidence. Customer notes/actions replace provider names with neutral descriptions; failures stay failed and unconfirmed publication is never reported as live. Existing accepted/frozen documents are preserved; this applies to newly generated documents.
+
+## Failure and resolution history
+
+Every authenticated failed main-branch publication check opens an issue. The original failure remains visible after recovery. A later successful check from the same project and deployment context can resolve a retry of the same update, or explicitly supersede a failed release with a later successful update. A software push, earlier success or success from another service cannot close it. Retries and out-of-order events are idempotent. Verified resolutions are retained even after the source event retention window.
+
+Client PDFs show the failure date recorded, issue detail, resolution date and verified update. Publication issues are separate from public website downtime. Open publication issues prevent an all-clear report headline. Reports preserve month-end state: a recovery in the following month does not rewrite the preceding month as resolved. Up to 20 relevant issue histories are displayed, with full total/open counts so omitted rows cannot conceal unresolved work. No manual close-without-evidence action exists.
+
+The pre-integration security blockage is recorded from reviewed build output, with the date it was added to this history. It remains open until a later authenticated successful publication result is observed. Preparing patched code is recorded as work, not proof of successful live publication. Existing issued documents remain unchanged.

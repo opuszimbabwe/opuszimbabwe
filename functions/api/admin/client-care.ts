@@ -9,7 +9,7 @@ const fail=(e:unknown)=>json({error:e instanceof CheckoutError?e.message:'The cu
 export const onRequestGet:PagesHandler=async c=>{
  const actor=await requireAdmin(c);if(actor instanceof Response)return actor;
  try{
-  const [projects,orders,jobs,events,checks,repositories,repositoryEvents]=await Promise.all([
+  const [projects,orders,jobs,events,checks,repositories,repositoryEvents,releaseIssues]=await Promise.all([
    c.env.DB.prepare("SELECT * FROM care_projects WHERE id<>'opus' ORDER BY name").all(),
    c.env.DB.prepare('SELECT id,project_id,period,recipient,amount_minor,currency,state,payment_id,expires_at,created_at,updated_at FROM care_orders ORDER BY created_at DESC LIMIT 100').all(),
    c.env.DB.prepare('SELECT j.id,j.kind,j.order_id,j.status,j.attempts,j.next_at,j.error,j.email_status,j.provider_id,j.created_at,j.updated_at,CASE WHEN j.pdf_key IS NOT NULL THEN 1 ELSE 0 END AS pdf_available FROM ops_jobs j ORDER BY created_at DESC LIMIT 100').all(),
@@ -17,8 +17,9 @@ export const onRequestGet:PagesHandler=async c=>{
    c.env.DB.prepare("SELECT c.* FROM care_checks c WHERE project_id<>'opus' AND slot=(SELECT MAX(slot) FROM care_checks WHERE project_id=c.project_id) ORDER BY project_id").all(),
    c.env.DB.prepare('SELECT * FROM care_repository_integrations').all(),
    c.env.DB.prepare('SELECT * FROM care_repository_events ORDER BY occurred_at DESC LIMIT 40').all(),
+   c.env.DB.prepare("SELECT * FROM care_release_issues ORDER BY CASE WHEN status='OPEN' THEN 0 ELSE 1 END,opened_at DESC LIMIT 80").all(),
   ]);
-  return json({repositories:repositories.results,repository_events:repositoryEvents.results,projects:projects.results,orders:orders.results,jobs:jobs.results,events:events.results,checks:checks.results,renderer_configured:Boolean(c.env.CARE_RENDERER&&c.env.CARE_RENDER_SECRET),email_configured:Boolean(c.env.RESEND_API_KEY&&c.env.RECEIPT_FROM_EMAIL),current_period:currentPeriod()},200,{'cache-control':'no-store'});
+  return json({release_issues:releaseIssues.results,repositories:repositories.results,repository_events:repositoryEvents.results,projects:projects.results,orders:orders.results,jobs:jobs.results,events:events.results,checks:checks.results,renderer_configured:Boolean(c.env.CARE_RENDERER&&c.env.CARE_RENDER_SECRET),email_configured:Boolean(c.env.RESEND_API_KEY&&c.env.RECEIPT_FROM_EMAIL),current_period:currentPeriod()},200,{'cache-control':'no-store'});
  }catch(e){return fail(e);}
 };
 export const onRequestPost:PagesHandler=async c=>{

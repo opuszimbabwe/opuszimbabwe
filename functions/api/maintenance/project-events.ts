@@ -1,3 +1,4 @@
+import {reconcileReleaseIssues} from '../../_lib/release-issues';
 import {githubIdentity} from '../../_lib/github-identity';
 import {json} from '../../_lib/auth';
 import type {PagesHandler} from '../../_lib/types';
@@ -24,6 +25,7 @@ export const onRequestPost:PagesHandler=async c=>{
    c.env.DB.prepare('UPDATE care_repository_integrations SET last_event_at=MAX(COALESCE(last_event_at,?),?) WHERE project_id=?').bind(now,now,integration.project_id),
    c.env.DB.prepare("DELETE FROM care_repository_events WHERE received_at<datetime('now','-90 days')").bind(),
   ]);
+  await reconcileReleaseIssues(c.env,integration.project_id);
   return reply({ok:true});
  }catch{return reply({error:'Event could not be recorded'},503)}
 };
