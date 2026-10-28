@@ -67,17 +67,18 @@ export async function fulfilCarePayment(env:Env,payment:PaymentRow){
 
 export async function clientSnapshot(env:Env,p:ClientProject,period:string):Promise<CareSnapshot>{
  const bounds=monthBounds(period),end=new Date(Math.min(Date.parse(bounds.end),Date.now())).toISOString();
- const [stats,last,incidents,notes,totals]=await Promise.all([
+ const [stats,last,incidents,notes,totals,repositoryEvents]=await Promise.all([
   env.DB.prepare('SELECT COUNT(*) AS n,COALESCE(SUM(ok),0) AS passed,ROUND(AVG(latency_ms)) AS ms FROM care_checks WHERE project_id=? AND checked_at>=? AND checked_at<?').bind(p.id,bounds.start,end).first<{n:number;passed:number;ms:number|null}>(),
   env.DB.prepare('SELECT * FROM care_checks WHERE project_id=? AND checked_at>=? AND checked_at<? ORDER BY slot DESC LIMIT 1').bind(p.id,bounds.start,end).all<CareCheck>(),
   env.DB.prepare('SELECT target,opened_at,resolved_at,detail FROM care_incidents WHERE project_id=? AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?) ORDER BY opened_at DESC LIMIT 12').bind(p.id,end,bounds.start).all<{target:string;opened_at:string;resolved_at:string|null;detail:string}>(),
   env.DB.prepare("SELECT category,title,note,created_at FROM care_events WHERE project_id=? AND client_visible=1 AND category IN ('maintenance','deployment','backup','note') AND created_at>=? AND created_at<? ORDER BY created_at DESC LIMIT 8").bind(p.id,bounds.start,end).all<{category:string;title:string;note:string;created_at:string}>(),
   env.DB.prepare('SELECT COUNT(*) AS total,SUM(CASE WHEN resolved_at IS NULL OR resolved_at>=? THEN 1 ELSE 0 END) AS open FROM care_incidents WHERE project_id=? AND opened_at<? AND (resolved_at IS NULL OR resolved_at>=?)').bind(end,p.id,end,bounds.start).first<{total:number;open:number}>(),
+  env.DB.prepare("SELECT event,status,context,commit_sha,occurred_at FROM care_repository_events WHERE project_id=? AND occurred_at>=? AND occurred_at<? AND status<>'pending' ORDER BY occurred_at DESC LIMIT 8").bind(p.id,bounds.start,end).all<{event:string;status:string;context:string;commit_sha:string;occurred_at:string}>(),
  ]);
  const checks=stats?.n||0,successful=stats?.passed||0,expected=Math.max(0,Math.floor((Date.parse(end)-Date.parse(bounds.start))/300000));
  const open=totals?.open||0;
- const actions=[...(open?['Investigate the open public website check incident.']:[]),...(checks<expected*.95?['Review monitoring gaps; checks started partway through this period or were interrupted.']:[]),'Connect repository, hosting and backup integrations before including their private evidence.'];
- return {project:p.name,month:period,generated_at:iso(),period_start:bounds.start,period_end:end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,target_definitions:[{id:'website',name:'Public website',url:p.site_url}],targets:[{name:'Public website',checks,successful,average_ms:stats?.ms??null}],latest_checks:last.results,incidents:totals?.total||0,open_incidents:open,incident_details:incidents.results,maintenance:notes.results,backup_status:'Backup verification is not connected.',actions};
+ const actions=[...(open?['Investigate the open public website check incident.']:[]),...(checks<expected*.95?['Review monitoring gaps; checks started partway through this period or were interrupted.']:[]),'Connect private hosting logs and backup verification before including their evidence.'];
+ return {repository_events:repositoryEvents.results,project:p.name,month:period,generated_at:iso(),period_start:bounds.start,period_end:end,checks,successful,expected,coverage:expected?Math.min(100,checks/expected*100):0,sample_availability:checks?successful/checks*100:null,target_definitions:[{id:'website',name:'Public website',url:p.site_url}],targets:[{name:'Public website',checks,successful,average_ms:stats?.ms??null}],latest_checks:last.results,incidents:totals?.total||0,open_incidents:open,incident_details:incidents.results,maintenance:notes.results,backup_status:'Backup verification is not connected.',actions};
 }
 
 export async function monitorClients(env:Env){
