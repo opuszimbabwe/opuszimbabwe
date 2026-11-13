@@ -18,6 +18,9 @@ const base = process.env.BASE_URL || 'http://127.0.0.1:8788';
     fixture.settings.hero_design.layout = 'split';
     fixture.settings.hero_design.show_media = true;
     fixture.settings.hero_design.media_image = '';
+    // Production uses the newer studio URLs rather than the original PNGs.
+    const studio = ['website', 'software', 'automation', 'branding', 'hosting', 'integrations'];
+    fixture.settings.hero_cycles = fixture.settings.hero_cycles.slice(0, 6).map((cycle, i) => ({ ...cycle, image: `/images/hero-studio/${studio[i]}-v1.webp` }));
     const page = await context.newPage();
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     let release, started;
