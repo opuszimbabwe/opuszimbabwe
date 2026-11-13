@@ -32,7 +32,6 @@ export default function HeroDesignEditor({ value: d, onChange, onUpload, onSave,
       {select('layout', 'Hero layout', [['split', 'Current split layout'], ['full_bleed', 'Full-bleed background'], ['card', 'Inset hero card']])}
       {select('text_align', 'Text alignment', [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']])}
       {select('text_position', 'Text position', [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']])}
-      <p className="text-sm text-black/60 md:col-span-2">Text position chooses the text column: Left places text before the image, Right places the image first. Text alignment aligns the words inside that column. Choose Text position: Left for text on the left.</p>
       {select('vertical_align', 'Vertical position', [['top', 'Top'], ['center', 'Middle'], ['bottom', 'Bottom']])}
       <Toggle label="Use reference responsive gutters" value={d.use_reference_gutters} onChange={v => patch({ use_reference_gutters: v })} />
       {!d.use_reference_gutters && range('edge_spacing', 'Custom edge-to-content spacing (px)', 0, 200)}

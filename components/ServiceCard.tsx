@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { ArrowRight, Plus } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import type { ServiceRecord } from '@/lib/content';
-import { serviceImage } from '@/lib/service-images';
 
 const tones: Record<string, string> = { 'web-design': '#9b4236', 'software-development': '#58415d', 'ai-automation': '#a13f65', 'graphic-design': '#274e48', 'domains-hosting': '#a05c14', 'api-integrations': '#252943' };
 export default function ServiceCard({ service, expanded, onExpand,design }: { design?:ServicePresentation; service: ServiceRecord; expanded: boolean; onExpand: (next: boolean) => void }) {
@@ -12,7 +11,7 @@ export default function ServiceCard({ service, expanded, onExpand,design }: { de
   const detailsId = `service-details-${service.id}`;
   return <article className="service-panel" data-open={expanded} style={{ '--service-tone': tone,...(design?{background:presentationBackground(design),color:design.text_color,textAlign:design.text_align}:{}) } as CSSProperties}
     onPointerEnter={event => { if (event.pointerType === 'mouse') onExpand(true); }}>
-    {(design?design.image:service.image)&&<img className="service-panel-image" src={serviceImage(design?design.image:service.image)} alt="" loading="lazy" style={design?{objectFit:design.image_fit}:undefined}/>}
+    {(design?design.image:service.image)&&<img className="service-panel-image" src={design?design.image:service.image} alt="" loading="lazy" style={design?{objectFit:design.image_fit}:undefined}/>}
     <div className="service-panel-shade" aria-hidden="true" style={design?{background:presentationOverlay(design),opacity:design.overlay_opacity}:undefined}/>
     <button type="button" className="service-panel-trigger" aria-expanded={expanded} aria-controls={detailsId} onClick={() => onExpand(!expanded)} onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onExpand(true); }}>
       <span className="service-panel-title" style={design?{textAlign:design.text_align,color:design.title_color}:undefined}>{service.name}</span>
