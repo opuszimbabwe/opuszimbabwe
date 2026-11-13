@@ -7,24 +7,10 @@ import { Pause, Play } from 'lucide-react';
 import { DEFAULT_HERO_CYCLES, DEFAULT_HOME_SECTIONS, heroServiceWord, type HeroCycle, type HomeSectionsConfig } from '@/lib/content';
 import { DEFAULT_HERO_DESIGN, type HeroDesign } from '@/lib/hero-design';
 import { useSiteContent } from '@/lib/use-site-content';
+import { serviceImage } from '@/lib/service-images';
 
-// Transparent margins in our existing artwork are cropped in CSS, preserving
-// the original files and leaving uploaded/custom images under the normal controls.
-const artworkBounds: Record<string, [number, number, number, number, number, number]> = {
-  '/images/hero-website-design.png': [500, 500, 46, 129, 410, 266],
-  '/images/hero-software-systems.png': [666, 375, 36, 24, 612, 323],
-  '/images/hero-ai-automation.png': [636, 392, 53, 53, 560, 321],
-  '/images/hero-graphic-design.png': [743, 740, 127, 184, 442, 476],
-  '/images/hero-domains-hosting.png': [586, 426, 1, 1, 585, 423],
-  '/images/hero-api-integrations.png': [1408, 768, 305, 96, 788, 582],
-};
 function ServiceImage({ source, label, design }: { source: string; label: string; design: HeroDesign }) {
-  const bounds = design.headline_mode === 'service_words' && design.media_fit === 'contain' ? artworkBounds[source] : null;
-  if (!bounds) return <img src={source} alt={label} style={{ height: design.media_height, objectFit: design.media_fit, objectPosition: 'center bottom' }} />;
-  const [width, height, left, top, cropWidth, cropHeight] = bounds;
-  return <div className="hero-artwork-frame" style={{ height: design.media_height, display: 'grid', alignItems: 'end', justifyItems: 'center' }}><div style={{ position: 'relative', overflow: 'hidden', aspectRatio: `${cropWidth}/${cropHeight}`, width: `min(100%, ${design.media_height * cropWidth / cropHeight}px)` }}>
-    <img src={source} alt={label} style={{ position: 'absolute', maxWidth: 'none', width: `${width / cropWidth * 100}%`, height: `${height / cropHeight * 100}%`, left: `${-left / cropWidth * 100}%`, top: `${-top / cropHeight * 100}%` }} />
-  </div></div>;
+  return <img src={serviceImage(source)} alt={label} style={{ height: design.media_height, objectFit: design.media_fit, objectPosition: 'center' }} />;
 }
 
 function RotatingServiceWords({ words, index, animate }: { words: string[]; index: number; animate: boolean }) {
@@ -117,5 +103,7 @@ export function HomeHeroView({ design, sections, cycles, loading = false, previe
 }
 export default function HomeHero() {
   const { content, status } = useSiteContent();
-  return <HomeHeroView design={content?.settings.hero_design || DEFAULT_HERO_DESIGN} sections={content?.settings.home_sections || DEFAULT_HOME_SECTIONS} cycles={content?.settings.hero_cycles || DEFAULT_HERO_CYCLES} loading={status === 'loading'} />;
+  // Never mount the opposite built-in arrangement before the saved design arrives.
+  if (!content || status !== 'ready') return null;
+  return <HomeHeroView design={content?.settings.hero_design || DEFAULT_HERO_DESIGN} sections={content?.settings.home_sections || DEFAULT_HOME_SECTIONS} cycles={content?.settings.hero_cycles || DEFAULT_HERO_CYCLES} loading={false} />;
 }

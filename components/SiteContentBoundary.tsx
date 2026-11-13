@@ -27,7 +27,7 @@ export default function SiteContentBoundary({ children }: { children: React.Reac
   const failed = !loading && status === 'failed';
   return <>
     {failed && <div className="content-unavailable" role="alert"><h1 className="text-2xl font-semibold">We couldn’t load the latest site content.</h1><p className="mt-4 text-base">Please retry. We won’t display an older version in its place.</p><button type="button" className="mt-6 rounded-full bg-[#b8441c] px-6 py-3 text-sm font-semibold text-white" onClick={() => void loadSiteContent(true, true)}>Retry latest content</button></div>}
-    <div className="site-content" data-loading={loading || failed} aria-busy={loading}>{children}</div>
+    <div className="site-content" data-loading={loading || failed} hidden={loading || failed} style={loading || failed ? { display: 'none' } : undefined} aria-busy={loading}>{children}</div>
     <noscript><style>{`.site-content{display:block!important}`}</style></noscript>
   </>;
 }
