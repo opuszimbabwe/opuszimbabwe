@@ -1,0 +1,18 @@
+[
+  "functions/api/admin/domain-applications.ts",
+  "functions/api/admin/feedback.ts",
+  "functions/api/admin/project-download.ts",
+  "functions/api/admin/push.ts",
+  "functions/api/admin/website-chat.ts",
+  "functions/api/admin/whatsapp-assets.ts",
+  "functions/api/admin/whatsapp.ts",
+  "functions/api/assistant.ts",
+  "functions/api/chat/attachment.ts",
+  "functions/api/chat/messages.ts",
+  "functions/api/chat/session.ts",
+  "functions/api/domains/applications.ts",
+  "functions/api/downloads/[id].ts",
+  "functions/api/feedback.ts",
+  "functions/api/payments/paynow-webhook.ts",
+  "functions/api/whatsapp.ts"
+]

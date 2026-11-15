@@ -1,0 +1,12 @@
+const OPUS_APP_CACHE='opus-inbox-shell-v21';
+self.addEventListener('install',event=>{event.waitUntil(caches.open(OPUS_APP_CACHE).then(cache=>cache.addAll(['/opus-inbox-assets/icon-192-v6.png','/opus-inbox-assets/icon-512-v6.png','/opus-inbox-assets/notify-logo-light-v19.png','/opus-inbox-assets/notify-logo-dark-v19.png','/opus-inbox.webmanifest'])).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys(),target=await caches.open(OPUS_APP_CACHE);for(const key of keys.filter(key=>key.startsWith('opus-inbox-shell-')&&key!==OPUS_APP_CACHE)){const old=await caches.open(key);if(await old.match('/__opus_inbox_preference'))await target.put('/__opus_inbox_preference',new Response('1'));await caches.delete(key);}await self.clients.claim();})());});
+self.addEventListener('message',event=>{if(event.data?.type==='opus-inbox-app-preferred')event.waitUntil(caches.open(OPUS_APP_CACHE).then(cache=>cache.put('/__opus_inbox_preference',new Response('1'))));});
+self.addEventListener('fetch',event=>{
+ const url=new URL(event.request.url);if(event.request.method!=='GET'||url.origin!==self.location.origin)return;
+ if(url.pathname==='/sysadmin/mobile/'){
+  event.respondWith((async()=>{const cache=await caches.open(OPUS_APP_CACHE);try{const response=await fetch(event.request);if(response.ok&&response.headers.get('x-opus-inbox-app')==='1')await cache.put('/sysadmin/mobile/',response.clone());return response;}catch{const shell=await cache.match('/sysadmin/mobile/');if(shell){const headers=new Headers(shell.headers);headers.set('x-opus-inbox-offline','1');return new Response(shell.body,{status:shell.status,headers});}return new Response('Connect to the internet to open OpusChat for the first time.',{status:503,headers:{'content-type':'text/plain'}});}})());
+ }else if(['/opus-inbox-assets/katex-0.19.1.min.js','/opus-inbox-assets/icon-192-v6.png','/opus-inbox-assets/icon-512-v6.png','/opus-inbox-assets/notify-logo-light-v19.png','/opus-inbox-assets/notify-logo-dark-v19.png','/opus-inbox.webmanifest','/opus-inbox-assets/wordmark-dark-v7.png','/opus-inbox-assets/wordmark-light-v7.png'].includes(url.pathname)||/^\/opus-inbox-assets\/(?:font-[a-z0-9-]+\.woff2|message-fonts-v(?:10|15)\.css)$/.test(url.pathname)){
+  event.respondWith(caches.open(OPUS_APP_CACHE).then(async cache=>(await cache.match(url.pathname))||(async()=>{const response=await fetch(event.request);if(response.ok&&!response.redirected)await cache.put(url.pathname,response.clone());return response;})()));
+ }
+});

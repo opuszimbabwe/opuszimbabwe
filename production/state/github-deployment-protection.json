@@ -1,0 +1,13 @@
+{
+  "project": "opuszimbabwe",
+  "canonical_deployment": "18a7f56e-775d-4ac4-a15f-91083eebd122",
+  "automatic_deployments_before": {
+    "deployments_enabled": true,
+    "production_deployments_enabled": true
+  },
+  "automatic_deployments_after": {
+    "deployments_enabled": false,
+    "production_deployments_enabled": false
+  },
+  "site_deployment_unchanged": true
+}

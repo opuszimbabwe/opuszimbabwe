@@ -1,0 +1,50 @@
+{
+  "account_id": "bfdd1ae2b409f941958f78ea99348c2e",
+  "project": "opuszimbabwe",
+  "deployment_id": "18a7f56e-775d-4ac4-a15f-91083eebd122",
+  "created_on": "2026-11-08T09:50:00.356129Z",
+  "deployment_trigger": {
+    "type": "ad_hoc",
+    "metadata": {
+      "branch": "main",
+      "commit_hash": "5baa5e9aad8d54c8d69f625f5c612761b778ef80",
+      "commit_message": "Enable text-only WhatsApp AI when Gemini is configured",
+      "commit_dirty": true
+    }
+  },
+  "domains": [
+    "opuszimbabwe.pages.dev",
+    "opuszim.co.zw",
+    "payments.opuszim.co.zw"
+  ],
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "environment_variable_names": [
+    "CARE_RENDER_SECRET",
+    "CF_ACCESS_AUD",
+    "CF_ACCESS_TEAM_DOMAIN",
+    "CLOUDFLARE_REGISTRAR_ACCOUNT_ID",
+    "CLOUDFLARE_REGISTRAR_TOKEN",
+    "GEMINI_API_KEY",
+    "GROQ_API_KEY",
+    "GROQ_API_KEY_FALLBACK",
+    "MAINTENANCE_CRON_SECRET",
+    "PAYNOW_CURRENCY",
+    "PAYNOW_INTEGRATION_ID",
+    "PAYNOW_INTEGRATION_KEY",
+    "PESEPAY_ENCRYPTION_KEY",
+    "PESEPAY_INTEGRATION_KEY",
+    "RECEIPT_FROM_EMAIL",
+    "RESEND_API_KEY",
+    "WEB_PUSH_PRIVATE_JWK",
+    "WEB_PUSH_PUBLIC_KEY",
+    "WHATSAPP_APP_SECRET",
+    "WHATSAPP_PHONE_NUMBER_ID",
+    "WHATSAPP_TOKEN",
+    "WHATSAPP_VERIFY_TOKEN"
+  ],
+  "source_complete": false,
+  "missing_source_manifest": "missing-pages-functions.json"
+}

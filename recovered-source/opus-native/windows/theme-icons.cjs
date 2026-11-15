@@ -1,0 +1,4 @@
+const path=require('node:path');
+function iconPath(app,theme){const directory=app.isPackaged?path.join(process.resourcesPath,'app.asar.unpacked','icons'):path.join(__dirname,'icons');return path.join(directory,'icon-'+theme+'.ico');}
+function updateThemeIcons({app,win,nativeTheme}){const windowDark=nativeTheme.shouldUseDarkColors,taskbarDark=typeof nativeTheme.shouldUseDarkColorsForSystemIntegratedUI==='boolean'?nativeTheme.shouldUseDarkColorsForSystemIntegratedUI:windowDark;const windowIcon=iconPath(app,windowDark?'dark':'light'),taskbarIcon=iconPath(app,taskbarDark?'dark':'light');if(win&&!win.isDestroyed())win.setIcon(windowIcon);app.setAppDetails({appId:'zw.co.opuszim.inbox',appIconPath:taskbarIcon,appIconIndex:0});return {windowIcon,taskbarIcon};}
+module.exports={iconPath,updateThemeIcons};

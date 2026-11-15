@@ -1,0 +1,1002 @@
+{
+  "status": "Recovered workspace source; some files predate the active compiled Workers and native Android 1.0.5.",
+  "authoritative_runtime": "production/workers/*/deployment.json",
+  "excluded": "Credentials, signing keys, customer screenshots/data, dependencies, caches, installers, superseded Worker backups and the unsafe original deployment script.",
+  "files": [
+    {
+      "file": "recovered-source/opus-first-paint/README.md",
+      "bytes": 24610,
+      "sha256": "97000a53489bb98539110cbd5fb79bcdfafbca3b2e40b9dfca641f452604075c"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-app-icon.png",
+      "bytes": 73876,
+      "sha256": "e7d3737737ba28c2669b7c0776c4ea9bf44788ac9e823ccbc06fbf841216cbcb"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-duplicates-audit.md",
+      "bytes": 2627,
+      "sha256": "f4f7a1dfda84b746461ee5895faec964ee03d9ea892387cf53cee72cc3adb927"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-duplicates.mjs",
+      "bytes": 2705,
+      "sha256": "0b0dbb79ae11897d484e9b5aaa5ad8cb9cab8d6569bb9ef532d4bcfb7888343d"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-refine.mjs",
+      "bytes": 2719,
+      "sha256": "07a3e9f7fbc6f1bf57423295e44931a7026bb55bcaa3da357566ebabac909393"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-small-icon.png",
+      "bytes": 11294,
+      "sha256": "9cadf4bb66e72cc989be9367e29e2b6fdba61314e52d65df9625cd6f99bf13c9"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/admin-square-icon.png",
+      "bytes": 51362,
+      "sha256": "3249dec608e4476206617a4bfd6b7a55b5e6379bb309dea81bfeca7ff935a603"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/ai-team-notifications.js",
+      "bytes": 8817,
+      "sha256": "4689d03f10751deb4913c80f669364c5931f7661d0e619663810523449e79775"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/app-downloads.mjs",
+      "bytes": 3443,
+      "sha256": "d20cfaa957d3f8ffd506de04428445e54c1907ee916359eeb3734d57a224c1ce"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/assistant-actions.js",
+      "bytes": 2451,
+      "sha256": "87757b9cff249cd7b9a8c164ef5f863254ef7953c23a8d4d4a07a72c16416587"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/assistant-direct-send.js",
+      "bytes": 1303,
+      "sha256": "b039b3e23c4c93b42ddea7b5438779cfc3382763706f8d68e153e9f7136bc7f4"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/assistant-response.mjs",
+      "bytes": 6036,
+      "sha256": "175410a3d90b65e351fcdef0b147caf00909780e7335994673119d74abb6fa9c"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/chat-files.mjs",
+      "bytes": 5192,
+      "sha256": "3da3366f2d15e721d1fc4681d4a9cc3968eaf9e363805bec3b95941ca484a0bb"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-admin-conversations.mjs",
+      "bytes": 852,
+      "sha256": "dfc0a53a0fcf5f69043328669ffbbfe798a38543c5f1539cc63d125228a5b51b"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-admin-duplicates-worker.mjs",
+      "bytes": 2300,
+      "sha256": "d6bfe461df7e1933981c8adb9d44399578ce1aa2f2ef1feb62ac0f299054b77a"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-admin-duplicates.mjs",
+      "bytes": 2050,
+      "sha256": "8245eb21aaed5ea6ddfd7fe639fcea0efd3d9260e329a5413481e71c10070b53"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-admin-handoff-intent.mjs",
+      "bytes": 1305,
+      "sha256": "283b6dd7bbedffe93e21256c99db8def00e5f44745b2fa8489772f8b177c1b69"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-app-downloads.mjs",
+      "bytes": 2562,
+      "sha256": "d3984cf89efac02cac5b6dc5aefcfe4d2bd26fdee80d290703e2c1b0ce30aadd"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-assistant-quality.cjs",
+      "bytes": 3719,
+      "sha256": "28991ad39defe05d73ac6927144cbd4547f779709973848e3108a88f9bbecbbe"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-bulk-messages.mjs",
+      "bytes": 7496,
+      "sha256": "8a7933d2e508c775b326a31a451da567009ca7bb7348d58c7f8dcc3964cfeb8a"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-chat-files.mjs",
+      "bytes": 3351,
+      "sha256": "723640bcccca27d345b43c7b8296f9a305e301e8f2f5aca50a5e9041ca82c771"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-contact-enquiry.cjs",
+      "bytes": 5170,
+      "sha256": "ece35c06572f83bce1743e688da8ec2f4b553695baf82a40dc75cd1e9b356f80"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-contact.cjs",
+      "bytes": 4219,
+      "sha256": "7b922776676f5d0770ce0c36b158d70f2943fc925b1c1f401321ba84f4fac9c0"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-customer-codes.mjs",
+      "bytes": 1700,
+      "sha256": "5978e2f5a333877a7c8be1e04c7a9cce1262796012920e189de79ed576c7e3b7"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-customer-layout-v18.cjs",
+      "bytes": 4408,
+      "sha256": "351c14d2c04a10ae013d8384425cb57b42804a57fff8aa5037c62bb7362255bb"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-direct-header-v21.cjs",
+      "bytes": 4372,
+      "sha256": "0c115798ceb7c12dd01d96490a736bb4fffcff29095002295982c8e035f83c5c"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-direct-send.cjs",
+      "bytes": 2665,
+      "sha256": "e895d1ff997bbf95007426d4221dc4615f61e794e86ce586f708be5b24a3c42b"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-enquiry-notification.mjs",
+      "bytes": 2505,
+      "sha256": "e86a6491598425a06960410d502586288fa9eaadd328e6f1c011d8638c878c8a"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-footer.cjs",
+      "bytes": 2269,
+      "sha256": "1b8f347fa1bff22c80434651b25cb9af0479e1798585cbba9140b47e368765d5"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-handoff-live-v21.cjs",
+      "bytes": 3975,
+      "sha256": "7dd64400dfb27cf5b7a6478d790d8e79cf5d7bcf235b54ef1cd06eaefafe9c3d"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-handoff-wording-v21.mjs",
+      "bytes": 1839,
+      "sha256": "46dc323632d09054c14e866223b306de62d886024581189f37ff8444a231056f"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-handoff.cjs",
+      "bytes": 3926,
+      "sha256": "b50444c5d9939e2915e4ca014840a33ab5339740326849b204101587a9f64457"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-hydration-no-footer.cjs",
+      "bytes": 1761,
+      "sha256": "ec0968bb3b4ad77cb6cc92c88cbe9facdeed764b5419573fa106340285266066"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-hydration-v14.cjs",
+      "bytes": 1698,
+      "sha256": "97a5599f2d9f19aa41d4e6d61ff4893f4df031bbd01eac60e50992f5673de3fe"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-message-mutations.mjs",
+      "bytes": 124,
+      "sha256": "1f3a6775eb8c34bbeeb62b1cc937a0b620cfdec89ad6459e357dbee9039c9d77"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-native-live.cjs",
+      "bytes": 3265,
+      "sha256": "94f8b10cdc386c153b464e85a823dc5c914148e8170eae18913d1715c52e1816"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-public-navigation.cjs",
+      "bytes": 1273,
+      "sha256": "f8d36aa57bb7c376b0b396b4e4a2c32b16463407375bcde45d286cddc3d91c09"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-rail-open.cjs",
+      "bytes": 2140,
+      "sha256": "d9eb2f67f29b2beaaee0dead19be28d1defacda5329fb436b6baec0722161347"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-responses.mjs",
+      "bytes": 2820,
+      "sha256": "3e666f6049c3e074ad1963d5762bb5c46dcc47374acc151e13ffbf5047c1929b"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check-search.cjs",
+      "bytes": 2882,
+      "sha256": "db7211793a8515a86efe4a04ddf410af4bf0db2bf1832c51ed55625c3f994be2"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/check.cjs",
+      "bytes": 4352,
+      "sha256": "6d2f7ca6239e7e690e2954ab4696df92351b0ac32d0c4fb1ee95cd05258c96bb"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/contact-enquiry.js",
+      "bytes": 3620,
+      "sha256": "9303b3aa15ef9f02f6f543d8eb756e00d4b2cc6767b207102e392d40009d141a"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/contact-layout.css",
+      "bytes": 1435,
+      "sha256": "903525173fe8021684a93df5a0602af19c5ee44e423b8c549f118bf58e4e186a"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/contact-layout.mjs",
+      "bytes": 4054,
+      "sha256": "ebc102487b384241f0c42e100f2d93e2115cb98c568ca65910f88396c8b24d2e"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/contact-navigation.js",
+      "bytes": 1660,
+      "sha256": "ab0b2cc7ef60ea212d45396e09aeb71188d491155796495e1ed727b9bf9cdcf2"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/contact-settings-before-number-change.json",
+      "bytes": 22098,
+      "sha256": "93421f9806ab08345cd0ba6c6d4341ac3f510b9c892025d385244b37659c90da"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/customer-chat-v18.css",
+      "bytes": 8869,
+      "sha256": "3644b3e76b68c0011b7321a5a6c064cebefce75740421cf5147fe6ca92c01c3c"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/customer-codes.mjs",
+      "bytes": 2318,
+      "sha256": "e9ef23a15866ec446ab26bf6c418bf815a24b7ce36bc1fa4a0cc7744da7bb47f"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/direct-chat-header.css",
+      "bytes": 831,
+      "sha256": "e0355cfa9fc83233f37b4f0a5f8ab7b9f03815cb8fc0b635804c7b4f9e13de7e"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/enquiry-notification.mjs",
+      "bytes": 2290,
+      "sha256": "9eb3f122779615d8dda895d7de2850d84f9701a8cf1f3805511353a1ae1ae9d9"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/footer-location.js",
+      "bytes": 980,
+      "sha256": "e3687b1c74c9225dd4bfa11df223b316410535dd68a34ba6ac69a942be28ccf4"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/handoff-intent.js",
+      "bytes": 5513,
+      "sha256": "57bee372629ddddf5de60004df4f21a9358da7576f44e864a552712606447594"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/handoff-intent.mjs",
+      "bytes": 5559,
+      "sha256": "e116a63ace93e889a47e023d6a24c7f4189c2c1fde464a22121ff21665f07235"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/inbox-test-record.json",
+      "bytes": 105,
+      "sha256": "b3fd728d5f372593e371b068a11d4f4d19a75fea43b51ecc475e0b2b4ca0d0a0"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/inspect-visitor-chat-v18.cjs",
+      "bytes": 2061,
+      "sha256": "d7d445af3713dbb2ea60966e35e0a5a4eb533a9b81958c269fd4083f7f96c7b1"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/message-mutations.mjs",
+      "bytes": 10607,
+      "sha256": "ff77703a833bc9fd7b02aaafa85436b76fb67332f00beccfe9431dce7ca6bf7f"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-assistant.cjs",
+      "bytes": 1548,
+      "sha256": "4d8fa1db0f4db93e2537d972395d3d87dac1ef32784ba0c334df44ccea75b527"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-chat-fields.cjs",
+      "bytes": 1423,
+      "sha256": "2e4d94668cf8bdd92ab93cf92c0340c1d1c8b4de0d1e80835cd702ea59cca9c0"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-chat-paths.cjs",
+      "bytes": 1170,
+      "sha256": "1678206126387ac178e58f6649544e9b132d8bfc8ad8b64ec095458142629e62"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-chat-protocol.cjs",
+      "bytes": 1414,
+      "sha256": "15d6fb8e7bc8ddbd043daf1d6c36d93da0176ff27b7287fa743862bee59504a3"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-chat-send.cjs",
+      "bytes": 1308,
+      "sha256": "5f9c0d3d12a0af8283b51a5fd7f5969312087c32356e9580aae8d2f5cde1889f"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/probe-website-chat.cjs",
+      "bytes": 1118,
+      "sha256": "6d51dd7c24c4183f5fd8f8e6885f6e3322a7ce827f44b59cd7c09e3da8b3fd6f"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/protocol-test-session.json",
+      "bytes": 45,
+      "sha256": "1963b410c40f8f71ccdb092aadea50627519c9db98d7f97130511e137a04b5e0"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/public-contact.mjs",
+      "bytes": 337,
+      "sha256": "486ff24a3e07271d3eed49650def25a298c4c4ada2a4626f0fe59db5e993c23e"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/rail-open.js",
+      "bytes": 672,
+      "sha256": "d78defcbbf155ed2fdd46efdc533e7c49e12addaa3ad5925bca67053452a216b"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/search-enhancements.css",
+      "bytes": 3368,
+      "sha256": "762238d758cb099948205181db50ce32b14f971997f91f9ac6df4881c7f53c58"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/search-enhancements.js",
+      "bytes": 2713,
+      "sha256": "fea3e775f19dfa55181a39c84df246c0f69495ce277185b9a24328c4f45b39d5"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/team-chat.css",
+      "bytes": 4162,
+      "sha256": "e52b0677867ec5e33cfe0970770105e421842d0b7d6fff09b1a23254c6d7023b"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/team-replies.js",
+      "bytes": 23660,
+      "sha256": "67cdb67b067487cc5de6f9c813f71a825d3a2c6abffe725b8df226e407a92eab"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/update-contact-settings.py",
+      "bytes": 2359,
+      "sha256": "fabd3410d4fedb46f8aefccb7a661f6e59dbf169935afbd4d787764c7e726949"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/website-transport.js",
+      "bytes": 2349,
+      "sha256": "d856fbbc93c0a2f0153834c37998ae022059fc06c7464ea8f192bd3a35ab4f86"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/whatsapp-brand.svg",
+      "bytes": 1216,
+      "sha256": "8fb209a53a61618c3483594b3e070481a35575d6aaecbe00a6fe386670c8fb1c"
+    },
+    {
+      "file": "recovered-source/opus-first-paint/worker.mjs",
+      "bytes": 149475,
+      "sha256": "4bb5e3bc6bd825387580dff55ecc3dc16c99415d9cd2beaee6eda9417710a6b1"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/README.md",
+      "bytes": 16967,
+      "sha256": "18ff35a42432c0857cf9bd2405f0aa05bfd5ee613151dbdc2707dc866d94c523"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/admin-app.mjs",
+      "bytes": 2695531,
+      "sha256": "2aa43210690fa16c7d20893316f1c194092f052c55e85a6df05ba31f1dac0212"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/app.css",
+      "bytes": 43490,
+      "sha256": "5a74ee807fced74631216740219cc8eedc97f45e499f2964177305da687f21fd"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/app.html",
+      "bytes": 15841,
+      "sha256": "a5e19ae4701abb514c45477b4c55805e557366cd541a31aecf1379a395708756"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/app.js",
+      "bytes": 60108,
+      "sha256": "17e1bf32a35becf57c458d807d1ef6dae3ebfefe168f24bcc5c1e9b990ada0d7"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/build-module.py",
+      "bytes": 6495,
+      "sha256": "a71574862a1d97476f660c608db1f86d5f42b0b0722718429d777e733de4669e"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-advanced.cjs",
+      "bytes": 2832,
+      "sha256": "9604bd76dce3190252850d3f5640e3819c7d64ac7193facbbb5d187a910a2a9d"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-app.cjs",
+      "bytes": 4079,
+      "sha256": "290e4fb577531d8558528de125a000c9a51a7cb34b0274a21acc41fcc364e30d"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-blocked-alerts-v19.cjs",
+      "bytes": 2035,
+      "sha256": "c2dd398baec8730e342189127c77074d59fb080928f184ad0370c8ac4aa1fb5b"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-closed-ui-v21.cjs",
+      "bytes": 3664,
+      "sha256": "6252285cfc65a7f26daf68af812f06050603e8005fd0107a26206262fa101edb"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-composer.cjs",
+      "bytes": 5714,
+      "sha256": "0fd4d26c0738cd55f05cd4ff5762d0a7b10b5e7581e3b6dc09cea9bce8460586"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-copy-fallback.cjs",
+      "bytes": 1349,
+      "sha256": "941c0720fd1f3c11a970eb956b40c54b9c40ef7ef6c3a4eb3730a6c7d09f97f8"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-device-repair-v18.cjs",
+      "bytes": 2963,
+      "sha256": "413003d470563757f5c1632a6b48ce937401f48eba1a24930082ee35a4242604"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-direct-chat.cjs",
+      "bytes": 3319,
+      "sha256": "3ddb8b3ad2ca666921d5507df5a8b36399acbffaf41f65caaa2a63ed953cdad3"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-fast-send.cjs",
+      "bytes": 3988,
+      "sha256": "b65827b7fb977089c899b7a0e3d60b5f8b806892a6dd993df32cabf8349d0757"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-feedback.cjs",
+      "bytes": 2780,
+      "sha256": "749c9ee1df595b62125b06632b75fd3a0ef4d62d921702905138ad20d1f74ad9"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-inline-icons.cjs",
+      "bytes": 2420,
+      "sha256": "e1afec9827bb75aba690f88d1c90b79e865cbcef5d3e59cb58330b8a4c4c8008"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-message-edit.cjs",
+      "bytes": 1892,
+      "sha256": "13d8204d0f16ee4ec3e823d2cbe805ed2d169ba9314dc615049579b7a91d5c23"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-native-live-client-v18.cjs",
+      "bytes": 2584,
+      "sha256": "9d7bebfea30d703d49d7ae0cd2fbead42a326e59449a7198e9e4281b8a93d153"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-opuschat-v15.cjs",
+      "bytes": 5938,
+      "sha256": "2816ab238025ab031d2f884a48f36b35c6ec9fd15535ff75a118a8bd62a1f2e8"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-popouts.cjs",
+      "bytes": 1568,
+      "sha256": "28dc36cdbc133612f9d4896e0bde14006a33f7fab1643ff0d9fe3eb4f942e9ca"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-rich.cjs",
+      "bytes": 4727,
+      "sha256": "f5748311504681c045d046af3788cd73c6d064d68d8dde5768dd1d84e5e5a63c"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-selection.cjs",
+      "bytes": 3430,
+      "sha256": "eff049db6fd65730903cc909082d0c76fc418495124b9e315f9d34327566a07c"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-swipe.cjs",
+      "bytes": 1522,
+      "sha256": "037cf1ef5178da7720315ace99626e90b2ec56bf2d03106fbe3ccfbe51cefee7"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-toolbar.cjs",
+      "bytes": 7254,
+      "sha256": "543e5c2fd53aad536bb56991566a32c5078bc6d34b5a3b0145c52376b7b20792"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-updates.cjs",
+      "bytes": 1935,
+      "sha256": "5acea7824ebb2260f492df0aec582d773ff80308ab392ff74db6a5e0d57e7a18"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-viewport.cjs",
+      "bytes": 3388,
+      "sha256": "922e92f49153dab1f1bea4cb84da38265a68d2cbdc5997c1c932afb437762593"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-visitor-edit.cjs",
+      "bytes": 4507,
+      "sha256": "3334f4e5f0fe345dea279b7a79d83a62825db8bd2c4eade3eb2c74cecce0c4fa"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-visitor-selection.cjs",
+      "bytes": 3009,
+      "sha256": "d99a49879f80454cd1fc72b6f053bd3d066d058a3a897ad2a4f178b92ddfe620"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/check-visitor-send.cjs",
+      "bytes": 3225,
+      "sha256": "8f86361a7dec18756a9d04314c61e37b0f6e5e619c404601bcac4fbe50044c8f"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/composer-tools.css",
+      "bytes": 8194,
+      "sha256": "eb3f7aa01f858342cbd24f279d07b10f76aa1fd1b782e6ad4156406bff4a54f8"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/composer-tools.js",
+      "bytes": 16422,
+      "sha256": "19687a184b228a54852af3dce0fbaab5fd30a0b23ea36a01b8bd835799b31f49"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/feedback-code.js",
+      "bytes": 3327,
+      "sha256": "0c4347a357c6a17d99b05761432dac828503026c05f8e0150ecfea4f08cffd18"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-inter-italic-v10.woff2",
+      "bytes": 51832,
+      "sha256": "7291b5970da2237441273c03b424a504b70b18f09791473fab99687dcc314720"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-inter-normal-v10.woff2",
+      "bytes": 48256,
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-liberation-serif-bold-v15.woff2",
+      "bytes": 140992,
+      "sha256": "5b94be1c14e9de6e233ce90b500bc3d7a603154d14c69983fd4a893d1e64a291"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-liberation-serif-bolditalic-v15.woff2",
+      "bytes": 147188,
+      "sha256": "7b516a057bf11f5de12c32eedaa26328984a11c0c3f9a3e6dad2dbcbe0c0473d"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-liberation-serif-italic-v15.woff2",
+      "bytes": 147396,
+      "sha256": "f491e2f7452fab26cc932188427e9a0a3e012261812cbc22c9dfadeeedd1cb38"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-liberation-serif-regular-v15.woff2",
+      "bytes": 146692,
+      "sha256": "0cf4b4ba9e677cefc409c0e075f203634dced2a6b3d5a1d7a874b55f1e5d9002"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-roboto-mono-italic-v10.woff2",
+      "bytes": 35328,
+      "sha256": "ae82dafb6340b538592b30dc18a367f56de3840b20669767adc011966405f6cf"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-roboto-mono-normal-v10.woff2",
+      "bytes": 32796,
+      "sha256": "b81cd55177300649be8f95b3b747d721ce607e8ed2856e25bd0c630cfd631faf"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-source-sans-3-italic-v10.woff2",
+      "bytes": 28460,
+      "sha256": "5fbc14d56cea35e60596c72ca969b349443c6a536f74e11748eed8b3a396e61d"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-source-sans-3-normal-v10.woff2",
+      "bytes": 28872,
+      "sha256": "19143dca075972bc84e3fd9eab7416dd40cc565dccb2435a044bdfabe060c7d5"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-source-serif-4-italic-v10.woff2",
+      "bytes": 51576,
+      "sha256": "b4f56ddc9873487f1c9a3ad5bbce31982fe89b951f57e4604f62b4c8a540fb19"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/font-source-serif-4-normal-v10.woff2",
+      "bytes": 50936,
+      "sha256": "382475f38242c52d42a3e5ff8dc69b5d73f10d0d21e4550b5fe232984688779a"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/inter-LICENSE.txt",
+      "bytes": 4477,
+      "sha256": "3b0a5fca3d17942cde889069889dedbbbd075e9b599968c82a95f4d944e9b345"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/liberation-serif-LICENSE.txt",
+      "bytes": 5756,
+      "sha256": "f32df582a2aab128c07b2f7e36e7b928dc5f6bd82657b905c04f91459f9e5cf9"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/message-fonts-v10.css",
+      "bytes": 1427,
+      "sha256": "c01d2e85b823bdb1ed7e2867a70fb33ad143aa357489308400aed0654453fb80"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/message-fonts-v15.css",
+      "bytes": 2154,
+      "sha256": "d49d502219ab06c96f27ffbae08d8d2869ec49b617119feafd94405f762c34eb"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/roboto-mono-LICENSE.txt",
+      "bytes": 4513,
+      "sha256": "b489132782690f2cc1ed23ab56d7057bbb08c42573603e8e704ae2e2ea9c8216"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/source-sans-3-LICENSE.txt",
+      "bytes": 4314,
+      "sha256": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/fonts/source-serif-4-LICENSE.txt",
+      "bytes": 4314,
+      "sha256": "18aabf190848725e2576eefb5c29ba06aac1029d02132252a7f312eac2e50cf3"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-192-v2.png",
+      "bytes": 27848,
+      "sha256": "db89b07dfdbef70d11a71bacec76f6bc72b98c34c484ec3c4f9a03a9d9074a61"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-192-v4.png",
+      "bytes": 17334,
+      "sha256": "f146e7bd3ad2d869e4cdd1da7f449536c7746376ce86d1c7463032da97e3c708"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-192-v5.png",
+      "bytes": 17334,
+      "sha256": "f146e7bd3ad2d869e4cdd1da7f449536c7746376ce86d1c7463032da97e3c708"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-192-v6.png",
+      "bytes": 8302,
+      "sha256": "ab2705691a8772c9991771224946371ae1f90a9811d6257a7cd8ad3453dd81a2"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-512-v2.png",
+      "bytes": 192411,
+      "sha256": "b332e53a68d26b8fa02275688bda4e9b1418cee7260543b97340d51a4a062b22"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-512-v4.png",
+      "bytes": 161904,
+      "sha256": "a63333975a71284e727e4572833c2df67c946d0e8b3bb1edaa41317bee56d001"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-512-v5.png",
+      "bytes": 161904,
+      "sha256": "a63333975a71284e727e4572833c2df67c946d0e8b3bb1edaa41317bee56d001"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/icon-512-v6.png",
+      "bytes": 34654,
+      "sha256": "d2f4bb4588cd5205c0caf82f492084ff17716268b0766bdf330c7a848691a756"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/notification-worker.js",
+      "bytes": 3217,
+      "sha256": "10a97d685839a98040671a0062ace9102d353ede37d5a0e96d2b49a886714b47"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/rich-message.css",
+      "bytes": 2795,
+      "sha256": "64cfe5787a4eeab1b9c8a37b29581ebc83b475e11ae783c9cd8daac649e39d91"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/rich-message.js",
+      "bytes": 10345,
+      "sha256": "06f6819bd9e89d90b3692bdda4e9cb8b91e20a31309d76cb084348f9de28d4cd"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/sw-additions.js",
+      "bytes": 2563,
+      "sha256": "ca71fe115fea45614c7853f0f91219c168571a3e41a0f0cb482a44e1fc9cefbf"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/test-server.mjs",
+      "bytes": 4828,
+      "sha256": "167d3ae5c5359535a3fab0475dae59affccb6b885526bde209c8cd1bc10f4379"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/vendor/package/LICENSE",
+      "bytes": 1107,
+      "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/viewport.js",
+      "bytes": 2355,
+      "sha256": "8c5a03e088e6a0e27eca5fef6ea6b01856ec5e84a87db17bd7190d565cc73149"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/wordmark-dark-v7.png",
+      "bytes": 50876,
+      "sha256": "f238e0edea6ac2ab96b8c3f40846372a93afd3a7b1e2cd61c1e8c5607eee4310"
+    },
+    {
+      "file": "recovered-source/opus-inbox-app/wordmark-light-v7.png",
+      "bytes": 36104,
+      "sha256": "79a3d31ceeda444f48f275dcabb2d4e13c9cf815941c8d3252377cc9e88586a1"
+    },
+    {
+      "file": "recovered-source/opus-notifications/README.md",
+      "bytes": 1946,
+      "sha256": "2ab0bc1c2158dd6dac633ee95c183b1ba4e4fc313447ff3ec251ea5a6cce158a"
+    },
+    {
+      "file": "recovered-source/opus-notifications/alerts.mjs",
+      "bytes": 10119,
+      "sha256": "5162790d03c4ad1fb6174162426e49a2eed829ccb6ec60aab584abf6f214eaad"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-alerts.mjs",
+      "bytes": 7408,
+      "sha256": "6c1716141b4634a85778df1260628d6b10117746c55b570c02afe255610dafa6"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-closed-sw.cjs",
+      "bytes": 1386,
+      "sha256": "ce7a5f66fc34cc0da804bd5010c5c6cdd298cceb1ba64ee89c9a25404415fa7f"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-closed-test.mjs",
+      "bytes": 4193,
+      "sha256": "139486284c9c73fa33e3bc1be6a690376be681f99a06441c20048366ce682e9b"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-live-room.cjs",
+      "bytes": 2332,
+      "sha256": "5661473700a26020f1f231e5f3b0d85d9432c2ac4189221c68fb0e8ceed45d01"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-notification-sw.cjs",
+      "bytes": 2193,
+      "sha256": "8484c927d843748da370f7a90741239248dc056c1475fcc3a68059ca66283dd4"
+    },
+    {
+      "file": "recovered-source/opus-notifications/check-realtime-client.cjs",
+      "bytes": 2747,
+      "sha256": "75d1f1927ab25d5c2f47ec8c651daf9f5dd9d177115b94b4310d0ac73b5576cc"
+    },
+    {
+      "file": "recovered-source/opus-notifications/client.js",
+      "bytes": 2847,
+      "sha256": "2a9f999227e28f85e8eab40533441aa714f9af3bea04d46e8deb1a1dbc87271d"
+    },
+    {
+      "file": "recovered-source/opus-notifications/closed-test.mjs",
+      "bytes": 6649,
+      "sha256": "cece74f3f3a971cb66c0b03c105c9f50b33df9ed09b5d54f351bd5bbb6d9b3c0"
+    },
+    {
+      "file": "recovered-source/opus-notifications/package-lock.json",
+      "bytes": 1207,
+      "sha256": "1c1970ef254c6bd20769c68cda5a8b3e2cc3f43f6f6b9f7a92f48a2676e749cf"
+    },
+    {
+      "file": "recovered-source/opus-notifications/package.json",
+      "bytes": 322,
+      "sha256": "a59c59e801d7c8c3520c9c45a94899034ed8d96e292b30dcc65b04bbffa045ca"
+    },
+    {
+      "file": "recovered-source/opus-notifications/wrangler.jsonc",
+      "bytes": 309,
+      "sha256": "b25a26d07731ee813c05eb2a0cc135edc43aa96aea4fd9de07ff27cd82d9ba11"
+    },
+    {
+      "file": "recovered-source/opus-native/NATIVE-PUSH-NEXT.md",
+      "bytes": 7389,
+      "sha256": "fdf458850bef7fa0f1a8f11d882444f2f63e3279175ac91c7178d962543c7679"
+    },
+    {
+      "file": "recovered-source/opus-native/README.md",
+      "bytes": 8904,
+      "sha256": "c2d06a0c5d86552fc7c8ae9b1e5a43b78a964b7ad8320ca452e18fbd95074918"
+    },
+    {
+      "file": "recovered-source/opus-native/android/AndroidManifest.xml",
+      "bytes": 1816,
+      "sha256": "5747c86b43c31280d6271b2fd665124e7eb28516d68bbe26b49681f2c4675592"
+    },
+    {
+      "file": "recovered-source/opus-native/android/assetlinks.json",
+      "bytes": 270,
+      "sha256": "d58af9d56c2c0c30ab6db9b216485853dce7fdaa73fdcbdeb48a5933dfc7cf66"
+    },
+    {
+      "file": "recovered-source/opus-native/android/assets/Apache-2.0.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "file": "recovered-source/opus-native/android/assets/third-party-notices.txt",
+      "bytes": 348,
+      "sha256": "d92c3e4418a25e46f0ce6925300bba72d3a343e0a0b760310f6506c65cb99072"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/drawable/icon_foreground.png",
+      "bytes": 17308,
+      "sha256": "b4760eb635f52ec910e202892c58deb7f076986ae15d1f76bd31d1e95333ea81"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/drawable/notification_small.png",
+      "bytes": 3184,
+      "sha256": "4277b5fba609269dcc32213c005a65260252dfcd3f5fe0aa63ef014f83208ee1"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "bytes": 195,
+      "sha256": "b05db9138c67c9fee35450f63ac472be11535834e43634c0f7f689f215cf3a20"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-hdpi/ic_launcher.png",
+      "bytes": 2095,
+      "sha256": "2a535f3f3cb30a5c2f0fc45974aff7ba9fa29597b786f0fba01614c3fe5a3793"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-mdpi/ic_launcher.png",
+      "bytes": 1246,
+      "sha256": "7c0805ad8c0c7a5c7f30ea968bfc47fdec625afcf8b91fd055eb63de34ee4d83"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-xhdpi/ic_launcher.png",
+      "bytes": 3191,
+      "sha256": "fe62b0208f1e6a9370b80582501447b999b65a43b615aac5783050964af3b7d7"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-xxhdpi/ic_launcher.png",
+      "bytes": 5421,
+      "sha256": "10234074eb00a03080517e19e793fff7f37b72be669e7ad78cb08e2651fdf32d"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/mipmap-xxxhdpi/ic_launcher.png",
+      "bytes": 8302,
+      "sha256": "ab2705691a8772c9991771224946371ae1f90a9811d6257a7cd8ad3453dd81a2"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/values/colors.xml",
+      "bytes": 61,
+      "sha256": "295eb1aea2002f0a264bbcfd3b1287f02019f8a94394ff0f7e616353eb590aae"
+    },
+    {
+      "file": "recovered-source/opus-native/android/res/values/strings.xml",
+      "bytes": 290,
+      "sha256": "d013e60003d5efed46f30082bc684460e77c23a28dc43368a9ef4da61eb39219"
+    },
+    {
+      "file": "recovered-source/opus-native/android/src/zw/co/opuszim/inbox/InboxNotificationService.java",
+      "bytes": 1086,
+      "sha256": "373b7a3dda0fe06b1af18ef453b50f9d7e6f7586bdb12330d6337cf2f6ecc3a5"
+    },
+    {
+      "file": "recovered-source/opus-native/android/src/zw/co/opuszim/inbox/MainActivity.java",
+      "bytes": 5398,
+      "sha256": "2a0858792d31e1a073bb642944ac51f6fd76e70feedf9d8f965677ac700cea3a"
+    },
+    {
+      "file": "recovered-source/opus-native/android/src/zw/co/opuszim/inbox/ProviderTokens.java",
+      "bytes": 800,
+      "sha256": "2b8dc43eb331fa224197ec36d8ac23352895bb0dad6c1d0803736f70f879b327"
+    },
+    {
+      "file": "recovered-source/opus-native/build-android.py",
+      "bytes": 1448,
+      "sha256": "5ded74e33e64441c6eb35d60bd9b39c21e3ad8deae90a501a8eef7b466327da8"
+    },
+    {
+      "file": "recovered-source/opus-native/check-android-1.0.2.py",
+      "bytes": 2052,
+      "sha256": "5b698b533965613dfa8e29480a91c8590b3b4746c3aa131fef24136aebb3b4d0"
+    },
+    {
+      "file": "recovered-source/opus-native/check-android-1.0.3.py",
+      "bytes": 2099,
+      "sha256": "0d5bfa05fbca64e394e5ada89dd7a381aad2d74d8f9d9d7531a6115d4b97a6ab"
+    },
+    {
+      "file": "recovered-source/opus-native/firebase-enable-operation.json",
+      "bytes": 84,
+      "sha256": "76a50130b02d902b887369ad5bb655fbae11548877f90021e970ecf2a9fd66d3"
+    },
+    {
+      "file": "recovered-source/opus-native/firebase-project-status.json",
+      "bytes": 457,
+      "sha256": "7158646e8901bbbde7cd74eb3c52f698ea9c218b7518a1fe6bb2532abf192079"
+    },
+    {
+      "file": "recovered-source/opus-native/icon-preview.html",
+      "bytes": 1427,
+      "sha256": "213e958c4a0f947a6bce446b90adb03ba7996f2150f239f9b5bb342caca46210"
+    },
+    {
+      "file": "recovered-source/opus-native/make-icons.py",
+      "bytes": 2404,
+      "sha256": "ecf27e21af58c08ad1cf20c59b9ee38c21e2b68a8c768df4a9e638fa778b45a4"
+    },
+    {
+      "file": "recovered-source/opus-native/release-1.0.4.py",
+      "bytes": 1530,
+      "sha256": "8bad8807b2a2c86f7cc7336720d6fbefdc9d16ab92163ac9638620687a7a20b7"
+    },
+    {
+      "file": "recovered-source/opus-native/upload-1.0.3.py",
+      "bytes": 905,
+      "sha256": "b2f62d8a5d8de0eacc11f04e70bc222e7848b29f76faa238f5a5b03d920d2cd7"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/brand-exe.mjs",
+      "bytes": 965,
+      "sha256": "32cf096d3745ab4f4037cee3d04323d995943218d97e18d6a2cc5eac7276da31"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/check-background-alerts.cjs",
+      "bytes": 4823,
+      "sha256": "8450f98d5e1878d9494a0054ceb627e78b9ea0a8305b57dd6847910d844681f4"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/check-theme-icons.cjs",
+      "bytes": 2686,
+      "sha256": "d534b3db8b5cd59b3b1be35e8fb241d25ff316c440f46e62a14fa7790068025d"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icon.ico",
+      "bytes": 29755,
+      "sha256": "f3c595dae3177b9c70aae2a48aa11c75450e25cb4eef45b1e6a02717bd17b305"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icon.png",
+      "bytes": 51362,
+      "sha256": "3249dec608e4476206617a4bfd6b7a55b5e6379bb309dea81bfeca7ff935a603"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icons/icon-dark.ico",
+      "bytes": 38093,
+      "sha256": "f2b6ac1f171af07061dc7e23746a7aa74d6d34aea5617fa80bb1df456c7e1e0a"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icons/icon-dark.png",
+      "bytes": 68964,
+      "sha256": "3a21c37c5386ec2efdb1cb12efcc1bfa2ec6d5d670ec2658329f37598e75d8db"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icons/icon-light.ico",
+      "bytes": 29755,
+      "sha256": "f3c595dae3177b9c70aae2a48aa11c75450e25cb4eef45b1e6a02717bd17b305"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/icons/icon-light.png",
+      "bytes": 51338,
+      "sha256": "02e3c95bd6261649906987afe80ec2ad3bdeb74f83ff6d42ed5f78de4cb22726"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/main.cjs",
+      "bytes": 8794,
+      "sha256": "ca268af8ed9ef93fe72344c9bbe7990255b76d70dab34a2b2ad76a184a0cc30a"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/notification-settings.cjs",
+      "bytes": 1389,
+      "sha256": "642986ab7c6be746ca1ca25cf888fb893df8d879025554685bf5286fe3b45554"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/package-lock.json",
+      "bytes": 128158,
+      "sha256": "576fd986564c4056f09ecade402567e593a0461d05005be8b88b74547f1574f4"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/package.json",
+      "bytes": 1114,
+      "sha256": "cdca9e8ce2ee583b5f2e25e02c11d48c7e1e3eda47c9aec3d0226b57f4201b15"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/preload.cjs",
+      "bytes": 773,
+      "sha256": "9b9782f377c808d444a50d9075cf79e88ceafb0304234ac64357ca094890a901"
+    },
+    {
+      "file": "recovered-source/opus-native/windows/theme-icons.cjs",
+      "bytes": 807,
+      "sha256": "3263c0c2b18b8fba3fe4a04b2be9f6271e2aa5c9826450d26a73166c378d6575"
+    },
+    {
+      "file": "recovered-source/opus-native/wrangler.jsonc",
+      "bytes": 119,
+      "sha256": "f4755807c6ab4dd85ab9511dbe1d552adc2e15a012004ff9fc2034c68a99828b"
+    }
+  ]
+}

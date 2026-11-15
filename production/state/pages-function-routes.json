@@ -1,0 +1,525 @@
+{
+  "baseURL": "/",
+  "routes": [
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/care.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/care"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/care.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/care"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/care-pdf.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/care-pdf"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/client-care.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/client-care"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/client-care.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/client-care"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/client-care.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/client-care"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/domain-applications.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/domain-applications"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/domain-applications.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/domain-applications"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/domains.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/domains"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/domains.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/domains"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/domains.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/domains"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/feedback.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/feedback"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/feedback.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/feedback"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/partners.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/partners"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/pricing.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/pricing"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/project-download.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/project-download"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/projects.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/projects"
+    },
+    {
+      "method": "DELETE",
+      "module": [
+        "api/admin/push.ts:onRequestDelete"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/push"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/push.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/push"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/push.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/push"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/receipts.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/receipts"
+    },
+    {
+      "method": "PATCH",
+      "module": [
+        "api/admin/services.ts:onRequestPatch"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/services"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/session.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/session"
+    },
+    {
+      "method": "PUT",
+      "module": [
+        "api/admin/settings.ts:onRequestPut"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/settings"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/transactions.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/transactions"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/transactions.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/transactions"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/upload.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/upload"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/website-chat.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/website-chat"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/website-chat.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/website-chat"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/whatsapp.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/whatsapp"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/whatsapp.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/whatsapp"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/admin/whatsapp-assets.ts:onRequestGet"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/whatsapp-assets"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/admin/whatsapp-assets.ts:onRequestPost"
+      ],
+      "mountPath": "/api/admin",
+      "routePath": "/api/admin/whatsapp-assets"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/care/documents.ts:onRequestGet"
+      ],
+      "mountPath": "/api/care",
+      "routePath": "/api/care/documents"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/care/orders.ts:onRequestGet"
+      ],
+      "mountPath": "/api/care",
+      "routePath": "/api/care/orders"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/chat/attachment.ts:onRequestGet"
+      ],
+      "mountPath": "/api/chat",
+      "routePath": "/api/chat/attachment"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/chat/attachment.ts:onRequestPost"
+      ],
+      "mountPath": "/api/chat",
+      "routePath": "/api/chat/attachment"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/chat/messages.ts:onRequestPost"
+      ],
+      "mountPath": "/api/chat",
+      "routePath": "/api/chat/messages"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/chat/session.ts:onRequestGet"
+      ],
+      "mountPath": "/api/chat",
+      "routePath": "/api/chat/session"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/chat/session.ts:onRequestPost"
+      ],
+      "mountPath": "/api/chat",
+      "routePath": "/api/chat/session"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/domains/applications.ts:onRequestPost"
+      ],
+      "mountPath": "/api/domains",
+      "routePath": "/api/domains/applications"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/domains/catalogue.ts:onRequestGet"
+      ],
+      "mountPath": "/api/domains",
+      "routePath": "/api/domains/catalogue"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/domains/check.ts:onRequestPost"
+      ],
+      "mountPath": "/api/domains",
+      "routePath": "/api/domains/check"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/domains/orders.ts:onRequestGet"
+      ],
+      "mountPath": "/api/domains",
+      "routePath": "/api/domains/orders"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/domains/orders.ts:onRequestPost"
+      ],
+      "mountPath": "/api/domains",
+      "routePath": "/api/domains/orders"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/maintenance/project-events.ts:onRequestPost"
+      ],
+      "mountPath": "/api/maintenance",
+      "routePath": "/api/maintenance/project-events"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/maintenance/tick.ts:onRequestPost"
+      ],
+      "mountPath": "/api/maintenance",
+      "routePath": "/api/maintenance/tick"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/payments/config.ts:onRequestGet"
+      ],
+      "mountPath": "/api/payments",
+      "routePath": "/api/payments/config"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/payments/create.ts:onRequestPost"
+      ],
+      "mountPath": "/api/payments",
+      "routePath": "/api/payments/create"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/payments/paynow-webhook.ts:onRequestPost"
+      ],
+      "mountPath": "/api/payments",
+      "routePath": "/api/payments/paynow-webhook"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/payments/status.ts:onRequestGet"
+      ],
+      "mountPath": "/api/payments",
+      "routePath": "/api/payments/status"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/payments/webhook.ts:onRequestPost"
+      ],
+      "mountPath": "/api/payments",
+      "routePath": "/api/payments/webhook"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/receipts/view.ts:onRequestGet"
+      ],
+      "mountPath": "/api/receipts",
+      "routePath": "/api/receipts/view"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/downloads/[id].ts:onRequestGet"
+      ],
+      "mountPath": "/api/downloads",
+      "routePath": "/api/downloads/:id"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/media/[key].ts:onRequestGet"
+      ],
+      "mountPath": "/api/media",
+      "routePath": "/api/media/:key"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/assistant.ts:onRequestPost"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/assistant"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/care-plans.ts:onRequestGet"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/care-plans"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/content.ts:onRequestGet"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/content"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/favicon.ts:onRequestGet"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/favicon"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/feedback.ts:onRequestPost"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/feedback"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/manifest.ts:onRequestGet"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/manifest"
+    },
+    {
+      "method": "GET",
+      "module": [
+        "api/whatsapp.ts:onRequestGet"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/whatsapp"
+    },
+    {
+      "method": "POST",
+      "module": [
+        "api/whatsapp.ts:onRequestPost"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/whatsapp"
+    },
+    {
+      "method": "",
+      "module": [
+        "api/whatsapp.ts:onRequest"
+      ],
+      "mountPath": "/api",
+      "routePath": "/api/whatsapp"
+    },
+    {
+      "method": "",
+      "middleware": [
+        "_middleware.ts:onRequest"
+      ],
+      "mountPath": "/",
+      "routePath": "/"
+    }
+  ]
+}

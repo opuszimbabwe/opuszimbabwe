@@ -12,3 +12,26 @@ npm-debug.log*
 
 # D1 exports (npm run db:backup:remote)
 backups/
+
+# Credentials and native signing material stay outside Git.
+**/vapid-private
+**/signing-password
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.key
+*.pem
+**/*service-account*.json
+**/*firebase-adminsdk*.json
+**/.firebase/
+**/__pycache__/
+*.pyc
+*.apk
+*.exe
+*.idsig
+*.class
+*.dex
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

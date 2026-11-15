@@ -1,0 +1,512 @@
+[
+  {
+    "type": "index",
+    "name": "care_billing_period_once",
+    "tbl_name": "care_orders",
+    "sql": "CREATE UNIQUE INDEX care_billing_period_once ON care_orders(project_id,period) WHERE state IN ('OPEN','PAYMENT_PENDING','PAID','REVERSED')"
+  },
+  {
+    "type": "index",
+    "name": "care_checks_date",
+    "tbl_name": "care_checks",
+    "sql": "CREATE INDEX care_checks_date ON care_checks(checked_at)"
+  },
+  {
+    "type": "index",
+    "name": "care_events_project",
+    "tbl_name": "care_events",
+    "sql": "CREATE INDEX care_events_project ON care_events(project_id,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "care_incident_open",
+    "tbl_name": "care_incidents",
+    "sql": "CREATE UNIQUE INDEX care_incident_open ON care_incidents(project_id,target) WHERE resolved_at IS NULL"
+  },
+  {
+    "type": "index",
+    "name": "care_payment_once",
+    "tbl_name": "customer_payments",
+    "sql": "CREATE UNIQUE INDEX care_payment_once ON customer_payments(care_order_id) WHERE care_order_id IS NOT NULL"
+  },
+  {
+    "type": "index",
+    "name": "care_release_issues_project_status",
+    "tbl_name": "care_release_issues",
+    "sql": "CREATE INDEX care_release_issues_project_status ON care_release_issues(project_id,status,opened_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "care_repository_events_project_time",
+    "tbl_name": "care_repository_events",
+    "sql": "CREATE INDEX care_repository_events_project_time ON care_repository_events(project_id,occurred_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "customer_payments_created",
+    "tbl_name": "customer_payments",
+    "sql": "CREATE INDEX customer_payments_created ON customer_payments(created_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "domain_order_active_name",
+    "tbl_name": "domain_orders",
+    "sql": "CREATE UNIQUE INDEX domain_order_active_name ON domain_orders(domain_name) WHERE state IN ('PAYMENT_PENDING','PAID','REGISTERING','UNCONFIRMED','REGISTERED','PRICE_CHANGED','ACTION_REQUIRED','REGISTRATION_FAILED')"
+  },
+  {
+    "type": "index",
+    "name": "domain_orders_state",
+    "tbl_name": "domain_orders",
+    "sql": "CREATE INDEX domain_orders_state ON domain_orders(state, created_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "idx_partners_order",
+    "tbl_name": "partners",
+    "sql": "CREATE INDEX idx_partners_order ON partners (order_index)"
+  },
+  {
+    "type": "index",
+    "name": "idx_pricing_order",
+    "tbl_name": "pricing_cards",
+    "sql": "CREATE INDEX idx_pricing_order ON pricing_cards (order_index)"
+  },
+  {
+    "type": "index",
+    "name": "idx_projects_order",
+    "tbl_name": "projects",
+    "sql": "CREATE INDEX idx_projects_order ON projects (order_index)"
+  },
+  {
+    "type": "index",
+    "name": "idx_projects_screenshot",
+    "tbl_name": "projects",
+    "sql": "CREATE INDEX idx_projects_screenshot ON projects (screenshot)"
+  },
+  {
+    "type": "index",
+    "name": "idx_services_order",
+    "tbl_name": "services",
+    "sql": "CREATE INDEX idx_services_order ON services (order_index)"
+  },
+  {
+    "type": "index",
+    "name": "local_domain_applications_created",
+    "tbl_name": "local_domain_applications",
+    "sql": "CREATE INDEX local_domain_applications_created ON local_domain_applications(created_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "local_domain_applications_requests",
+    "tbl_name": "local_domain_applications",
+    "sql": "CREATE INDEX local_domain_applications_requests ON local_domain_applications(request_hash,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "ops_jobs_ready",
+    "tbl_name": "ops_jobs",
+    "sql": "CREATE INDEX ops_jobs_ready ON ops_jobs(status,next_at)"
+  },
+  {
+    "type": "index",
+    "name": "opus_alert_devices_enabled",
+    "tbl_name": "opus_alert_devices",
+    "sql": "CREATE INDEX opus_alert_devices_enabled ON opus_alert_devices(enabled,updated_at)"
+  },
+  {
+    "type": "index",
+    "name": "opus_alert_devices_owner",
+    "tbl_name": "opus_alert_devices",
+    "sql": "CREATE INDEX opus_alert_devices_owner ON opus_alert_devices(admin_email,enabled)"
+  },
+  {
+    "type": "index",
+    "name": "opus_chat_files_session",
+    "tbl_name": "opus_chat_files",
+    "sql": "CREATE INDEX opus_chat_files_session ON opus_chat_files(session_id,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "opus_native_devices_owner",
+    "tbl_name": "opus_native_devices",
+    "sql": "CREATE INDEX opus_native_devices_owner ON opus_native_devices(admin_email, enabled)"
+  },
+  {
+    "type": "index",
+    "name": "opus_native_pairings_expiry",
+    "tbl_name": "opus_native_pairings",
+    "sql": "CREATE INDEX opus_native_pairings_expiry ON opus_native_pairings(expires_at)"
+  },
+  {
+    "type": "index",
+    "name": "payment_receipts_payment",
+    "tbl_name": "payment_receipts",
+    "sql": "CREATE INDEX payment_receipts_payment ON payment_receipts(payment_id,created_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "site_feedback_limit",
+    "tbl_name": "site_feedback",
+    "sql": "CREATE INDEX site_feedback_limit ON site_feedback(request_hash,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "site_feedback_recent",
+    "tbl_name": "site_feedback",
+    "sql": "CREATE INDEX site_feedback_recent ON site_feedback(created_at)"
+  },
+  {
+    "type": "index",
+    "name": "website_chat_attachments_owner",
+    "tbl_name": "website_chat_attachments",
+    "sql": "CREATE INDEX website_chat_attachments_owner ON website_chat_attachments(session_id,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "website_chat_messages_session",
+    "tbl_name": "website_chat_messages",
+    "sql": "CREATE INDEX website_chat_messages_session ON website_chat_messages(session_id,seq)"
+  },
+  {
+    "type": "index",
+    "name": "website_chat_sessions_limit",
+    "tbl_name": "website_chat_sessions",
+    "sql": "CREATE INDEX website_chat_sessions_limit ON website_chat_sessions(request_hash,created_at)"
+  },
+  {
+    "type": "index",
+    "name": "whatsapp_conversation_recent",
+    "tbl_name": "whatsapp_conversations",
+    "sql": "CREATE INDEX whatsapp_conversation_recent ON whatsapp_conversations(last_message_at DESC)"
+  },
+  {
+    "type": "index",
+    "name": "whatsapp_message_queue",
+    "tbl_name": "whatsapp_messages",
+    "sql": "CREATE INDEX whatsapp_message_queue ON whatsapp_messages(state,due_at)"
+  },
+  {
+    "type": "index",
+    "name": "whatsapp_message_retention",
+    "tbl_name": "whatsapp_messages",
+    "sql": "CREATE INDEX whatsapp_message_retention ON whatsapp_messages(created_at)"
+  },
+  {
+    "type": "index",
+    "name": "whatsapp_message_thread",
+    "tbl_name": "whatsapp_messages",
+    "sql": "CREATE INDEX whatsapp_message_thread ON whatsapp_messages(conversation_id,seq DESC)"
+  },
+  {
+    "type": "index",
+    "name": "whatsapp_webhook_received",
+    "tbl_name": "whatsapp_webhook_events",
+    "sql": "CREATE INDEX whatsapp_webhook_received ON whatsapp_webhook_events(received_at)"
+  },
+  {
+    "type": "table",
+    "name": "_cf_KV",
+    "tbl_name": "_cf_KV",
+    "sql": "CREATE TABLE _cf_KV (\n        key TEXT PRIMARY KEY,\n        value BLOB\n      ) WITHOUT ROWID"
+  },
+  {
+    "type": "table",
+    "name": "admin_push_jobs",
+    "tbl_name": "admin_push_jobs",
+    "sql": "CREATE TABLE admin_push_jobs(id TEXT PRIMARY KEY,channel TEXT NOT NULL DEFAULT 'whatsapp',state TEXT NOT NULL DEFAULT 'QUEUED',created_at TEXT NOT NULL,attempts INTEGER NOT NULL DEFAULT 0)"
+  },
+  {
+    "type": "table",
+    "name": "admin_push_subscriptions",
+    "tbl_name": "admin_push_subscriptions",
+    "sql": "CREATE TABLE admin_push_subscriptions(id TEXT PRIMARY KEY,admin_email TEXT NOT NULL,endpoint TEXT NOT NULL,p256dh TEXT NOT NULL,auth TEXT NOT NULL,created_at TEXT NOT NULL,last_error TEXT,disabled INTEGER NOT NULL DEFAULT 0)"
+  },
+  {
+    "type": "table",
+    "name": "care_alert_budget",
+    "tbl_name": "care_alert_budget",
+    "sql": "CREATE TABLE care_alert_budget(day TEXT PRIMARY KEY, attempts INTEGER NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "care_checks",
+    "tbl_name": "care_checks",
+    "sql": "CREATE TABLE care_checks (\n project_id TEXT NOT NULL, target TEXT NOT NULL, slot INTEGER NOT NULL,\n checked_at TEXT NOT NULL, ok INTEGER NOT NULL, status INTEGER, latency_ms INTEGER NOT NULL,\n detail TEXT NOT NULL, PRIMARY KEY(project_id,target,slot)\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_events",
+    "tbl_name": "care_events",
+    "sql": "CREATE TABLE care_events (\n id TEXT PRIMARY KEY, project_id TEXT NOT NULL, category TEXT NOT NULL,\n title TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', actor TEXT NOT NULL,\n created_at TEXT NOT NULL\n, client_visible INTEGER NOT NULL DEFAULT 0)"
+  },
+  {
+    "type": "table",
+    "name": "care_incidents",
+    "tbl_name": "care_incidents",
+    "sql": "CREATE TABLE care_incidents (\n id TEXT PRIMARY KEY, project_id TEXT NOT NULL, target TEXT NOT NULL,\n opened_at TEXT NOT NULL, resolved_at TEXT, detail TEXT NOT NULL,\n alert_status TEXT NOT NULL DEFAULT 'PENDING', alert_error TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_orders",
+    "tbl_name": "care_orders",
+    "sql": "CREATE TABLE care_orders (\n id TEXT PRIMARY KEY,project_id TEXT NOT NULL,period TEXT NOT NULL,\n token_hash TEXT NOT NULL UNIQUE,recipient TEXT NOT NULL,amount_minor INTEGER NOT NULL DEFAULT 1000,\n currency TEXT NOT NULL DEFAULT 'USD',state TEXT NOT NULL DEFAULT 'OPEN',payment_id TEXT UNIQUE,\n expires_at INTEGER NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_plans",
+    "tbl_name": "care_plans",
+    "sql": "CREATE TABLE care_plans (\n price_usd INTEGER PRIMARY KEY, name TEXT NOT NULL, summary TEXT NOT NULL,\n features TEXT NOT NULL, visible INTEGER NOT NULL DEFAULT 1\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_projects",
+    "tbl_name": "care_projects",
+    "sql": "CREATE TABLE care_projects (\n id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL DEFAULT '',\n alert_email TEXT NOT NULL DEFAULT '', plan_usd INTEGER NOT NULL DEFAULT 10,\n enabled INTEGER NOT NULL DEFAULT 1, last_tick TEXT, created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))\n, site_url TEXT NOT NULL DEFAULT '', auto_documents INTEGER NOT NULL DEFAULT 0, report_policy TEXT NOT NULL DEFAULT 'progress-and-final')"
+  },
+  {
+    "type": "table",
+    "name": "care_release_issues",
+    "tbl_name": "care_release_issues",
+    "sql": "CREATE TABLE care_release_issues (\n id TEXT PRIMARY KEY,\n project_id TEXT NOT NULL,\n failure_event_id TEXT UNIQUE,\n context TEXT NOT NULL,\n origin TEXT NOT NULL DEFAULT 'SIGNED_EVENT',\n status TEXT NOT NULL DEFAULT 'OPEN',\n opened_at TEXT NOT NULL,\n failed_commit TEXT NOT NULL,\n failed_url TEXT NOT NULL,\n detail TEXT NOT NULL,\n resolved_at TEXT,\n resolution_event_id TEXT,\n resolution_commit TEXT,\n resolution_url TEXT,\n resolution_detail TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_report_editions",
+    "tbl_name": "care_report_editions",
+    "sql": "CREATE TABLE care_report_editions (\n report_id TEXT NOT NULL, revision INTEGER NOT NULL, month TEXT NOT NULL,\n snapshot TEXT NOT NULL, pdf_key TEXT NOT NULL, pdf_hash TEXT NOT NULL,\n pdf_version INTEGER NOT NULL, approved_by TEXT, approved_at TEXT,\n recipient TEXT, provider_id TEXT, delivery_status TEXT NOT NULL,\n delivery_error TEXT, created_at TEXT NOT NULL,\n PRIMARY KEY(report_id,revision)\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_reports",
+    "tbl_name": "care_reports",
+    "sql": "CREATE TABLE care_reports (\n id TEXT PRIMARY KEY, project_id TEXT NOT NULL, month TEXT NOT NULL,\n snapshot TEXT NOT NULL, state TEXT NOT NULL DEFAULT 'DRAFT',\n approved_by TEXT, approved_at TEXT, pdf_key TEXT, pdf_hash TEXT,\n recipient TEXT, provider_id TEXT, delivery_status TEXT NOT NULL DEFAULT 'NOT_SENT', delivery_error TEXT,\n delivery_attempt INTEGER NOT NULL DEFAULT 0,\n created_at TEXT NOT NULL, updated_at TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 1, pdf_version INTEGER NOT NULL DEFAULT 1, UNIQUE(project_id,month)\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_repository_events",
+    "tbl_name": "care_repository_events",
+    "sql": "CREATE TABLE care_repository_events (\n id TEXT PRIMARY KEY,\n project_id TEXT NOT NULL,\n event TEXT NOT NULL,\n status TEXT NOT NULL,\n context TEXT NOT NULL,\n commit_sha TEXT NOT NULL,\n url TEXT NOT NULL,\n occurred_at TEXT NOT NULL,\n received_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_repository_integrations",
+    "tbl_name": "care_repository_integrations",
+    "sql": "CREATE TABLE care_repository_integrations (\n project_id TEXT PRIMARY KEY,\n repository_id INTEGER NOT NULL UNIQUE,\n repository TEXT NOT NULL,\n enabled INTEGER NOT NULL DEFAULT 1,\n last_event_at TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "care_runs",
+    "tbl_name": "care_runs",
+    "sql": "CREATE TABLE care_runs (\n slot INTEGER PRIMARY KEY, started_at TEXT NOT NULL, completed_at TEXT, error TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "client_monitor_runs",
+    "tbl_name": "client_monitor_runs",
+    "sql": "CREATE TABLE client_monitor_runs(slot INTEGER PRIMARY KEY,completed_at TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "customer_payments",
+    "tbl_name": "customer_payments",
+    "sql": "CREATE TABLE customer_payments (\n id TEXT PRIMARY KEY,\n token_hash TEXT NOT NULL UNIQUE,\n fingerprint TEXT NOT NULL,\n payer_name TEXT NOT NULL,\n payer_email TEXT NOT NULL,\n payer_phone TEXT NOT NULL DEFAULT '',\n invoice TEXT NOT NULL,\n amount_minor INTEGER NOT NULL CHECK(amount_minor > 0),\n amount_paid_minor INTEGER,\n currency TEXT NOT NULL,\n method_code TEXT NOT NULL,\n method_name TEXT NOT NULL,\n gateway_reference TEXT UNIQUE,\n redirect_url TEXT,\n status TEXT NOT NULL DEFAULT 'CREATING',\n transaction_date TEXT,\n checked_at INTEGER NOT NULL DEFAULT 0,\n created_at TEXT NOT NULL,\n updated_at TEXT NOT NULL\n, gateway_error_code TEXT, gateway_error_message TEXT, care_order_id TEXT, gateway_provider TEXT NOT NULL DEFAULT 'pesepay', gateway_poll_url TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "d1_migrations",
+    "tbl_name": "d1_migrations",
+    "sql": "CREATE TABLE \"d1_migrations\"(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT,\n\t\tname       TEXT UNIQUE,\n\t\tapplied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "domain_catalogue",
+    "tbl_name": "domain_catalogue",
+    "sql": "CREATE TABLE domain_catalogue (\n extension TEXT PRIMARY KEY,\n registration_cost_minor INTEGER,\n renewal_cost_minor INTEGER,\n availability TEXT NOT NULL,\n reason TEXT NOT NULL,\n updated_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "domain_orders",
+    "tbl_name": "domain_orders",
+    "sql": "CREATE TABLE domain_orders (\n id TEXT PRIMARY KEY,\n token_hash TEXT NOT NULL UNIQUE,\n domain_name TEXT NOT NULL,\n extension TEXT NOT NULL,\n supplier_cost_minor INTEGER NOT NULL,\n renewal_cost_minor INTEGER,\n retail_minor INTEGER NOT NULL,\n markup_percent REAL NOT NULL,\n minimum_markup_minor INTEGER NOT NULL,\n contact_json TEXT NOT NULL,\n registration_json TEXT NOT NULL,\n terms_accepted_at TEXT NOT NULL,\n quote_expires_at INTEGER NOT NULL,\n state TEXT NOT NULL DEFAULT 'QUOTED',\n payment_id TEXT UNIQUE,\n supplier_status_json TEXT,\n supplier_started_at TEXT,\n last_error TEXT,\n created_at TEXT NOT NULL,\n updated_at TEXT NOT NULL\n, receipt_email TEXT, receipt_whatsapp TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "local_domain_applications",
+    "tbl_name": "local_domain_applications",
+    "sql": "CREATE TABLE local_domain_applications (\n id TEXT PRIMARY KEY,\n token_hash TEXT NOT NULL,\n fingerprint TEXT NOT NULL,\n request_hash TEXT NOT NULL,\n extension TEXT NOT NULL CHECK(extension IN ('.co.zw','.org.zw','.ac.zw')),\n domain_name TEXT NOT NULL,\n full_name TEXT NOT NULL,\n company_name TEXT NOT NULL,\n physical_address TEXT NOT NULL,\n phone TEXT NOT NULL,\n email TEXT NOT NULL,\n core_business TEXT NOT NULL,\n nameservers TEXT NOT NULL DEFAULT '',\n message TEXT NOT NULL DEFAULT '',\n letter_key TEXT,\n letter_filename TEXT,\n letter_type TEXT,\n letter_size INTEGER,\n state TEXT NOT NULL DEFAULT 'NEW' CHECK(state IN ('NEW','REVIEWED','COMPLETED')),\n created_at TEXT NOT NULL,\n updated_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "ops_job_events",
+    "tbl_name": "ops_job_events",
+    "sql": "CREATE TABLE ops_job_events (\n id TEXT PRIMARY KEY,job_id TEXT NOT NULL,stage TEXT NOT NULL,detail TEXT NOT NULL,created_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "ops_jobs",
+    "tbl_name": "ops_jobs",
+    "sql": "CREATE TABLE ops_jobs (\n id TEXT PRIMARY KEY,kind TEXT NOT NULL,order_id TEXT NOT NULL,\n status TEXT NOT NULL DEFAULT 'READY',attempts INTEGER NOT NULL DEFAULT 0,\n next_at INTEGER NOT NULL,lease_until INTEGER NOT NULL DEFAULT 0,\n error TEXT,pdf_key TEXT,pdf_hash TEXT,snapshot TEXT,\n email_status TEXT NOT NULL DEFAULT 'NOT_SENT',provider_id TEXT,\n created_at TEXT NOT NULL,updated_at TEXT NOT NULL,\n UNIQUE(kind,order_id)\n)"
+  },
+  {
+    "type": "table",
+    "name": "ops_mail_budget",
+    "tbl_name": "ops_mail_budget",
+    "sql": "CREATE TABLE ops_mail_budget(day TEXT PRIMARY KEY,attempts INTEGER NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "opus_alert_devices",
+    "tbl_name": "opus_alert_devices",
+    "sql": "CREATE TABLE opus_alert_devices(id TEXT PRIMARY KEY,admin_email TEXT NOT NULL,endpoint TEXT NOT NULL UNIQUE,p256dh TEXT NOT NULL,auth TEXT NOT NULL,theme TEXT NOT NULL DEFAULT 'light',enabled INTEGER NOT NULL DEFAULT 1,updated_at TEXT NOT NULL,last_status INTEGER,last_success TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "opus_alert_events",
+    "tbl_name": "opus_alert_events",
+    "sql": "CREATE TABLE opus_alert_events(id TEXT PRIMARY KEY,session_id TEXT NOT NULL,created_at TEXT NOT NULL,socket_ms INTEGER,push_ms INTEGER,accepted_count INTEGER,failed_count INTEGER)"
+  },
+  {
+    "type": "table",
+    "name": "opus_chat_files",
+    "tbl_name": "opus_chat_files",
+    "sql": "CREATE TABLE opus_chat_files (id TEXT PRIMARY KEY,session_id TEXT NOT NULL,object_key TEXT NOT NULL UNIQUE,filename TEXT NOT NULL,mime TEXT NOT NULL,size INTEGER NOT NULL,created_at TEXT NOT NULL DEFAULT (datetime('now')))"
+  },
+  {
+    "type": "table",
+    "name": "opus_customer_codes",
+    "tbl_name": "opus_customer_codes",
+    "sql": "CREATE TABLE opus_customer_codes (number INTEGER PRIMARY KEY AUTOINCREMENT, session_id TEXT NOT NULL UNIQUE)"
+  },
+  {
+    "type": "table",
+    "name": "opus_native_devices",
+    "tbl_name": "opus_native_devices",
+    "sql": "CREATE TABLE opus_native_devices (\n id TEXT PRIMARY KEY,\n admin_email TEXT NOT NULL,\n token TEXT NOT NULL,\n secret_hash TEXT NOT NULL,\n enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1)),\n updated_at TEXT NOT NULL,\n last_status INTEGER,\n last_success TEXT,\n test_at INTEGER\n)"
+  },
+  {
+    "type": "table",
+    "name": "opus_native_pair_limits",
+    "tbl_name": "opus_native_pair_limits",
+    "sql": "CREATE TABLE opus_native_pair_limits (bucket TEXT PRIMARY KEY,requests INTEGER NOT NULL,expires_at INTEGER NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "opus_native_pairings",
+    "tbl_name": "opus_native_pairings",
+    "sql": "CREATE TABLE opus_native_pairings (\n ticket_hash TEXT PRIMARY KEY,\n id TEXT NOT NULL,\n token TEXT NOT NULL,\n secret_hash TEXT NOT NULL,\n code_hash TEXT NOT NULL,\n expires_at INTEGER NOT NULL,\n attempts INTEGER NOT NULL DEFAULT 0,\n used_at INTEGER,\n approved_email TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "partners",
+    "tbl_name": "partners",
+    "sql": "CREATE TABLE partners (\n  id TEXT PRIMARY KEY NOT NULL,\n  name TEXT NOT NULL,\n  logo TEXT NOT NULL DEFAULT '',\n  url TEXT NOT NULL DEFAULT '',\n  order_index INTEGER NOT NULL DEFAULT 0,\n  visible INTEGER NOT NULL DEFAULT 1,\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n, bg_color TEXT NOT NULL DEFAULT '#ffffff')"
+  },
+  {
+    "type": "table",
+    "name": "payment_rate_limits",
+    "tbl_name": "payment_rate_limits",
+    "sql": "CREATE TABLE payment_rate_limits (\n bucket TEXT PRIMARY KEY,\n attempts INTEGER NOT NULL,\n expires_at INTEGER NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "payment_receipts",
+    "tbl_name": "payment_receipts",
+    "sql": "CREATE TABLE payment_receipts (\n id TEXT PRIMARY KEY,\n payment_id TEXT NOT NULL,\n token_hash TEXT NOT NULL UNIQUE,\n expires_at INTEGER NOT NULL,\n issued_by TEXT NOT NULL,\n recipient_email TEXT NOT NULL DEFAULT '',\n email_status TEXT NOT NULL DEFAULT 'DRAFT',\n provider_id TEXT,\n email_error TEXT,\n sent_at TEXT,\n created_at TEXT NOT NULL,\n updated_at TEXT NOT NULL\n)"
+  },
+  {
+    "type": "table",
+    "name": "pricing_cards",
+    "tbl_name": "pricing_cards",
+    "sql": "CREATE TABLE pricing_cards (\n  id TEXT PRIMARY KEY NOT NULL,\n  name TEXT NOT NULL,\n  monthly_price TEXT NOT NULL DEFAULT '',\n  yearly_price TEXT NOT NULL DEFAULT '',\n  features TEXT NOT NULL DEFAULT '[]',\n  order_index INTEGER NOT NULL DEFAULT 0,\n  visible INTEGER NOT NULL DEFAULT 1,\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n)"
+  },
+  {
+    "type": "table",
+    "name": "project_downloads",
+    "tbl_name": "project_downloads",
+    "sql": "CREATE TABLE project_downloads(project_id TEXT PRIMARY KEY,storage_key TEXT NOT NULL,filename TEXT NOT NULL,version TEXT NOT NULL,sha256 TEXT NOT NULL,size INTEGER NOT NULL,updated_at TEXT NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "projects",
+    "tbl_name": "projects",
+    "sql": "CREATE TABLE projects (\n  id TEXT PRIMARY KEY NOT NULL,\n  name TEXT NOT NULL,\n  url TEXT NOT NULL DEFAULT '',\n  tag TEXT NOT NULL DEFAULT '',\n  location TEXT NOT NULL DEFAULT '',\n  description TEXT NOT NULL DEFAULT '',\n  status TEXT NOT NULL DEFAULT 'active',\n  order_index INTEGER NOT NULL DEFAULT 0,\n  visible INTEGER NOT NULL DEFAULT 1,\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n, screenshot TEXT NOT NULL DEFAULT '', logo TEXT NOT NULL DEFAULT '', preview_video TEXT NOT NULL DEFAULT '')"
+  },
+  {
+    "type": "table",
+    "name": "service_extras",
+    "tbl_name": "service_extras",
+    "sql": "CREATE TABLE service_extras (\n  service_id TEXT PRIMARY KEY NOT NULL,\n  hero_eyebrow TEXT NOT NULL DEFAULT '',\n  hero_headline TEXT NOT NULL DEFAULT '',\n  hero_intro TEXT NOT NULL DEFAULT '',\n  hero_cta TEXT NOT NULL DEFAULT '',\n  hero_background TEXT NOT NULL DEFAULT '',\n  hero_background_kind TEXT NOT NULL DEFAULT 'image', \n  hero_gradient TEXT NOT NULL DEFAULT '160deg,#1a1a1a,#454545',\n  why_items TEXT NOT NULL DEFAULT '[]',\n  related_items TEXT NOT NULL DEFAULT '[]',\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n, visual_background TEXT NOT NULL DEFAULT '')"
+  },
+  {
+    "type": "table",
+    "name": "services",
+    "tbl_name": "services",
+    "sql": "CREATE TABLE services (\n  id TEXT PRIMARY KEY NOT NULL,\n  tagline TEXT NOT NULL DEFAULT '',\n  name TEXT NOT NULL,\n  description TEXT NOT NULL DEFAULT '',\n  page_description TEXT NOT NULL DEFAULT '',\n  items TEXT NOT NULL DEFAULT '[]',\n  icon TEXT NOT NULL DEFAULT 'Globe',\n  gradient TEXT NOT NULL DEFAULT '160deg,#1a1a1a,#454545',\n  slug TEXT NOT NULL DEFAULT '',\n  image TEXT NOT NULL DEFAULT '',\n  order_index INTEGER NOT NULL DEFAULT 0,\n  visible INTEGER NOT NULL DEFAULT 1,\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n, card_bg_color TEXT NOT NULL DEFAULT '#ffffff')"
+  },
+  {
+    "type": "table",
+    "name": "settings",
+    "tbl_name": "settings",
+    "sql": "CREATE TABLE settings (\n  key TEXT PRIMARY KEY NOT NULL,\n  value TEXT NOT NULL,\n  updated_at TEXT NOT NULL DEFAULT (datetime('now'))\n)"
+  },
+  {
+    "type": "table",
+    "name": "site_feedback",
+    "tbl_name": "site_feedback",
+    "sql": "CREATE TABLE site_feedback(id TEXT PRIMARY KEY,rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),comment TEXT NOT NULL DEFAULT '',page TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'NEW' CHECK(state IN('NEW','REVIEWED')),request_hash TEXT NOT NULL,created_at TEXT NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_attachments",
+    "tbl_name": "website_chat_attachments",
+    "sql": "CREATE TABLE website_chat_attachments(id TEXT PRIMARY KEY,session_id TEXT NOT NULL REFERENCES website_chat_sessions(id) ON DELETE CASCADE,storage_key TEXT NOT NULL,filename TEXT NOT NULL,content_type TEXT NOT NULL,size INTEGER NOT NULL,created_at TEXT NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_message_hides",
+    "tbl_name": "website_chat_message_hides",
+    "sql": "CREATE TABLE website_chat_message_hides(viewer_key TEXT NOT NULL,message_id TEXT NOT NULL,PRIMARY KEY(viewer_key,message_id))"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_messages",
+    "tbl_name": "website_chat_messages",
+    "sql": "CREATE TABLE website_chat_messages(seq INTEGER PRIMARY KEY AUTOINCREMENT,id TEXT UNIQUE NOT NULL,session_id TEXT NOT NULL REFERENCES website_chat_sessions(id) ON DELETE CASCADE,direction TEXT NOT NULL CHECK(direction IN('IN','OUT')),body TEXT NOT NULL DEFAULT '',attachment_id TEXT REFERENCES website_chat_attachments(id),created_at TEXT NOT NULL, reply_to_id TEXT, edited_at TEXT, deleted_at TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_session_clears",
+    "tbl_name": "website_chat_session_clears",
+    "sql": "CREATE TABLE website_chat_session_clears(session_id TEXT PRIMARY KEY,through_seq INTEGER NOT NULL)"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_session_hides",
+    "tbl_name": "website_chat_session_hides",
+    "sql": "CREATE TABLE website_chat_session_hides(viewer_key TEXT NOT NULL,session_id TEXT NOT NULL,hidden_seq INTEGER NOT NULL,PRIMARY KEY(viewer_key,session_id))"
+  },
+  {
+    "type": "table",
+    "name": "website_chat_sessions",
+    "tbl_name": "website_chat_sessions",
+    "sql": "CREATE TABLE website_chat_sessions(id TEXT PRIMARY KEY,token_hash TEXT UNIQUE NOT NULL,name TEXT NOT NULL,created_at TEXT NOT NULL,last_activity TEXT NOT NULL,expires_at INTEGER NOT NULL,request_hash TEXT NOT NULL,admin_read_seq INTEGER NOT NULL DEFAULT 0)"
+  },
+  {
+    "type": "table",
+    "name": "whatsapp_conversations",
+    "tbl_name": "whatsapp_conversations",
+    "sql": "CREATE TABLE whatsapp_conversations (\n id TEXT PRIMARY KEY, phone TEXT NOT NULL, display_name TEXT NOT NULL DEFAULT '',\n status TEXT NOT NULL DEFAULT 'OPEN' CHECK(status IN ('OPEN','HANDLED')),\n last_customer_at INTEGER NOT NULL DEFAULT 0, last_message_at TEXT NOT NULL,\n last_inbound_seq INTEGER NOT NULL DEFAULT 0, read_seq INTEGER NOT NULL DEFAULT 0,\n created_at TEXT NOT NULL\n, photo_key TEXT)"
+  },
+  {
+    "type": "table",
+    "name": "whatsapp_messages",
+    "tbl_name": "whatsapp_messages",
+    "sql": "CREATE TABLE whatsapp_messages (\n seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT NOT NULL UNIQUE,\n conversation_id TEXT NOT NULL REFERENCES whatsapp_conversations(id),\n direction TEXT NOT NULL CHECK(direction IN ('IN','OUT')), message_type TEXT NOT NULL,\n body TEXT NOT NULL, payload_json TEXT, provider_id TEXT UNIQUE,\n state TEXT NOT NULL, error TEXT, created_at TEXT NOT NULL, occurred_at TEXT NOT NULL,\n due_at INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0,\n lease_until INTEGER NOT NULL DEFAULT 0, admin_email TEXT\n)"
+  },
+  {
+    "type": "table",
+    "name": "whatsapp_webhook_events",
+    "tbl_name": "whatsapp_webhook_events",
+    "sql": "CREATE TABLE whatsapp_webhook_events (\n  id TEXT PRIMARY KEY,\n  kind TEXT NOT NULL,\n  message_type TEXT NOT NULL,\n  occurred_at TEXT NOT NULL,\n  received_at TEXT NOT NULL\n)"
+  }
+]

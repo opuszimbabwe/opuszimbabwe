@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" fill="none">
+  <path d="M16 32L32 16V26H46V38H32V48L16 32Z" fill="#16A34A" transform="translate(62, 0) scale(-1, 1)"/>
+  <text x="54" y="45" font-family="Poppins, system-ui, sans-serif" font-weight="800" font-size="36" font-style="italic" letter-spacing="-0.5">
+    <tspan fill="#003399">ZIP</tspan><tspan fill="#16A34A">IT</tspan>
+  </text>
+</svg>

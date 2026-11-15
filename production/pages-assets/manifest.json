@@ -1,0 +1,33 @@
+{
+  "name": "Opus Zimbabwe — Digital Services for Zimbabwe",
+  "short_name": "Opus Zimbabwe",
+  "description": "Websites, software systems, AI automation, branding, domains, hosting and integrations for Zimbabwean organisations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#E85D2A",
+  "icons": [
+    {
+      "src": "/images/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "project_id": "opuschat-zimbabwe",
+  "project_number": "18182776055",
+  "display_name": "OpusChat",
+  "account": "info.opuszim@gmail.com",
+  "cloud_project_state": "ACTIVE",
+  "firebase_enabled": true,
+  "firebase_management_api": "ENABLED",
+  "billing_upgrade_requested": false,
+  "last_blocker": null,
+  "android_app_id": "1:18182776055:android:8e4dd4a7f854ac08055ff2",
+  "android_package": "zw.co.opuszim.inbox",
+  "native_push_implemented": false
+}

@@ -1,0 +1,4 @@
+import * as PE from 'pe-library';import * as R from 'resedit';import fs from 'node:fs';
+const file='dist/win-unpacked/OpusChat.exe',exe=PE.NtExecutable.from(fs.readFileSync(file)),res=PE.NtExecutableResource.from(exe),icons=R.Data.IconFile.from(fs.readFileSync('icon.ico'));
+for(const entry of R.Resource.IconGroupEntry.fromEntries(res.entries))R.Resource.IconGroupEntry.replaceIconsForResource(res.entries,entry.id,entry.lang,icons.icons.map(i=>i.data));
+const vi=R.Resource.VersionInfo.fromEntries(res.entries)[0];vi.setFileVersion(1,0,4,0,1033);vi.setProductVersion(1,0,4,0,1033);vi.setStringValues({lang:1033,codepage:1200},{FileDescription:'OpusChat',ProductName:'OpusChat',CompanyName:'Opus Zimbabwe',OriginalFilename:'OpusChat.exe',LegalCopyright:'Opus Zimbabwe'});vi.outputToResourceEntries(res.entries);res.outputResource(exe);fs.writeFileSync(file,Buffer.from(exe.generate()));console.log('Opus icon and product metadata embedded in Windows executable');

@@ -1,0 +1,23 @@
+{
+  "worker": "opus-inbox-notifications",
+  "active_version_id": "c064b701-5017-4161-a9e2-b190ba832124",
+  "active_deployment_id": "35dbd895-8bf0-45b7-9391-21fdae0aad57",
+  "compatibility_date": "2026-11-14",
+  "compatibility_flags": [],
+  "bindings": [
+    {
+      "class_name": "OpusInboxLive",
+      "name": "ROOMS",
+      "namespace_id": "86bf56c34c3c48c0a5291288d83f419b",
+      "type": "durable_object_namespace"
+    }
+  ],
+  "secret_values_included": false,
+  "modules": [
+    {
+      "file": "live-worker.js",
+      "bytes": 6060,
+      "sha256": "e9f052725233bd19d091114acfed64d827b62ad6ddb3779e61ecd7ec4dc61fd3"
+    }
+  ]
+}

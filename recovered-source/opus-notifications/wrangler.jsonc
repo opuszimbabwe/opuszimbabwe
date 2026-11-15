@@ -1,0 +1,1 @@
+{"name":"opus-inbox-notifications","account_id":"bfdd1ae2b409f941958f78ea99348c2e","main":"live-worker.mjs","compatibility_date":"2026-11-14","workers_dev":false,"durable_objects":{"bindings":[{"name":"ROOMS","class_name":"OpusInboxLive"}]},"migrations":[{"tag":"v1","new_sqlite_classes":["OpusInboxLive"]}]}

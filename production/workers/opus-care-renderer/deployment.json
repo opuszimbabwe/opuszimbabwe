@@ -1,0 +1,27 @@
+{
+  "worker": "opus-care-renderer",
+  "active_version_id": "930d2e7d-6360-41b7-84b9-276b633aef93",
+  "active_deployment_id": "76ae7abe-7a8e-459a-b577-ade981156dc9",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "bindings": [
+    {
+      "name": "BROWSER",
+      "type": "browser"
+    },
+    {
+      "name": "CARE_RENDER_SECRET",
+      "type": "secret_text"
+    }
+  ],
+  "secret_values_included": false,
+  "modules": [
+    {
+      "file": "care-renderer.js",
+      "bytes": 705395,
+      "sha256": "67b2cc5ee3472cd2c2b1776429eb44f059f5115f2269ff605ad7b901cd2142fb"
+    }
+  ]
+}

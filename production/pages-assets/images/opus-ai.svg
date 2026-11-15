@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1450" height="300" viewBox="300 400 1450 300"
+     role="img" aria-labelledby="opus-ai-title opus-ai-desc">
+  <title id="opus-ai-title">OPUS AI</title>
+  <desc id="opus-ai-desc">Smooth vector reconstruction with independently animatable logo parts and a transparent background.</desc>
+  <defs>
+    <linearGradient id="opus-ai-mark-gradient" gradientUnits="userSpaceOnUse"
+                    x1="322" y1="570" x2="533" y2="645">
+      <stop offset="0" stop-color="#e50023"/>
+      <stop offset="0.48" stop-color="#ed2605"/>
+      <stop offset="1" stop-color="#ff6b00"/>
+    </linearGradient>
+    <linearGradient id="opus-ai-a-gradient" gradientUnits="userSpaceOnUse"
+                    x1="1391" y1="501" x2="1640" y2="604">
+      <stop offset="0" stop-color="#ad0025"/>
+      <stop offset="0.48" stop-color="#dc0019"/>
+      <stop offset="1" stop-color="#ff6000"/>
+    </linearGradient>
+    <linearGradient id="opus-ai-i-gradient" gradientUnits="userSpaceOnUse"
+                    x1="1676" y1="441" x2="1725" y2="480">
+      <stop offset="0" stop-color="#df3500"/>
+      <stop offset="1" stop-color="#ff6000"/>
+    </linearGradient>
+  </defs>
+  <g id="opus-ai-logo">
+    <g id="opus-ai-symbol">
+      <path id="opus-ai-o-ring" fill="#000000"
+            d="M327 510
+               C343 459 393 421 448 421
+               C520 421 578 478 578 547
+               C578 580 566 611 542 634
+               C520 635 498 631 478 625
+               C509 613 528 582 528 547
+               C528 504 493 469 450 469
+               C407 469 373 505 372 554
+               C353 545 339 527 327 510Z"/>
+      <path id="opus-ai-o-accent" fill="url(#opus-ai-mark-gradient)"
+            d="M323 524
+               C375 588 447 636 533 644
+               C509 664 480 673 449 672
+               C378 671 321 613 322 543
+               C322 537 322 530 323 524Z"/>
+    </g>
+    <path id="opus-ai-p" fill="#000000"
+          d="M599 444H749
+             C790 444 815 470 815 510
+             C815 551 790 578 749 578H652V651H613V558
+             Q613 540 630 540H749
+             C766 540 777 528 777 511
+             C777 494 767 482 749 482H641
+             Q634 482 628 476Z"/>
+    <path id="opus-ai-u" fill="#000000"
+          d="M845 464L884 436V563
+             C884 598 904 616 947 616
+             C990 616 1013 598 1013 563V464L1052 436V565
+             C1052 625 1019 655 947 655
+             C879 655 845 624 845 565Z"/>
+    <path id="opus-ai-s" fill="#000000"
+          d="M1290 444L1263 474Q1256 482 1246 482H1144
+             C1128 482 1118 491 1118 506
+             C1118 520 1128 530 1144 530H1228
+             C1267 530 1290 553 1290 590
+             C1290 626 1267 651 1228 651H1079
+             L1107 621Q1113 614 1125 614H1228
+             C1242 614 1251 604 1251 590
+             C1251 576 1242 566 1228 566H1144
+             C1104 566 1080 543 1080 506
+             C1080 469 1104 444 1144 444Z"/>
+    <g id="opus-ai-ai">
+      <path id="opus-ai-a" fill="url(#opus-ai-a-gradient)"
+            d="M1366 653L1465 460
+               Q1475 441 1497 441H1513Q1533 441 1542 460
+               L1642 653H1589L1503 485L1418 653Z"/>
+      <path id="opus-ai-i" fill="url(#opus-ai-i-gradient)"
+            d="M1676 441H1725V653H1676Z"/>
+    </g>
+  </g>
+</svg>

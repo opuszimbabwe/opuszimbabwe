@@ -1,0 +1,1 @@
+[{"relation": ["delegate_permission/common.handle_all_urls"], "target": {"namespace": "android_app", "package_name": "zw.co.opuszim.inbox", "sha256_cert_fingerprints": ["DC:DA:EE:39:74:A0:C9:EA:48:91:5E:63:07:4B:8F:4F:70:63:5B:8B:94:08:B2:D1:47:E4:52:EF:E8:BD:CB:E9"]}}]

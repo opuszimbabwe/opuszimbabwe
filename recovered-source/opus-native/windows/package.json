@@ -1,0 +1,49 @@
+{
+  "name": "opus-inbox",
+  "version": "1.0.4",
+  "description": "Opus Zimbabwe customer inbox",
+  "author": "Opus Zimbabwe",
+  "main": "main.cjs",
+  "private": true,
+  "devDependencies": {
+    "electron": "45.3.2",
+    "electron-builder": "26.18.0",
+    "resedit": "^3.1.0"
+  },
+  "build": {
+    "appId": "zw.co.opuszim.inbox",
+    "productName": "OpusChat",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "theme-icons.cjs",
+      "icons/**/*",
+      "package.json",
+      "notification-settings.cjs"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "icon.ico",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "artifactName": "OpusChat-Windows-Setup-${version}.${ext}"
+    },
+    "asarUnpack": [
+      "icons/**/*"
+    ]
+  },
+  "productName": "OpusChat"
+}

@@ -6,7 +6,42 @@ on:
   pull_request:
 
 jobs:
+  recovery:
+    name: Verify recovered production snapshot
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      source_complete: ${{ steps.state.outputs.source_complete }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ops/recovery/package-lock.json
+      - name: Install recovery verification dependencies
+        run: npm ci --prefix ops/recovery --ignore-scripts --no-audit --no-fund
+      - name: Verify exact production artifacts and recovered source
+        run: npm run verify --prefix ops/recovery
+      - name: Check tracked files for sensitive material
+        run: python3 ops/recovery/check-safe-files.py
+      - name: Check recovery status and production build guard
+        id: state
+        run: |
+          node <<'NODE'
+          const fs=require('node:fs'),assert=require('node:assert/strict'),{spawnSync}=require('node:child_process');
+          const status=JSON.parse(fs.readFileSync('production/state/recovery-status.json'));
+          const complete=status.pages_functions_source_complete;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'source_complete='+String(complete)+'\n');
+          const guard=spawnSync(process.execPath,['scripts/require-live-source.cjs'],{encoding:'utf8'});
+          assert.equal(guard.status,complete?0:2);
+          console.log(complete?'Pages source marked recovered; run application checks.':'Recovery verified; production deployment remains blocked until Pages source recovery is complete.');
+          NODE
+
   checks:
+    needs: recovery
+    if: needs.recovery.outputs.source_complete == 'true'
     name: Typecheck, build & D1 checks
     runs-on: ubuntu-latest
     env:

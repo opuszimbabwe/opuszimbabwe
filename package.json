@@ -1,7 +1,8 @@
 {
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
-    "build": "next build",
+    "build": "node scripts/require-live-source.cjs && next build",
+    "build:legacy": "next build",
     "start": "npx serve out -l 3000",
     "typecheck": "tsc --noEmit",
     "db:migrate:local": "wrangler d1 migrations apply opuszim-content --local",

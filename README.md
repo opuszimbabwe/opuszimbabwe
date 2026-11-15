@@ -1,44 +1,46 @@
 # Opus Zimbabwe
 
-Next.js 14 App Router site for Opus Zimbabwe, deployed to Cloudflare Pages
-(static export + Pages Functions).
+This repository preserves recoverable files from the working Cloudflare website,
+its supporting Workers and OpusChat apps, captured 15 November 2026.
 
-## Development
+**The original Pages server source is not fully recovered.** The root Next.js
+application is an older baseline; deploying it would omit working chat,
+WhatsApp, feedback and Paynow endpoints. Production builds are guarded and
+GitHub automatic deployments are paused. The working website remains running
+on its existing Cloudflare deployment.
 
-```bash
-npm install
-npm run dev
+| Location | Contents |
+| --- | --- |
+| [production/](production/README.md) | 455 assets verified against Cloudflare hashes, four exact active Worker bundles, route/configuration records and schema definitions. |
+| [recovered-source/](recovered-source/README.md) | 199 source/app/brand files previously stored outside Git. Some predate the latest deployed bundles. |
+| [ops/recovery/](ops/recovery/README.md) | Read-only export and integrity verification tools. |
+| [Deployment audit](docs/LIVE-DEPLOYMENT-AUDIT.md) | Evidence explaining why production and GitHub diverged. |
+| [Historical development notes](docs/LEGACY-README.md) | Instructions for the older Next.js baseline. |
+
+Credentials, signing keys, customer conversations, private files, installer
+binaries and dependency/build caches are deliberately excluded. Cloudflare
+secrets, D1 data and private R2 objects remain in their existing services.
+
+## Verify recovered files
+
+```sh
+npm ci --prefix ops/recovery --ignore-scripts
+npm run verify --prefix ops/recovery
 ```
 
-## Production check
+Verification checks original Pages asset hashes, SHA-256 hashes of every Worker
+module and recovered source file, and that the database export is schema only.
 
-```bash
-npm run build
-npm start
-```
+## Restore deployment readiness
 
-## Admin dashboard & content API
+Recover the 16 Pages Functions listed in
+[missing-pages-functions.json](production/state/missing-pages-functions.json),
+with their matching libraries and build configuration. Four Access-protected
+admin shell assets have not been exported. Native Android 1.0.5 source also
+needs recovery; the available Android source predates it.
 
-`/sysadmin` (private, Cloudflare Access protected) edits site content stored in
-Cloudflare D1 — service cards and images, pricing cards, hero background —
-with images uploaded to R2. JavaScript-enabled pages wait for current API content before displaying the site. If a fresh read fails, a retry screen is shown instead of older built-in content. Static fallback HTML remains available without JavaScript.
-
-```bash
-npm run checks              # typecheck + build + local D1 migrations + db checks
-npm run pages:local         # serve site + API locally on :8788
-node scripts/smoke-api.mjs  # end-to-end API/auth/upload tests
-
-# Remote D1 — from a terminal …
-npm run db:backup:remote    # export a SQL backup to backups/
-npm run db:migrations:list  # list pending migrations
-npm run db:migrate:remote   # apply pending migrations (currently 0006–0011)
-npm run db:verify:remote    # read-only checks after migrating
-
-# … or with no terminal at all: GitHub → Actions → "D1 (remote)" → Run workflow
-# (tasks: verify | list | backup | migrate; see docs/ADMIN.md §2)
-```
-
-Deployment, remote migrations and Cloudflare Access setup: see
-**[docs/ADMIN.md](docs/ADMIN.md)**.
-
-Public routes include Home, Services, Domains, FAQ, Contact, and the six service landing pages. Payments and third-party API integrations are not connected.
+Reconcile recovered source with deployed versions and run the application,
+payment and security checks before marking recovery complete or re-enabling
+automatic deployment. Do not use `npm run build:legacy` to deploy over production.
+The pending Mastercard checkout patch remains separately in the original
+workspace; it is not mixed into this current-version snapshot.

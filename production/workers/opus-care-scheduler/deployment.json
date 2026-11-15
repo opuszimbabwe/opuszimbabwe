@@ -1,0 +1,21 @@
+{
+  "worker": "opus-care-scheduler",
+  "active_version_id": "2f282ad7-9c45-415c-bfb5-017daca01c6a",
+  "active_deployment_id": "ddee1338-cb06-4c06-bd1d-9544b0a16242",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": [],
+  "bindings": [
+    {
+      "name": "MAINTENANCE_CRON_SECRET",
+      "type": "secret_text"
+    }
+  ],
+  "secret_values_included": false,
+  "modules": [
+    {
+      "file": "care-scheduler.js",
+      "bytes": 559,
+      "sha256": "885504234e48478630af6024382b686af4613b3455f20901ca8c4dfff7e86ad5"
+    }
+  ]
+}

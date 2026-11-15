@@ -1,0 +1,58 @@
+{
+  "worker": "opus-content-first-paint",
+  "active_version_id": "2ddd36f5-0fb5-4693-b665-78c50ceadf81",
+  "active_deployment_id": "0f636086-ee65-4e45-9540-a4f49cc49d72",
+  "compatibility_date": "2026-11-13",
+  "compatibility_flags": [],
+  "bindings": [
+    {
+      "name": "ENQUIRY_ALERT_EMAIL",
+      "type": "secret_text"
+    },
+    {
+      "name": "OPUS_ANDROID_SIGNING_PASSWORD",
+      "type": "secret_text"
+    },
+    {
+      "bucket_name": "opus-inbox-private",
+      "name": "OPUS_CHAT_FILES",
+      "type": "r2_bucket"
+    },
+    {
+      "database_id": "885cb934-939a-4080-a48f-40901a111cc2",
+      "name": "OPUS_CUSTOMER_CODES",
+      "type": "d1"
+    },
+    {
+      "name": "OPUS_FCM_SERVICE_ACCOUNT",
+      "type": "secret_text"
+    },
+    {
+      "class_name": "OpusInboxLive",
+      "name": "OPUS_INBOX_LIVE",
+      "namespace_id": "86bf56c34c3c48c0a5291288d83f419b",
+      "script_name": "opus-inbox-notifications",
+      "type": "durable_object_namespace"
+    },
+    {
+      "name": "OPUS_VAPID_PRIVATE_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "OPUS_VAPID_PUBLIC_KEY",
+      "type": "secret_text"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "type": "secret_text"
+    }
+  ],
+  "secret_values_included": false,
+  "modules": [
+    {
+      "file": "worker.js",
+      "bytes": 2954946,
+      "sha256": "181923dad5694a348f821d63c0c9c62441629891ecb2f96e661f5adf1d8dcc50"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /sysadmin/
+Disallow: /api/
+
+Sitemap: https://opuszim.co.zw/sitemap.xml

@@ -1,0 +1,9 @@
+# OpusChat notifications
+
+Root Worker imports alerts.mjs; live-worker.mjs is the private opus-inbox-notifications SQLite Durable Object service. Staff and visitor rooms authenticate through original session APIs. Events contain routing metadata only. Message acceptance schedules socket delivery and encrypted high-urgency Web Push concurrently. Indexed event claims prevent duplicate alerts; expired subscriptions are disabled.
+
+Keep OPUS_VAPID_PUBLIC_KEY and OPUS_VAPID_PRIVATE_KEY stable in encrypted Worker secrets. Do not rotate on routine deployments. Local key files are permission 0600; never distribute or print them. Dedicated /opus-inbox-alerts-sw.js scope /sysadmin/mobile/ preserves legacy root subscriptions.
+
+Tests: node check-alerts.mjs; node check-live-room.cjs; node check-realtime-client.cjs; node check-notification-sw.cjs. They use isolated data/fake endpoints, including real encryption/decryption verification. Server fanout is tested under two seconds, which does not guarantee OS receipt. App Settings offers Enable alerts and a device-only Test notification. Windows 1.0.2 stays in tray after window close; explicit Quit stops native delivery. Android needs browser notification permission and cannot override force-stop, OS power policy or connectivity.
+
+Closed-app diagnostics: closed-test.mjs authenticates scheduling/status to the device owner. A private DO alarm sends after20 seconds. Encrypted payload contains only a signed one-hour receipt capability. The receipt route validates HMAC before binding a test room, and reports showNotification completion/error plus app-window counts; it cannot prove a visible OS banner without user confirmation. No-open-window evidence differs from a successful push-provider response. Tests: check-closed-test.mjs, check-closed-sw.cjs and ../opus-inbox-app/check-closed-ui-v21.cjs. The latter are controlled protocol/UI tests; physical handset verification is still required.
