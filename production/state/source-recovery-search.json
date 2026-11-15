@@ -1,0 +1,96 @@
+{
+  "searched_on": "2026-11-15",
+  "original_function_files_recovered": 0,
+  "missing_original_function_files": [
+    "functions/api/admin/domain-applications.ts",
+    "functions/api/admin/feedback.ts",
+    "functions/api/admin/project-download.ts",
+    "functions/api/admin/push.ts",
+    "functions/api/admin/website-chat.ts",
+    "functions/api/admin/whatsapp-assets.ts",
+    "functions/api/admin/whatsapp.ts",
+    "functions/api/assistant.ts",
+    "functions/api/chat/attachment.ts",
+    "functions/api/chat/messages.ts",
+    "functions/api/chat/session.ts",
+    "functions/api/domains/applications.ts",
+    "functions/api/downloads/[id].ts",
+    "functions/api/feedback.ts",
+    "functions/api/payments/paynow-webhook.ts",
+    "functions/api/whatsapp.ts"
+  ],
+  "checks": [
+    {
+      "location": "Linked GitHub main and eight saved branches",
+      "result": "No matching original source files."
+    },
+    {
+      "location": "Nine open/closed pull-request head trees",
+      "trees_checked": 9,
+      "matching_paths": 0,
+      "unavailable_trees": 0
+    },
+    {
+      "location": "Fourteen accessible organization repositories",
+      "default_branch_trees_checked": 14,
+      "matching_paths": 0,
+      "recorded_upload_commit_found": false
+    },
+    {
+      "location": "Other Opus repository autoconfiguration branch",
+      "result": "No matching source paths."
+    },
+    {
+      "location": "Current local checkouts, ignored build folders, temporary directories and source maps",
+      "source_maps_checked": 4,
+      "matching_embedded_sources": 0
+    },
+    {
+      "location": "Local Git stashes and unreachable objects",
+      "result": "No missing source recovered."
+    },
+    {
+      "location": "Wrangler logs",
+      "result": "No logs from the 7\u20138 November upload and no references to its deployment ID, recorded commit, or sampled missing module paths."
+    },
+    {
+      "location": "Opus R2 buckets",
+      "buckets_checked": 2,
+      "objects_inspected": 235,
+      "source_archive_candidates": 0
+    },
+    {
+      "location": "Website attachment metadata",
+      "source_or_archive_attachment_candidates": 0,
+      "customer_message_bodies_read": false
+    },
+    {
+      "location": "Own-site project download/repository metadata",
+      "result": "No source archive or alternate repository reference."
+    },
+    {
+      "location": "GitHub release assets",
+      "result": "No releases on either checked Opus website repository."
+    },
+    {
+      "location": "Linked repository Actions artifacts",
+      "result": "Only a D1 database backup was listed; no source/build archive. Database row contents were not downloaded."
+    },
+    {
+      "location": "Original Cloudflare deployment history",
+      "deployment_log_entries": 0
+    },
+    {
+      "location": "Cloudflare Pages Functions endpoint",
+      "result": "Routing configuration returned; original source or compiled function bundle not returned."
+    }
+  ],
+  "limitations": [
+    "This search does not establish that no backup exists elsewhere; other past workspaces or offline backups are not accessible here.",
+    "Cloudflare KV namespace listing returned HTTP 401 and was not searched.",
+    "Running routes do not imply that their original TypeScript can be downloaded through the available Cloudflare API."
+  ],
+  "next_required_artifact": "Original source folder, source-map bundle with embedded sources, or full _worker.bundle from the 7\u20138 November direct upload.",
+  "production_changes_made": false,
+  "placeholder_implementations_added": false
+}

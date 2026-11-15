@@ -117,3 +117,8 @@ source/app files, public binding topology and database schema definitions.
 The missing original Pages server source and four protected admin shell assets
 are explicitly listed rather than represented as recovered. A build guard and
 recovery CI checks prevent deploying the older Next.js baseline by accident.
+
+An additional owner-requested source search checked organization repositories,
+pull-request trees, ignored build/source-map caches, all Opus R2 objects and
+archive metadata. It did not recover the 16 original Pages handler files. See
+`PAGES-SOURCE-RECOVERY-SEARCH.md` for the checked locations and limitations.

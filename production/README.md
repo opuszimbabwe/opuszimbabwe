@@ -18,6 +18,8 @@ Nothing was redeployed to create this snapshot.
   connected repository. Guessed implementations have not been substituted.
 - `state/database-schema.json`: schema definitions, without customer/content rows.
 - `state/recovery-status.json`: explicit recovery completeness and exclusions.
+- `state/source-recovery-search.json`: extended source search results; no
+  original Pages handler files were recovered from the checked locations.
 
 The original Pages Functions runtime remains running in Cloudflare, but its
 complete source/build bundle has not been recovered. This is a partial disaster

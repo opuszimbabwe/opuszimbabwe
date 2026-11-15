@@ -12,5 +12,7 @@
   "automatic_github_deployments_enabled": false,
   "customer_data_exported": false,
   "secret_values_exported": false,
-  "unpublished_mastercard_change_included": false
+  "unpublished_mastercard_change_included": false,
+  "last_extended_source_search": "2026-11-15",
+  "original_pages_functions_recovered_in_extended_search": 0
 }
