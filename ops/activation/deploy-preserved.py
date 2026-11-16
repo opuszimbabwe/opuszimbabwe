@@ -84,6 +84,9 @@ def main():
     for digest,(filename,candidate) in files.items():
         payload=[{'key':digest,'value':base64.b64encode(candidate.read_bytes()).decode(),'metadata':{'contentType':mimetypes.guess_type(filename)[0] or 'application/octet-stream'},'base64':True}]
         api('/pages/assets/upload',payload,token=jwt)
+    # Match Wrangler's upload protocol: associate uploaded content hashes with
+    # this project's asset index before checking availability or deploying.
+    api('/pages/assets/upsert-hashes',{'hashes':hashes},token=jwt)
     assert not api('/pages/assets/check-missing',{'hashes':hashes},token=jwt),'Not all asset hashes are present'
     if args.activate:
         assert args.apply_migration,'Activation requires the explicit additive migration flag'
