@@ -1,0 +1,30 @@
+{
+  "preview_project": "opus-zimbabwe-redesign",
+  "preview_url": "https://opus-zimbabwe-redesign.pages.dev",
+  "preview_deployment": "3e865e22-2acb-4e58-9144-4611513110ad",
+  "source_commit": "a20cff5d3a5f14d4fd93656b511f277d5de39e48",
+  "production_unchanged": true,
+  "production_deployment": "9ede74a7-6361-4bd6-8490-97e3b7ed7ffd",
+  "supporting_workers_unchanged": true,
+  "no_production_bindings": true,
+  "live_browser_validation": {
+    "preview": "https://opus-zimbabwe-redesign.pages.dev",
+    "widths": [
+      390,
+      1440
+    ],
+    "routes": 7,
+    "headers": true,
+    "imagesDecoded": true,
+    "noOverflow": true,
+    "galleriesAndCarousel": true,
+    "menus": true,
+    "noBrowserErrors": true,
+    "noExternalRuntimeRequests": true
+  },
+  "reference_limitations": {
+    "paypal": "HTTP 403 in both browser attempts; current interactions unverified",
+    "client_video": "Not supplied; no brand film substituted"
+  },
+  "source_scope": "experiments/deolume only; separate design/deolume-global branch"
+}

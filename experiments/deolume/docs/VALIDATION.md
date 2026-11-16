@@ -30,3 +30,15 @@ image dialogs. Deployment/live checks are recorded separately after the guarded
 preview upload. These checks emulate browser viewports, not physical devices.
 PayPal's reference remains unverified because both actual browser attempts
 returned HTTP 403. The supplied future film is not yet integrated.
+
+## Served preview
+
+The guarded deployment of source `a20cff5` is available at
+https://opus-zimbabwe-redesign.pages.dev/. All seven routes passed served-page
+checks at 390px and 1440px, including CSP/noindex headers, local image decoding,
+no overflow, live gallery filters/dialogs, carousel dots and navigation. No browser
+exceptions, CSP errors, failed requests or third-party runtime requests occurred.
+The live Opus deployment, its domains and four supporting Worker versions were
+unchanged. The snapshot is in PREVIEW-DEPLOYMENT.json. A 23-second actual browser
+walkthrough was captured locally and its video stream and representative frames
+were inspected. It is a screen recording, not the future brand film.
