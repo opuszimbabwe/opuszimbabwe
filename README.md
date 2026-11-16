@@ -3,11 +3,12 @@
 This repository preserves recoverable files from the working Cloudflare website,
 its supporting Workers and OpusChat apps, captured 15 November 2026.
 
-**The original Pages server source is not fully recovered.** The root Next.js
-application is an older baseline; deploying it would omit working chat,
-WhatsApp, feedback and Paynow endpoints. Production builds are guarded and
-GitHub automatic deployments are paused. The working website remains running
-on its existing Cloudflare deployment.
+**All 16 missing API handlers now have reconstructed, tested implementations.**
+They implement the recorded route methods and live database/UI contracts; they
+are not recovered originals. See [implementation and validation notes](docs/RECONSTRUCTED-PAGES-FUNCTIONS.md).
+The root frontend and some supporting code remain an older baseline, so release
+parity is not yet verified. Production builds stay guarded and automatic GitHub
+deployment stays paused. The working site remains on its existing deployment.
 
 | Location | Contents |
 | --- | --- |
@@ -33,14 +34,15 @@ module and recovered source file, and that the database export is schema only.
 
 ## Restore deployment readiness
 
-Recover the 16 Pages Functions listed in
-[missing-pages-functions.json](production/state/missing-pages-functions.json),
-with their matching libraries and build configuration. Four Access-protected
-admin shell assets have not been exported. Native Android 1.0.5 source also
-needs recovery; the available Android source predates it.
+The original paths in
+[missing-pages-functions.json](production/state/missing-pages-functions.json)
+are retained as provenance: reconstructed files now exist at all 16 paths.
+Four protected admin shell assets and the latest Android 1.0.5 native source
+remain unrecovered. Validate the replacements and supporting legacy code
+against a staging copy of the working site before release.
 
-Reconcile recovered source with deployed versions and run the application,
-payment and security checks before marking recovery complete or re-enabling
+Reconcile reconstructed source with deployed versions and run the application,
+payment and security checks before marking release parity verified or re-enabling
 automatic deployment. Do not use `npm run build:legacy` to deploy over production.
 The pending Mastercard checkout patch remains separately in the original
 workspace; it is not mixed into this current-version snapshot.

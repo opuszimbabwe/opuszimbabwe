@@ -1,0 +1,8 @@
+import {body,origin,UUID,text,hash,now,rate,response,failure,CheckoutError,integer} from '../_lib/http';
+import type {PagesHandler} from '../_lib/types';
+export const onRequestPost:PagesHandler=async c=>{try{origin(c.request);const data=await body(c.request,8000);if(data.website)return response({ok:true});const id=text(data.id,'feedback reference',36);if(!UUID.test(id))throw new CheckoutError(400,'Invalid feedback reference.');const rating=integer(data.rating,0,1,5),comment=text(data.comment??'','comment',2000,false),page=text(data.page,'page',300);
+ if(!page.startsWith('/')||page.startsWith('//')||/[?#\s]/.test(page))throw new CheckoutError(400,'Invalid page.');
+ const previous=await c.env.DB.prepare('SELECT rating,comment,page FROM site_feedback WHERE id=?').bind(id).first<{rating:number;comment:string;page:string}>();if(previous){if(previous.rating!==rating||previous.comment!==comment||previous.page!==page)throw new CheckoutError(409,'This feedback reference was already used.');return response({ok:true});}
+ await rate(c,'feedback',10);await c.env.DB.prepare('INSERT INTO site_feedback(id,rating,comment,page,request_hash,created_at) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING').bind(id,rating,comment,page,await hash(c.request.headers.get('cf-connecting-ip')||'local'),now()).run();
+ const saved=await c.env.DB.prepare('SELECT rating,comment,page FROM site_feedback WHERE id=?').bind(id).first<{rating:number;comment:string;page:string}>();if(!saved||saved.rating!==rating||saved.comment!==comment||saved.page!==page)throw new CheckoutError(409,'This feedback reference was already used.');return response({ok:true},201);
+ }catch(e){return failure(e)}};

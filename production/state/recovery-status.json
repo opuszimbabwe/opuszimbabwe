@@ -3,7 +3,7 @@
   "github_repository": "opuszimbabwe/opuszimbabwe",
   "pages_deployment_id": "18a7f56e-775d-4ac4-a15f-91083eebd122",
   "pages_functions_source_complete": false,
-  "missing_pages_function_files": 16,
+  "missing_pages_function_files": 0,
   "exact_public_pages_assets_recovered": 455,
   "protected_pages_assets_not_exported": 4,
   "active_worker_bundles_recovered": 4,
@@ -14,5 +14,11 @@
   "secret_values_exported": false,
   "unpublished_mastercard_change_included": false,
   "last_extended_source_search": "2026-11-15",
-  "original_pages_functions_recovered_in_extended_search": 0
+  "original_pages_functions_recovered_in_extended_search": 0,
+  "unrecovered_original_pages_function_files": 16,
+  "reconstructed_pages_function_files": 16,
+  "remaining_missing_handler_paths": [],
+  "reconstruction_release_ready": false,
+  "reconstruction_validated_locally": true,
+  "validated_on": "2026-11-16"
 }

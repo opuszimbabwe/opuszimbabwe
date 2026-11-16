@@ -1,0 +1,26 @@
+{
+  "status": 201,
+  "response_fields": [
+    "session"
+  ],
+  "session_fields": [
+    "id",
+    "name",
+    "expires_at",
+    "admin_read_seq",
+    "last_activity"
+  ],
+  "cookies": [
+    {
+      "name": "__Host-opus_chat",
+      "length": 64,
+      "hex64": true,
+      "uuidDotToken": false,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "temporary_test_session_removed": true,
+  "messages_sent": 0
+}

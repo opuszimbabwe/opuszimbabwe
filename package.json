@@ -5,6 +5,7 @@
     "build:legacy": "next build",
     "start": "npx serve out -l 3000",
     "typecheck": "tsc --noEmit",
+    "test:reconstructed": "node scripts/build-reconstructed-pages.cjs && node scripts/test-reconstructed-pages.cjs && node scripts/test-reconstructed-workerd.cjs",
     "db:migrate:local": "wrangler d1 migrations apply opuszim-content --local",
     "db:migrations:list": "wrangler d1 migrations list opuszim-content --remote",
     "db:migrate:remote": "wrangler d1 migrations apply opuszim-content --remote",
@@ -15,6 +16,7 @@
     "checks": "npm run typecheck && npm run build && npm run db:migrate:local && npm run db:check"
   },
   "dependencies": {
+    "@block65/webcrypto-web-push": "^2.0.0",
     "@cloudflare/puppeteer": "^1.4.0",
     "@fontsource/poppins": "5.3.0",
     "@pdf-lib/fontkit": "^1.1.1",

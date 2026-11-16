@@ -1,0 +1,9 @@
+import {admin,body,hash,now,CheckoutError,response,failure,rate} from '../../_lib/http';
+import {registration,validPushEndpoint,vapid} from '../../_lib/push';
+import type {PagesHandler} from '../../_lib/types';
+export const onRequestGet:PagesHandler=async c=>{try{const email=await admin(c);const rows=(await c.env.DB.prepare('SELECT id,created_at,disabled,last_error FROM admin_push_subscriptions WHERE admin_email=? ORDER BY created_at DESC LIMIT 20').bind(email).all()).results;return response({configured:!!vapid(c.env),public_key:c.env.WEB_PUSH_PUBLIC_KEY||'',subscriptions:rows});}catch(e){return failure(e)}};
+export const onRequestPost:PagesHandler=async c=>{try{const email=await admin(c,true);const data=await body(c.request);if(!vapid(c.env))throw new CheckoutError(503,'Phone alerts are not configured.');const sub=await registration(data.subscription);await rate(c,'push-registration',30);
+ const existing=await c.env.DB.prepare('SELECT admin_email FROM admin_push_subscriptions WHERE id=?').bind(sub.id).first<{admin_email:string}>();if(existing&&existing.admin_email!==email)throw new CheckoutError(409,'This device is registered to another administrator.');
+ await c.env.DB.prepare('INSERT INTO admin_push_subscriptions(id,admin_email,endpoint,p256dh,auth,created_at,disabled) VALUES(?,?,?,?,?,?,0) ON CONFLICT(id) DO UPDATE SET p256dh=excluded.p256dh,auth=excluded.auth,disabled=0,last_error=NULL').bind(sub.id,email,sub.endpoint,sub.p256dh,sub.auth,now()).run();return response({ok:true,id:sub.id},201);
+ }catch(e){return failure(e)}};
+export const onRequestDelete:PagesHandler=async c=>{try{const email=await admin(c,true),data=await body(c.request);if(!validPushEndpoint(data.endpoint))throw new CheckoutError(400,'Invalid device.');await c.env.DB.prepare('DELETE FROM admin_push_subscriptions WHERE id=? AND admin_email=?').bind(await hash(data.endpoint),email).run();return response({ok:true});}catch(e){return failure(e)}};

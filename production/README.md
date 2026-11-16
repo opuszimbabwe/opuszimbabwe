@@ -14,8 +14,8 @@ Nothing was redeployed to create this snapshot.
 - `state/pages-asset-recovery.json`: per-file checks and the four protected
   admin HTML/RSC assets not exported.
 - `state/pages-function-routes.json`: actual deployed Pages routing manifest.
-- `state/missing-pages-functions.json`: 16 live source files absent from the
-  connected repository. Guessed implementations have not been substituted.
+- `state/missing-pages-functions.json`: the 16 unrecovered original module paths. Reconstructed replacements now exist;
+  provenance and hashes are in `state/reconstructed-functions.json`.
 - `state/database-schema.json`: schema definitions, without customer/content rows.
 - `state/recovery-status.json`: explicit recovery completeness and exclusions.
 - `state/source-recovery-search.json`: extended source search results; no
@@ -35,3 +35,8 @@ Version metadata is authoritative for compatibility flags.
 Automatic GitHub deployments were paused before pushing this update. Prior
 settings are recorded in `state/github-deployment-protection.json`. Keep them
 paused until the complete Pages source is recovered and reconciled.
+
+All 16 API replacements are now implemented and locally tested. See
+`../docs/RECONSTRUCTED-PAGES-FUNCTIONS.md` for behavior, validation and remaining
+release gates. Their implementation does not make the original source recovered
+or establish full production parity. No live deployment or schema was changed.

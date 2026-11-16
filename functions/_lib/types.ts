@@ -25,9 +25,26 @@ export interface R2Bucket {
     value: ArrayBuffer | string,
     options?: { httpMetadata?: { contentType?: string } }
   ): Promise<unknown>;
+  delete(key: string): Promise<unknown>;
 }
 
 export interface Env {
+  GEMINI_API_KEY?: string;
+  GEMINI_MODEL?: string;
+  GROQ_API_KEY?: string;
+  GROQ_API_KEY_FALLBACK?: string;
+  GROQ_MODEL?: string;
+  GROQ_VISION_MODEL?: string;
+  WHATSAPP_APP_SECRET?: string;
+  WHATSAPP_PHONE_NUMBER_ID?: string;
+  WHATSAPP_TOKEN?: string;
+  WHATSAPP_VERIFY_TOKEN?: string;
+  WHATSAPP_AI_ENABLED?: string;
+  WEB_PUSH_PUBLIC_KEY?: string;
+  WEB_PUSH_PRIVATE_JWK?: string;
+  PAYNOW_INTEGRATION_ID?: string;
+  PAYNOW_INTEGRATION_KEY?: string;
+  PAYNOW_CURRENCY?: string;
   CARE_RENDER_SECRET?:string;
   CARE_RENDERER?:{fetch(input:Request|string,init?:RequestInit):Promise<Response>};
   MAINTENANCE_CRON_SECRET?:string;

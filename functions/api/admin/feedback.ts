@@ -1,0 +1,4 @@
+import {admin,body,identifier,CheckoutError,response,failure} from '../../_lib/http';
+import type {PagesHandler} from '../../_lib/types';
+export const onRequestGet:PagesHandler=async c=>{try{await admin(c);return response({feedback:(await c.env.DB.prepare('SELECT id,rating,comment,page,state,created_at FROM site_feedback ORDER BY created_at DESC,id LIMIT 200').all()).results});}catch(e){return failure(e)}};
+export const onRequestPost:PagesHandler=async c=>{try{await admin(c,true);const data=await body(c.request);if(!['NEW','REVIEWED'].includes(String(data.state)))throw new CheckoutError(400,'Choose a valid review state.');const id=identifier(data.id);if(!await c.env.DB.prepare('SELECT id FROM site_feedback WHERE id=?').bind(id).first())throw new CheckoutError(404,'Feedback not found.');await c.env.DB.prepare('UPDATE site_feedback SET state=? WHERE id=?').bind(data.state,id).run();return response({ok:true});}catch(e){return failure(e)}};

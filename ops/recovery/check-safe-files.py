@@ -18,7 +18,7 @@ for raw in paths:
     count+=1
     if path.suffix in forbidden or path.name in {'vapid-private','signing-password'} or (path.name.startswith('.env') and path.name!='.env.example'):
         findings.append((str(relative),'forbidden_sensitive_or_build_file'));continue
-    if not any(relative.parts[0]==part for part in ['production','recovered-source','ops']):continue
+    if not any(relative.parts[0]==part for part in ['production','recovered-source','ops','functions','scripts','migrations']):continue
     content=path.read_bytes()
     for name,pattern in patterns.items():
         if pattern.search(content):findings.append((str(relative),name))

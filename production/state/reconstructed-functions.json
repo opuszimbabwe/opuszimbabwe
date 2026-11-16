@@ -1,0 +1,147 @@
+{
+  "implemented_on": "2026-11-15",
+  "count": 16,
+  "files": [
+    {
+      "file": "functions/api/admin/domain-applications.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "44ccf020e786c282d56969a77c2ff0bc5ef410217d5392dbae43c590f40b8c1a"
+    },
+    {
+      "file": "functions/api/admin/feedback.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "a8e7f65f2721df3a94697ba6a0db7b358fb2c5f41c62e76af56bb10e8d8ac04d"
+    },
+    {
+      "file": "functions/api/admin/project-download.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "47c51560ab97b53966a93f44d9880c0b3177ca4e70beea6e91b6746aba7b47c2"
+    },
+    {
+      "file": "functions/api/admin/push.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "DELETE",
+        "GET",
+        "POST"
+      ],
+      "sha256": "1a1bd5b6bb8c3fabe8fcf5518df618ba4c6d029d44830929a28e30f21ea03241"
+    },
+    {
+      "file": "functions/api/admin/website-chat.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "535e3605080e41505bd3996b443bbe11d0ef5fe675ba3ffa4bd3c54e29ae0ece"
+    },
+    {
+      "file": "functions/api/admin/whatsapp-assets.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "e18afcc83cd85e8ec63bae5e1b91970cb3f8ca6215f5fb504cde0596a83536b5"
+    },
+    {
+      "file": "functions/api/admin/whatsapp.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "9e94e1471ddd2a6bc0fd92ddbbfc1fc0cf5496136bde4da4df805abf576632d2"
+    },
+    {
+      "file": "functions/api/assistant.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "96e9e60142b1d3883322d9a8956223baa70ccfe7e17981d9d7e963efb4af49b6"
+    },
+    {
+      "file": "functions/api/chat/attachment.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "3bb200898f24574f42c80afa4c36665ff5d79d32be3e1c699fce6524009437bd"
+    },
+    {
+      "file": "functions/api/chat/messages.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "9cfec7bef23f56753b3e1931fc6fca22fd43a8e2d5b771507bc10c521f9eccd4"
+    },
+    {
+      "file": "functions/api/chat/session.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET",
+        "POST"
+      ],
+      "sha256": "4066fc64f82a588a39ea253f6db32d7e7bba7d9414458bc13206f6e842f94b4d"
+    },
+    {
+      "file": "functions/api/domains/applications.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "4e41395f35eb14995aa7a64465b0a399ef5bfb7979a2ae4c94e2609d2d37dc25"
+    },
+    {
+      "file": "functions/api/downloads/[id].ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "GET"
+      ],
+      "sha256": "560f9bc1ddbefa02a9e876af3688f37a4b01526ed770aa6fcaac1626d478743e"
+    },
+    {
+      "file": "functions/api/feedback.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "4f03a2ca6069179a381c74b6e6a136f2a81a17ee0e0182ad46b83d9e0050154c"
+    },
+    {
+      "file": "functions/api/payments/paynow-webhook.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "POST"
+      ],
+      "sha256": "d793432f6e21b35c0dea3d8a19082e7893eb0cc083c9b2d07ae6ae902eca8565"
+    },
+    {
+      "file": "functions/api/whatsapp.ts",
+      "classification": "reconstructed replacement; original source unrecovered",
+      "route_methods": [
+        "*",
+        "GET",
+        "POST"
+      ],
+      "sha256": "b146cbc7c3a7ca5df52502cdb9d415a316dbb381f2757f9de6ec960f545c29c7"
+    }
+  ],
+  "validation": "TypeScript, isolated provider/security suite, generated Pages router in local workerd and existing backend regressions. No production deployment.",
+  "validated_on": "2026-11-16"
+}
