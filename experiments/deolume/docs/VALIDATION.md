@@ -19,6 +19,8 @@ production database or production Worker mutation.
 - Property enquiry context prefills the intended service. Required fields and
   consent are validated before a WhatsApp/email draft is prepared. WhatsApp
   was intercepted in the browser context, with no message sent.
+- The no-JavaScript form fallback targets the email app with a POST form,
+  preventing enquiry details from becoming a website GET query.
 - No browser exceptions were recorded. Text and navigation remain available
   in a no-JavaScript mobile context. Architecture photography is real sourced
   photography; original typographic concepts are explicitly identified.
