@@ -20,5 +20,8 @@
   "remaining_missing_handler_paths": [],
   "reconstruction_release_ready": false,
   "reconstruction_validated_locally": true,
-  "validated_on": "2026-11-16"
+  "validated_on": "2026-11-16",
+  "current_manual_release": "../current-release.json",
+  "mastercard_preserved_frontend_release_active": true,
+  "migration_0027_applied_live": true
 }

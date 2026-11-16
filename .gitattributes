@@ -1,6 +1,8 @@
 # Preserve exact recovered bytes, including original vendor line endings.
 production/pages-assets/** -text -whitespace linguist-generated=true
 production/workers/** -text -whitespace linguist-generated=true
+production/releases/** -text -whitespace linguist-generated=true
+production/releases/**/*.bundle -diff
 recovered-source/** -text -whitespace
 recovered-source/opus-inbox-app/admin-app.mjs linguist-generated=true
 recovered-source/opus-inbox-app/vendor/** linguist-vendored=true

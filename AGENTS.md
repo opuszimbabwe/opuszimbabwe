@@ -4,12 +4,15 @@
   `production/state/recovery-status.json` before deployment work. All 16 missing
   handlers now have reconstructed implementations, not recovered originals.
   The root frontend and some supporting code still predate the working site.
-- The working Pages deployment is `18a7f56e-775d-4ac4-a15f-91083eebd122`.
-  Preserve it and its supporting Workers during source recovery.
+- The working Pages deployment is recorded in `production/current-release.json`
+  (currently `9ede74a7-6361-4bd6-8490-97e3b7ed7ffd`). The original
+  `18a7f56e-775d-4ac4-a15f-91083eebd122` remains the rollback baseline.
+  Preserve the current frontend assets and all supporting Worker versions.
 - Preserve the production build guard. Do not use `build:legacy` for production
   or re-enable automatic deployment while release parity remains unverified.
 - Run `npm run typecheck` and `npm run test:reconstructed` for handler changes.
-  Keep provider tests mocked. Migration 0027 is local-tested, not applied live.
+  Keep provider tests mocked. Additive migration 0027 was applied live during
+  the reviewed Mastercard activation; do not apply the old migration backlog.
 - Recovered workspace source may predate active bundles. Version metadata and
   hashes identify the actual snapshot. Script GET can return an inactive upload.
 - Keep secrets, signing identities, customer records, private R2 files and

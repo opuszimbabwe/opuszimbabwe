@@ -3,8 +3,9 @@
 All 16 previously missing handler paths now contain implemented replacements.
 These are new implementations inferred from the deployed route manifest, the
 live D1 schema, recovered client/Worker source, and a minimal live cookie probe.
-They are **not recovered original source**. No production code or schema has
-been deployed by this reconstruction.
+They are **not recovered original source**. The initial reconstruction did not deploy code or schema. The later reviewed
+Mastercard activation deployed these handlers with the preserved frontend and
+additive migration 0027; see `../production/current-release.json`.
 
 ## Implemented behavior
 
@@ -59,7 +60,7 @@ domain purchase, customer message or production migration was performed.
 ## Explicit differences and release gates
 
 - Apply migration `0027_reconstructed_pages_features.sql` only as part of a
-  reviewed release. It preserves existing tables and adds download-capability
+  reviewed release (applied on 2026-11-16). It preserves existing tables and adds download-capability
   grants plus durable WhatsApp delivery events and supporting indexes.
 - Private project downloads now require an administrator or expiring capability.
   Any existing download-link workflow needs review; public project IDs are not

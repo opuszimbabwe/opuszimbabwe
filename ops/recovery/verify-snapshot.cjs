@@ -28,4 +28,16 @@ const schema=read('production/state/database-schema.json');
 assert.ok(schema.every(row=>['table','index','trigger','view'].includes(row.type)&&/^CREATE\s/i.test(row.sql)));
 const state=read('production/state/recovery-status.json');
 assert.equal(state.pages_functions_source_complete,false);
+const currentPath=path.join(root,'production/current-release.json');
+if(fs.existsSync(currentPath)){
+ const current=JSON.parse(fs.readFileSync(currentPath));
+ const folder=path.join(root,current.artifact_directory),manifest=JSON.parse(fs.readFileSync(path.join(folder,'asset-manifest.json')));
+ assert.equal(sha(fs.readFileSync(path.join(folder,'pages-worker.bundle'))),current.backend_bundle_sha256);
+ const changed=new Set(current.checkout_changes.map(item=>item.file));
+ const baseline=read('production/state/pages-asset-manifest.json');
+ for(const [file,hash] of Object.entries(baseline))if(!changed.has(file))assert.equal(manifest[file],hash,file);
+ for(const item of current.checkout_changes){const bytes=fs.readFileSync(path.join(folder,'assets',item.file));assert.equal(bytes.length,item.bytes);assert.equal(blake3.hash(bytes.toString('base64')+path.extname(item.file).slice(1)).toString('hex').slice(0,32),manifest[item.file]);}
+ assert.equal(changed.size,4);assert.equal(current.automatic_github_next_deployment_enabled,false);
+ console.log('Verified current release bundle, four checkout artifacts and preserved baseline asset hashes.');
+}
 console.log(JSON.stringify({worker_modules_verified:workerModules,exact_pages_assets_verified:assets,source_files_verified:sourceFiles,database_schema_objects:schema.length,pages_function_source_complete:false}));

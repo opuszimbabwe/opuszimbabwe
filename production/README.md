@@ -1,8 +1,12 @@
 # Working production snapshot
 
-Approved Pages deployment: `18a7f56e-775d-4ac4-a15f-91083eebd122`. This directory
+Original approved Pages deployment: `18a7f56e-775d-4ac4-a15f-91083eebd122`. This directory
 preserves its recoverable artifacts and the Workers serving the website.
-Nothing was redeployed to create this snapshot.
+Nothing was redeployed to create this original snapshot.
+
+The current activation is recorded in `current-release.json`; the exact four
+checkout artifacts, complete deployed Pages worker bundle and resulting manifest
+are in `releases/2026-11-16-mastercard/`. Original recovery files stay unchanged.
 
 - `pages-assets/`: 455 exact files, 33,351,180 bytes. Each file's Cloudflare
   BLAKE3 hash matches the original deployment manifest.
@@ -21,7 +25,7 @@ Nothing was redeployed to create this snapshot.
 - `state/source-recovery-search.json`: extended source search results; no
   original Pages handler files were recovered from the checked locations.
 
-The original Pages Functions runtime remains running in Cloudflare, but its
+The original Pages Functions runtime remains available in the rollback deployment, but its
 complete source/build bundle has not been recovered. This is a partial disaster
 recovery backup, not a complete replacement deployment. Database content,
 uploaded media, private app-download objects, signing identities and secrets
@@ -39,4 +43,6 @@ paused until the complete Pages source is recovered and reconciled.
 All 16 API replacements are now implemented and locally tested. See
 `../docs/RECONSTRUCTED-PAGES-FUNCTIONS.md` for behavior, validation and remaining
 release gates. Their implementation does not make the original source recovered
-or establish full production parity. No live deployment or schema was changed.
+or establish full production parity. That reconstruction commit did not change live deployment or schema. The later
+reviewed activation applied additive migration 0027 and deployed the preserved
+frontend release; see `current-release.json` for actual checks and limitations.
