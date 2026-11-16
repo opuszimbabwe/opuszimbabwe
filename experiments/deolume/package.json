@@ -6,6 +6,7 @@
     "build": "node scripts/build.mjs",
     "dev": "node scripts/build.mjs && python3 -m http.server 9098 --bind 0.0.0.0 --directory dist",
     "test": "node scripts/check.cjs",
-    "deploy:preview": "python3 scripts/deploy-preview.py"
+    "deploy:preview": "python3 scripts/deploy-preview.py",
+    "test:live": "node scripts/check-live.cjs"
   }
 }

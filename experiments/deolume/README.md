@@ -21,6 +21,8 @@ npm run build
 npm run dev
 # Separate terminal, with the local preview running:
 npm test
+# After guarded preview deployment:
+npm run test:live
 ```
 
 The build uses only Node built-ins. There are no external runtime scripts,
