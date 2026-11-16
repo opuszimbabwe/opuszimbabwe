@@ -23,7 +23,7 @@ def api(path, body=None, method=None, token=None, content_type='application/json
         raise RuntimeError(f'Cloudflare request failed: HTTP {e.code} at {path}') from None
     if not result.get('success'):
         raise RuntimeError('Cloudflare API error codes: '+str([e.get('code') for e in result.get('errors',[])]))
-    return result['result']
+    return result.get('result')
 
 def multipart(fields):
     boundary='opus-release-'+uuid.uuid4().hex
