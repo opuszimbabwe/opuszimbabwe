@@ -5,6 +5,21 @@ import { normalizeContent, DEFAULT_SERVICE_PAGES } from '../lib/content';
 import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN } from '../lib/section-design';
 
 const raw = (settings = {}, partners: unknown[] = []) => ({ services: [], pricing: [], partners, settings });
+test('published layout documents round-trip without dropping newer settings', () => {
+  const layouts: Record<string, unknown> = {
+    footer_design: {shape:'rounded',radius:100,background_kind:'solid',background_color:'#f5f5f5',text_color:'#0f0928',icon_size:30},
+    section_banners: {home:{image:'/api/media/example.png',title:'Our services'}},
+    template_gallery: [{url:'https://example.com/preview',title:'Example'}],
+    video_showcase: null,
+  };
+  for(const [key,value] of Object.entries(layouts)) {
+    assert.deepEqual(JSON.parse(sanitizeSetting(key,value)!),value);
+    assert.equal(sanitizeSetting(key,{image:'javascript:alert(1)'}),null);
+    assert.equal(sanitizeSetting(key,{title:'<script>bad</script>'}),null);
+    assert.equal(sanitizeSetting(key,JSON.parse('{"__proto__":{}}')),null);
+    assert.equal(sanitizeSetting(key,Array(101).fill('x')),null);
+  }
+});
 test('payment logo updates never silently discard rows', () => {
   const methods = Array.from({ length: 7 }, (_, i) => ({ id: `new-${i}`, name: `Method ${i}`, logo: `/api/media/img_${i.toString(16)}.png`, visible: true }));
   const saved = sanitizeSetting('payment_methods', methods);

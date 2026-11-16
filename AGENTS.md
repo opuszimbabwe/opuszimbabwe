@@ -14,5 +14,7 @@
   hashes identify the actual snapshot. Script GET can return an inactive upload.
 - Keep secrets, signing identities, customer records, private R2 files and
   conversation screenshots out of Git. Database exports here are schema only.
-- The separate Mastercard Worker adapter was removed. The pending checkout
-  feature patch is separate from this current-version recovery snapshot.
+- The separate Mastercard Worker adapter was removed. Mastercard activation
+  must use `ops/activation/README.md`: preserve the original frontend manifest,
+  patch only checkout artifacts and retain all four supporting Worker versions.
+  Do not run the old full Next build or re-enable automatic GitHub deployment.

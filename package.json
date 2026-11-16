@@ -13,7 +13,8 @@
     "db:verify:remote": "wrangler d1 execute opuszim-content --remote --file=scripts/remote-verify.sql",
     "db:check": "node scripts/db-check.mjs",
     "pages:local": "wrangler pages dev --port 8788 --ip 0.0.0.0",
-    "checks": "npm run typecheck && npm run build && npm run db:migrate:local && npm run db:check"
+    "checks": "npm run typecheck && npm run build && npm run db:migrate:local && npm run db:check",
+    "release:prepare": "node scripts/build-reconstructed-pages.cjs && node scripts/prepare-mastercard-release.cjs && node scripts/test-preserved-release.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",

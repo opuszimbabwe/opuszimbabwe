@@ -90,6 +90,10 @@ export const JSON_SETTINGS = [
   'faq_page',
   'approach_items',
   'built_for_zimbabwe',
+  'section_banners',
+  'template_gallery',
+  'video_showcase',
+  'footer_design',
 ] as const;
 export const ALL_SETTINGS: readonly string[] = [...URL_SETTINGS, ...TEXT_SETTINGS, ...JSON_SETTINGS];
 
@@ -206,6 +210,8 @@ export async function readAllContent(db: D1Database) {
     visible: Boolean(p.visible),
   }));
 
+  const downloadRows = await db.prepare('SELECT project_id,filename,version,sha256,size,updated_at FROM project_downloads').all<{project_id:string;filename:string;version:string;sha256:string;size:number;updated_at:string}>().catch(()=>({results:[]}));
+  const downloads = new Map(downloadRows.results.map(row=>[row.project_id,{filename:row.filename,version:row.version,sha256:row.sha256,size:row.size,updated_at:row.updated_at}]));
   const projects = (projectRows.results || []).map((p) => ({
     id: p.id,
     name: p.name,
@@ -216,6 +222,7 @@ export async function readAllContent(db: D1Database) {
     screenshot: p.screenshot || '',
     logo: p.logo || '',
     preview_video: p.preview_video || '',
+    download: downloads.get(p.id) || null,
     status: p.status === 'coming_soon' ? 'coming_soon' : 'active',
     order_index: p.order_index,
     visible: Boolean(p.visible),
@@ -269,6 +276,10 @@ export async function readAllContent(db: D1Database) {
       faq_page: parseJsonUnknown(settingsMap.faq_page),
       approach_items: parseJsonUnknown(settingsMap.approach_items),
       built_for_zimbabwe: parseJsonUnknown(settingsMap.built_for_zimbabwe),
+      section_banners: parseJsonUnknown(settingsMap.section_banners),
+      template_gallery: parseJsonUnknown(settingsMap.template_gallery),
+      video_showcase: parseJsonUnknown(settingsMap.video_showcase),
+      footer_design: parseJsonUnknown(settingsMap.footer_design),
     },
   };
 }
@@ -312,6 +323,25 @@ export function sanitizeSetting(key: string, value: unknown): string | null {
   }
 
   switch (key) {
+    case 'section_banners':
+    case 'template_gallery':
+    case 'video_showcase':
+    case 'footer_design': {
+      // Preserve newer public layout documents without accepting executable
+      // markup, dangerous URL schemes or unbounded JSON structures.
+      let nodes=0;
+      const safe=(input:unknown,depth:number):boolean=>{
+        if(++nodes>1500||depth>8)return false;
+        if(input===null||typeof input==='boolean')return true;
+        if(typeof input==='number')return Number.isFinite(input);
+        if(typeof input==='string')return input.length<=10000&&!/[<>\x00-\x08\x0b\x0c\x0e-\x1f]/.test(input)&&!/(?:javascript|vbscript|data)\s*:/i.test(input);
+        if(Array.isArray(input))return input.length<=100&&input.every(v=>safe(v,depth+1));
+        if(typeof input==='object')return Object.entries(input as Record<string,unknown>).every(([name,v])=>!['__proto__','prototype','constructor'].includes(name)&&name.length<=100&&safe(v,depth+1)&&(!/(?:url|src|href|image|video|poster)$/i.test(name)||typeof v!=='string'||!v||isUrlPath(v)));
+        return false;
+      };
+      if(!safe(value,0))return null;
+      const encoded=JSON.stringify(value);return encoded.length<=50000?encoded:null;
+    }
     case 'hero_design':
       { const design = upgradeHeroDesign(value); return design ? JSON.stringify(design) : null; }
     case 'cta_design':

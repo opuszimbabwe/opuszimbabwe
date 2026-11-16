@@ -32,7 +32,7 @@ export const onRequestPost: PagesHandler = async context => {
   const previous = await existing(); if (previous) return respond(previous);
   if(domainOrder)await prepareDomainPayment(context.env,domainOrder.id,raw.domain_order_token);
   const method = (await localMethods(input.currency)).find(item => item.code === input.method);
-  if (!method) throw new CheckoutError(400, 'Please choose an available local payment method. International payments are currently unavailable.');
+  if (!method) throw new CheckoutError(400, 'Please choose an available payment method for the selected currency.');
   const amount = input.minor / 100;
   if (amount < method.minimumAmount || amount > method.maximumAmount) throw new CheckoutError(400, `This method accepts ${input.currency} ${method.minimumAmount.toFixed(2)}–${method.maximumAmount.toFixed(2)}. Please choose another method or contact support@opuszim.co.zw.`);
   const network = mobileNetwork(method.name);

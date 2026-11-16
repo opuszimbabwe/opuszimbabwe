@@ -64,8 +64,10 @@ domain purchase, customer message or production migration was performed.
 - Private project downloads now require an administrator or expiring capability.
   Any existing download-link workflow needs review; public project IDs are not
   treated as credentials.
-- WhatsApp AI auto-replies require `WHATSAPP_AI_ENABLED=true`. They default off;
-  verified inbound messages still reach the human inbox. Models are configurable
+- WhatsApp AI auto-replies preserve the original configured-model behavior.
+  `WHATSAPP_AI_ENABLED=false` explicitly disables them; `true` enables them.
+  Without an override they run when Gemini/Groq credentials are configured.
+  Verified inbound messages also reach the human inbox. Models are configurable
   with optional `GEMINI_MODEL`, `GROQ_MODEL` and `GROQ_VISION_MODEL` variables.
 - Scheduled WhatsApp dispatch is integrated with the authenticated maintenance
   tick. Replies with uncertain provider acceptance require reconciliation.
@@ -79,4 +81,5 @@ domain purchase, customer message or production migration was performed.
 
 `reconstruction_release_ready` remains false. Automatic production deployment
 and the build guard remain in place. The pending Mastercard feature is separate;
-this commit reconstructs the missing source without publishing that feature.
+the manual preserved-asset release path is documented in
+`../ops/activation/README.md`. It does not permit rebuilding the older frontend.

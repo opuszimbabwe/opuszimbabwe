@@ -97,7 +97,14 @@ export async function currencies() {
 export async function localMethods(currency: string): Promise<LocalMethod[]> {
  if (!['USD', 'ZiG'].includes(currency)) throw new CheckoutError(400, 'Please select a supported currency.');
  return (await publicGateway('/v1/payment-methods/for-currency?currencyCode=' + encodeURIComponent(currency)))
- .filter(item => item.active === true && typeof item.name === 'string' && LOCAL.test(item.name) && !INTERNATIONAL.test(item.name) && typeof item.code === 'string')
+ .filter(item => item.active === true && typeof item.name === 'string' && typeof item.code === 'string' && (
+  (LOCAL.test(item.name) && !INTERNATIONAL.test(item.name)) ||
+  // This is an explicit USD Mastercard exception, not blanket international
+  // enablement. Hosted BASIC checkout collects all card details on Pesepay.
+  (currency === 'USD' && item.code === 'PZW205' && /^master\s?card$/i.test(item.name) &&
+   Number.isFinite(Number(item.minimumAmount)) && Number(item.minimumAmount) > 0 &&
+   Number.isFinite(Number(item.maximumAmount)) && Number(item.maximumAmount) >= Number(item.minimumAmount))
+ ))
  .map(item => ({ code: String(item.code), name: String(item.name), minimumAmount: Number(item.minimumAmount) || 0.01, maximumAmount: Number(item.maximumAmount) || 1000000, redirectRequired: item.redirectRequired === true, phoneField: Array.isArray(item.requiredFields) ? item.requiredFields.find((field: { name?: string }) => /^(customerPhoneNumber|phoneNumber|mobileNumber)$/.test(field.name || ''))?.name : undefined }));
 }
 export function safeRedirect(value: string) {

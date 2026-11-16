@@ -70,7 +70,8 @@ export async function ingest(env:Env,input:Record<string,any>){
     env.DB.prepare('UPDATE whatsapp_conversations SET last_inbound_seq=COALESCE((SELECT MAX(seq) FROM whatsapp_messages WHERE conversation_id=? AND direction=\'IN\'),0) WHERE id=?').bind(id,id)
    ]);
    const winner=await env.DB.prepare('SELECT id FROM whatsapp_messages WHERE provider_id=?').bind(provider).first<{id:string}>();
-   if(winner?.id===messageId&&env.WHATSAPP_AI_ENABLED==='true'&&message.type==='text'){
+   const aiEnabled=env.WHATSAPP_AI_ENABLED==='true'||(env.WHATSAPP_AI_ENABLED!=='false'&&!!(env.GEMINI_API_KEY||env.GROQ_API_KEY||env.GROQ_API_KEY_FALLBACK));
+   if(winner?.id===messageId&&aiEnabled&&message.type==='text'){
     try{const generated=await answer(env,conversation([{role:'user',content}]));if(!generated.handoff){const chat=(await env.DB.prepare('SELECT * FROM whatsapp_conversations WHERE id=?').bind(id).first<WhatsAppConversation>())!;const queued=await enqueue(env,chat,{id:'ai-'+await hash(provider),kind:'text',body:generated.answer,delay:0},'ai');await dispatch(env,queued.id);}}catch{/* The human inbox retains the inbound message if AI is unavailable. */}
    }
   }

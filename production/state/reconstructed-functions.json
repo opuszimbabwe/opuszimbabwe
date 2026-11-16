@@ -113,7 +113,7 @@
       "route_methods": [
         "GET"
       ],
-      "sha256": "560f9bc1ddbefa02a9e876af3688f37a4b01526ed770aa6fcaac1626d478743e"
+      "sha256": "1d7fe75c96f1afc7504d7bb8a219397795b72bcd85aee2f2548a694029f8cbe4"
     },
     {
       "file": "functions/api/feedback.ts",

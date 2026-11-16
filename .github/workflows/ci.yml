@@ -60,6 +60,8 @@ jobs:
         run: npm run typecheck
       - name: Test reconstructed routes and generated Pages runtime
         run: npm run test:reconstructed
+      - name: Preserve published frontend and checkout artifacts
+        run: node scripts/prepare-mastercard-release.cjs && node scripts/test-preserved-release.cjs
       - name: Existing payment, domain, receipt and care regressions
         run: |
           node_modules/.bin/esbuild functions/api/payments/create.ts functions/api/payments/status.ts functions/api/payments/webhook.ts functions/api/payments/config.ts functions/api/domains/orders.ts functions/api/domains/catalogue.ts functions/api/domains/check.ts functions/_lib/domains.ts functions/api/admin/services.ts functions/api/admin/receipts.ts functions/api/receipts/view.ts functions/_lib/operations.ts functions/_lib/client-care.ts functions/api/admin/client-care.ts functions/api/care/orders.ts functions/api/care/documents.ts functions/api/maintenance/project-events.ts --outbase=functions --outdir=/tmp/opus-payments-test --bundle --platform=node --format=cjs
