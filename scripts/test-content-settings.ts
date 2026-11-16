@@ -1,10 +1,21 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { sanitizeSetting } from '../functions/_lib/db';
+import { sanitizeSetting, readContent } from '../functions/_lib/db';
 import { normalizeContent, DEFAULT_SERVICE_PAGES } from '../lib/content';
 import { DEFAULT_CTA_DESIGN, DEFAULT_CONTACT_DESIGN } from '../lib/section-design';
 
 const raw = (settings = {}, partners: unknown[] = []) => ({ services: [], pricing: [], partners, settings });
+test('public project content never queries or exposes private download metadata', async () => {
+  const DB = {prepare(sql:string) {
+    assert.ok(!sql.includes('project_downloads'),'Private installer records stay out of public content');
+    return {all:async()=>({results:sql.includes('FROM projects')?[{
+      id:'fixture-project',name:'Public project',url:'',tag:'Web',location:'Harare',description:'Public description',status:'active',order_index:0,visible:1,
+    }]:[]})};
+  }};
+  const content=await readContent({DB:DB as any});
+  assert.equal(content.projects.length,1);
+  assert.equal(content.projects[0].download,null);
+});
 test('published layout documents round-trip without dropping newer settings', () => {
   const layouts: Record<string, unknown> = {
     footer_design: {shape:'rounded',radius:100,background_kind:'solid',background_color:'#f5f5f5',text_color:'#0f0928',icon_size:30},

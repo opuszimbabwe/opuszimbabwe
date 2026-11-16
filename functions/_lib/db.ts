@@ -210,8 +210,6 @@ export async function readAllContent(db: D1Database) {
     visible: Boolean(p.visible),
   }));
 
-  const downloadRows = await db.prepare('SELECT project_id,filename,version,sha256,size,updated_at FROM project_downloads').all<{project_id:string;filename:string;version:string;sha256:string;size:number;updated_at:string}>().catch(()=>({results:[]}));
-  const downloads = new Map(downloadRows.results.map(row=>[row.project_id,{filename:row.filename,version:row.version,sha256:row.sha256,size:row.size,updated_at:row.updated_at}]));
   const projects = (projectRows.results || []).map((p) => ({
     id: p.id,
     name: p.name,
@@ -222,7 +220,9 @@ export async function readAllContent(db: D1Database) {
     screenshot: p.screenshot || '',
     logo: p.logo || '',
     preview_video: p.preview_video || '',
-    download: downloads.get(p.id) || null,
+    // The approved public API hides private installer/source metadata.
+    // Download ownership is checked by the separate authenticated endpoint.
+    download: null,
     status: p.status === 'coming_soon' ? 'coming_soon' : 'active',
     order_index: p.order_index,
     visible: Boolean(p.visible),
