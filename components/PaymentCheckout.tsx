@@ -10,9 +10,12 @@ import PaymentReceiptActions from '@/components/PaymentReceiptActions';
 import type {PublicCareOrder} from '@/lib/client-care';
 import type { DomainPublicOrder } from '@/lib/domains';
 type Session = { id: string; token: string };
+type PreviousAttempt=Session&{method:string};
+type CheckoutAttempt={token:string;form:Form;id?:string;care?:Session;domain?:Session};
 type Form = { name: string; email: string; phone: string; invoice: string; amount: string; currency: string; method: string };
 const emptyForm: Form = { name: '', email: '', phone: '', invoice: '', amount: '', currency: 'USD', method: '' };
 const attemptKey = 'opus-payment-attempt';
+const previousKey='opus-previous-payment-attempts';
 const newToken = () => [...crypto.getRandomValues(new Uint8Array(32))].map(value => value.toString(16).padStart(2, '0')).join('');
 const support = <>Contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> or call <a href={`tel:${SUPPORT_PHONE}`}>0773 979 162</a> for payment support.</>;
 function remember(session: Session) {
@@ -39,6 +42,9 @@ export default function PaymentCheckout() {
  const [checkError, setCheckError] = useState('');
  const [pollExpired, setPollExpired] = useState(false);
  const [resumable, setResumable] = useState(false);
+ const [previousAttempts,setPreviousAttempts]=useState<PreviousAttempt[]>([]);
+ const liveSession=useRef<Session|null>(null);liveSession.current=session;
+ useEffect(()=>{try{const saved=JSON.parse(sessionStorage.getItem(previousKey)||'[]');if(Array.isArray(saved))setPreviousAttempts(saved.filter(p=>p&&typeof p.id==='string'&&/^[a-zA-Z0-9-]{1,80}$/.test(p.id)&&typeof p.token==='string'&&/^[a-f0-9]{64}$/.test(p.token)&&typeof p.method==='string'))}catch{}},[]);
  const [phoneTouched, setPhoneTouched] = useState(false);
  const [amountTouched,setAmountTouched]=useState(false);
  const [referenceTouched,setReferenceTouched]=useState(false);
@@ -47,7 +53,7 @@ export default function PaymentCheckout() {
 
  const [configRetry, setConfigRetry] = useState(0);
  const inFlight = useRef(false);
- const attempt = useRef<{ token: string; form: Form;care?:Session;domain?:Session } | null>(null);
+ const attempt = useRef<CheckoutAttempt|null>(null);
  const [ready, setReady] = useState(false);
  const [motion,setMotion]=useState(false);
  const [viewport,setViewport]=useState({width:1200,height:1000});
@@ -113,8 +119,8 @@ export default function PaymentCheckout() {
   inFlight.current = true; setChecking(true);
   try {
    const response = await fetch('/api/payments/status?id=' + encodeURIComponent(session.id), { headers: { authorization: 'Bearer ' + session.token }, cache: 'no-store', signal: signal || AbortSignal.timeout(25000) });
-   const body = await response.json().catch(()=>{throw new Error('Payment methods could not be loaded. Please try again.')}); if (!response.ok) throw new Error(body.error || 'We could not confirm your payment yet.');
-   if (signal?.aborted) return false;
+   const body = await response.json().catch(()=>{throw new Error('We could not confirm your payment yet.')}); if (!response.ok) throw new Error(body.error || 'We could not confirm your payment yet.');
+   if (signal?.aborted||liveSession.current?.id!==session.id) return false;
    setReceipt(body.receipt);if(body.careOrder){setCareOrder(body.careOrder);setCareAccess({id:body.careOrder.id,token:session.token});} if(body.domainOrder)setDomainOrder(body.domainOrder); setCheckError('');
    if (body.continueUrl) setContinueUrl(body.continueUrl);
    return Boolean(body.receipt.terminal && (!body.domainOrder || body.domainOrder.terminal));
@@ -141,6 +147,20 @@ export default function PaymentCheckout() {
   return () => { stopped = true; controller.abort(); clearTimeout(timer); };
  }, [session, checkStatus]);
  function change(key: keyof Form, value: string) { setForm(previous => ({ ...previous, [key]: value, ...(key === 'currency' ? { method: '' } : {}) })); if (key === 'method' || key === 'currency' || key==='phone') setPhoneTouched(false); if(key==='amount'||key==='method')setAmountTouched(false); if(key==='method')setReferenceTouched(false); setError(''); }
+ function attemptLink(value:Session){try{if(sessionStorage.getItem('opus-payment-'+value.id)===value.token)return '/payments/?payment='+encodeURIComponent(value.id)}catch{}return '/payments/?payment='+encodeURIComponent(value.id)+'&token='+encodeURIComponent(value.token)}
+ function changePaymentMethod(){
+  if(busy)return;
+  let saved=attempt.current;try{const stored=JSON.parse(sessionStorage.getItem(attemptKey)||'null');if(!saved&&stored?.form&&typeof stored.token==='string'&&(!session||stored.token===session.token))saved=stored}catch{}
+  let old:Session|null=session;if(!old&&saved?.id)old={id:saved.id,token:saved.token};
+  if(!old&&saved){try{const id=sessionStorage.getItem('opus-last-payment');if(id&&sessionStorage.getItem('opus-payment-'+id)===saved.token)old={id,token:saved.token}}catch{}}
+  if((domainOrder&&!domainAccess&&!saved?.domain)||(careOrder&&!careAccess&&!saved?.care)){setError('Reopen your private order link to change its payment method safely.');return;}
+  const restored=saved?.form||(receipt?{...emptyForm,invoice:receipt.invoice,amount:(receipt.invoiceAmount??receipt.amount).toFixed(2),currency:receipt.currency}:form);
+  if(old){remember(old);const history=[...previousAttempts.filter(p=>p.id!==old!.id),{...old,method:receipt?.method||config?.methods.find(m=>m.code===restored.method)?.name||'Earlier payment'}];setPreviousAttempts(history);try{sessionStorage.setItem(previousKey,JSON.stringify(history));sessionStorage.removeItem(attemptKey)}catch{}attempt.current=null;setResumable(false)}
+  else if(saved){attempt.current=saved;setResumable(true)}
+  if(saved?.care){setCareAccess(saved.care);setCareBlocked(false)}if(saved?.domain){setDomainAccess(saved.domain);setDomainBlocked(false)}
+  setForm({...restored,method:''});liveSession.current=null;setSession(null);setReceipt(null);setContinueUrl('');setCheckError('');setChecking(false);setError('');setNotice('');setPhoneTouched(false);setAmountTouched(false);setReferenceTouched(false);
+  const params=new URLSearchParams();const domain=saved?.domain||domainAccess,care=saved?.care||careAccess;if(domain){params.set('domain_order',domain.id);try{sessionStorage.setItem('opus-domain-'+domain.id,domain.token)}catch{params.set('domain_token',domain.token)}}else if(care){params.set('care_order',care.id);try{sessionStorage.setItem('opus-care-'+care.id,care.token)}catch{params.set('care_token',care.token)}}history.replaceState(null,'','/payments/'+(params.size?'?'+params:''));
+ }
  async function pay(event: React.FormEvent) {
   event.preventDefault(); if (busy || !config?.configured || configBusy || domainLoading || domainBlocked || careLoading || careBlocked) return;
   if (!selectedMethod) return;
@@ -148,6 +168,7 @@ export default function PaymentCheckout() {
   if (amountError) { setError(amountError); return; }
   setBusy(true); setError('');
   try {
+   for(const previous of previousAttempts){const response=await fetch('/api/payments/status?id='+encodeURIComponent(previous.id),{headers:{authorization:'Bearer '+previous.token},cache:'no-store',signal:AbortSignal.timeout(20000)});const body=await response.json();if(!response.ok||!body.receipt||typeof body.receipt.paid!=='boolean'||typeof body.receipt.status!=='string'||typeof body.receipt.terminal!=='boolean')throw new Error('Check your earlier payment status before starting another payment.');if(body.receipt.paid){remember(previous);setReceipt(body.receipt);setSession(previous);history.replaceState(null,'',attemptLink(previous));return}if(['UNCONFIRMED','VERIFICATION_FAILED'].includes(body.receipt.status))throw new Error('Your earlier request is still unconfirmed. Review its status before starting another payment.');}
    let token = careAccess?.token || domainAccess?.token || newToken();
    if (attempt.current) {
     if (JSON.stringify(attempt.current.form) !== JSON.stringify(form)) throw new Error('An earlier payment attempt needs checking. Restore its original details or contact support@opuszim.co.zw before starting another payment.');
@@ -164,6 +185,7 @@ export default function PaymentCheckout() {
     throw new Error(body.error || 'We could not start this payment. Please contact support@opuszim.co.zw.');
    }
    const value = { id: body.id, token }; const persisted = remember(value);
+   if(attempt.current){attempt.current.id=body.id;try{sessionStorage.setItem(attemptKey,JSON.stringify(attempt.current))}catch{}}
    if (body.redirectUrl) { location.assign(body.redirectUrl); return; }
    setReceipt(body.receipt); setSession(value);
    history.replaceState(null, '', '/payments/?payment=' + body.id + (persisted ? '' : '&token=' + token));
@@ -172,7 +194,7 @@ export default function PaymentCheckout() {
  }
  function anotherPayment() {
   try { sessionStorage.removeItem(attemptKey); sessionStorage.removeItem('opus-last-payment'); } catch {}
-  attempt.current = null;
+  attempt.current = null;setPreviousAttempts([]);try{sessionStorage.removeItem(previousKey)}catch{}
   history.replaceState(null, '', '/payments/'); setSession(null); setReceipt(null); setContinueUrl(''); setCheckError(''); setError(''); setForm(emptyForm); setResumable(false);setDomainOrder(null);setDomainAccess(null);setDomainBlocked(false);setCareOrder(null);setCareAccess(null);setCareBlocked(false);
  }
  const selectedMethod = config?.methods.find(method => method.code === form.method);
@@ -190,6 +212,7 @@ export default function PaymentCheckout() {
  const pending = !receipt || !receipt.terminal;
  return <main className="payment-page opus-pay-page" data-motion={motion} data-keyboard={viewport.height<430}>
   {notice&&!session&&<div id="opus-field-notice" className="opus-field-notice" role="alert"><span className="opus-notice-icon" aria-hidden="true"><CircleAlert size={20} strokeWidth={2.8}/></span><div><strong>Please check this detail</strong><p>{notice}</p></div><button type="button" aria-label="Dismiss notification" onClick={()=>setNotice('')}>×</button></div>}
+  {!session&&previousAttempts.length>0&&<details className="opus-previous-attempts"><summary>Earlier payment may still complete · review</summary><p>Changing method does not cancel an earlier request. Only complete one payment.</p>{previousAttempts.map((previous,index)=><a key={previous.id} href={attemptLink(previous)}>{previous.method} · attempt {index+1} <ArrowUpRight size={12}/></a>)}</details>}
   <article className={`payment-sheet ${session ? 'payment-receipt' : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
    {paid&&<div className="receipt-verified-watermark" aria-hidden="true">OPUS<span>VERIFIED</span></div>}
    <header className="opus-pay-header"><OpusPayBrand/></header>
@@ -201,7 +224,7 @@ export default function PaymentCheckout() {
     <form onSubmit={pay} className="payment-form">
      {!selectedMethod&&<PaymentMethodPicker methods={config?.methods||[]} loading={configBusy} error={configError} onRetry={()=>setConfigRetry(v=>v+1)} disabled={busy||domainLoading||domainBlocked||careLoading||careBlocked} onSelect={method=>{setMotion(motionAllowed());change('method',method.code)}}/>}
      {!configBusy && config && !config.configured && <div className="payment-notice" role="status">Online payments are being set up. {support}</div>}
-     {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy||resumable} onClick={()=>change('method','')}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
+     {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy} onClick={changePaymentMethod}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
       <div className="opus-reference-field"><OpusFloatingField label="Invoice or project reference" name="invoice" required maxLength={120} autoComplete="off" value={form.invoice} valid={Boolean(form.invoice.trim())} invalid={referenceTouched&&!form.invoice.trim()} onChange={value=>{setReferenceTouched(false);change('invoice',value)}} onBlur={()=>{setReferenceTouched(true);setValidationPulse(v=>v+1)}} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></div>
       <div className="opus-amount-currency"><OpusFloatingField label="Amount to pay" example="e.g. 25.00" name="amount" type="text" inputMode="decimal" required maxLength={12} value={form.amount} valid={Boolean(form.amount)&&!amountError} invalid={Boolean(amountTouched&&amountError)} onChange={value=>change('amount',value)} onBlur={()=>{setAmountTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={amountFeedback?'opus-field-notice':undefined} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/><OpusFloatingCurrency disabled={busy}/></div>
       {network&&<div className="payment-mobile-field"><OpusFloatingField label={`${network==='onemoney'?'OneMoney':'EcoCash'} mobile number`} example={network==='onemoney'?'e.g. 0710 000 000':'e.g. 0770 000 000'} id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} valid={phoneValid} invalid={Boolean(phoneError)} onChange={value=>change('phone',value)} onBlur={()=>{setPhoneTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={phoneFeedback?'opus-field-notice':undefined} disabled={busy}/></div>}
@@ -221,7 +244,7 @@ export default function PaymentCheckout() {
     {receipt && (!pending || checkError) && <section className="payment-details" aria-labelledby="payment-details-title"><h2 id="payment-details-title">Payment details</h2>{receipt.name && <div className="payment-payer"><div><span>Payer Name</span><strong>{receipt.name}</strong></div><UserRound size={58} aria-hidden="true" /></div>}<div className="payment-detail-row"><CalendarDays aria-hidden="true" /><div><span>{receiptDate(receipt).label}</span><strong>{receiptDate(receipt).text}</strong></div></div><div className="payment-detail-row"><CreditCard aria-hidden="true" /><div><span>Payment Method</span><strong className="payment-method-value"><MethodLogo name={receipt.method} /></strong></div></div><div className="payment-detail-row"><ShieldCheck aria-hidden="true" /><div><span>Transaction Reference / Approval Code</span><strong>{receipt.reference || receipt.id}</strong></div></div><div className="payment-detail-row"><Wallet aria-hidden="true" /><div><span>Invoice / Project Reference</span><strong>{receipt.invoice}</strong></div></div><div className={`payment-amount-panel ${paid ? 'is-paid' : ''}`}><Coins size={48} aria-hidden="true" /><div><span>{paid ? 'Amount Paid' : 'Payment Amount'}</span><strong>{receipt.currency} {receipt.amount.toFixed(2)}</strong>{paid && receipt.invoiceAmount !== undefined && receipt.invoiceAmount !== receipt.amount && <span className="payment-small">Invoice amount: {receipt.currency} {receipt.invoiceAmount.toFixed(2)}</span>}</div></div></section>}
     {error&&<p role="alert" className="payment-notice">{error}</p>}{careOrder&&<section className="payment-notice"><h2 className="text-xl font-bold">{careOrder.project} · {careOrder.period}</h2><p>{careOrder.state==='PAID'?'Your receipt and care documents are queued for the authorised project email. A current-month payment includes a progress report now and a final report after month-end.':'Maintenance documents are issued only after independent payment verification.'}</p>{careOrder.documents.map(d=><p key={d.kind}>{d.kind==='PROGRESS'?'Progress report':'Final report'} · {d.email_status==='NOT_SENT'?d.status:d.email_status}{d.available&&careAccess&&<button type="button" className="payment-text-button" onClick={async()=>{try{const r=await fetch(`/api/care/documents?id=${careAccess.id}&kind=${d.kind}`,{headers:{authorization:'Bearer '+careAccess.token},cache:'no-store'});if(!r.ok)throw Error((await r.json()).error);const url=URL.createObjectURL(await r.blob());const a=document.createElement('a');a.href=url;a.download=`Opus-care-${careOrder.period}-${d.kind.toLowerCase()}.pdf`;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(e){setError(e instanceof Error?e.message:'Document unavailable.');}}}>Download PDF</button>}</p>)}<button type="button" className="payment-text-button" disabled={checking} onClick={()=>void checkStatus()}>Refresh document status</button></section>}
     {domainOrder&&<section className="payment-notice" aria-live="polite"><h2 className="text-xl font-bold">{domainOrder.state==='REGISTERED'?'Domain registered':domainOrder.state==='QUOTED'?'Domain order':'Domain registration: '+domainOrder.state.toLowerCase().replace(/_/g,' ')}</h2><p><strong>{domainOrder.domain}</strong></p><p>{domainOrder.state==='REGISTERED'?'The registrar has confirmed your registration. Check your registrant email for verification instructions.':domainOrder.message||'Registration is submitted after verified payment. Do not make another payment while this order is being confirmed.'}</p>{!domainOrder.terminal&&<button type="button" className="payment-text-button" onClick={()=>void checkStatus()} disabled={checking}>{checking?'Checking…':'Check registration status'}</button>}</section>}
-    <div className="payment-receipt-actions">{!paid && <button type="button" onClick={() => void checkStatus()} disabled={checking}>{checking ? 'Checking…' : 'Check payment status'}</button>}{!paid && continueUrl && receipt?.status === 'INITIATED' && <a href={continueUrl}>Continue payment on Pesepay</a>}{paid && <><button type="button" onClick={() => window.print()}>Print receipt</button>{!domainOrder&&!careOrder&&<button type="button" onClick={anotherPayment}>Make another payment</button>}</>}</div>
+    <div className="payment-receipt-actions">{!paid&&<button type="button" disabled={busy} onClick={changePaymentMethod}>Change method</button>}{!paid && <button type="button" onClick={() => void checkStatus()} disabled={checking}>{checking ? 'Checking…' : 'Check payment status'}</button>}{!paid && continueUrl && receipt?.status === 'INITIATED' && <a href={continueUrl}>Continue payment on {/(onemoney|pos2u|telecash)/i.test(receipt?.method||'')?'Paynow':'Pesepay'}</a>}{paid && <><button type="button" onClick={() => window.print()}>Print receipt</button>{!domainOrder&&!careOrder&&<button type="button" onClick={anotherPayment}>Make another payment</button>}</>}</div>
     {paid&&session&&<PaymentReceiptActions id={session.id} token={session.token} onVerified={setReceipt}/>}
     {paid && <div className="payment-thanks"><Heart size={30} fill="currentColor" /><h2>Thank You!</h2><p>We appreciate your continued support.</p></div>}
    </>}

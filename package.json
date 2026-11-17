@@ -21,6 +21,7 @@
     "test:paynow": "node scripts/test-opus-pay-paynow.cjs",
     "preview:checkout": "node scripts/serve-opus-pay-preview.cjs",
     "test:checkout:viewports": "node scripts/test-opus-pay-viewports.cjs",
+    "test:checkout:switch-method": "node scripts/test-opus-pay-method-switch.cjs",
     "test:checkout:loading": "node scripts/test-opus-pay-loading.cjs",
     "test:checkout:floating": "node scripts/test-opus-pay-floating.cjs",
     "test:checkout:no-scroll": "node scripts/test-opus-pay-no-scroll.cjs"

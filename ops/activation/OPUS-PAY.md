@@ -153,3 +153,22 @@ artwork. The two group surfaces remain mounted in loading/error states, layering
 resets on failure and decorative cues pause. `test:checkout:loading` exercises
 these conditions without gateway requests. The authorisation paragraph spans
 the form width and is explicitly centred on desktop and mobile.
+
+## Changing method after a hosted checkout
+
+Change method is available on both entry and unpaid return/status screens. A
+known previous attempt retains its private status link; changing creates a new
+attempt only after a user explicitly submits the new method. Earlier statuses
+are checked first: paid attempts return to their receipt, while unconfirmed
+attempts remain blocked against duplicate initiation. Switching does not cancel
+a gateway request. Unknown/ambiguous attempts retain their original fingerprint.
+Domain/care order linkage and server-side single-attempt safeguards remain in
+force; an unavailable private order capability cannot become a generic payment.
+`test:checkout:switch-method` covers return, legacy browser-back recovery, an
+already-paid previous attempt and an unknown ambiguous attempt, with mocked APIs.
+
+Floating captions now have a transparent background. Closed/open base SVG paths
+create an actual label-sized border gap; the field's border itself is transparent.
+Autofill-coloured backgrounds therefore blend through the caption rather than
+showing a white rectangle. Valid/invalid colours are rendered on the SVG base
+path, while the focus tracer overlays it.

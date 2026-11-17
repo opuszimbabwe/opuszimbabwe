@@ -538,3 +538,23 @@
 .opus-picker-feedback{overflow-wrap:anywhere}
 .opus-group-controls button:disabled{cursor:default;opacity:.65}
 @media(max-width:700px){.opus-logo-fallback{font-size:11px}}
+/* A real opening in the outline: transparent captions blend with autofill/fill colours. */
+.opus-pay-page .opus-detail-card .opus-float-caption{background:transparent!important}
+.opus-pay-page .opus-detail-card .opus-field-orbit{opacity:1}
+.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-base{stroke:#d8dde4;stroke-width:1;stroke-dasharray:none;stroke-dashoffset:0;animation:none!important}
+.opus-pay-page .opus-detail-card .opus-outline-open{display:none}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-open,.opus-pay-page .opus-detail-card .opus-float-field[data-filled=true] .opus-outline-open{display:block}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-closed,.opus-pay-page .opus-detail-card .opus-float-field[data-filled=true] .opus-outline-closed{display:none}
+.opus-pay-page .opus-detail-card .opus-float-field input,.opus-pay-page .opus-detail-card .opus-float-field select,.opus-pay-page .opus-detail-card .opus-float-field input:focus,.opus-pay-page .opus-detail-card .opus-float-field select:focus,.opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) input,.opus-pay-page .opus-detail-card .opus-float-field[data-invalid=true] input{border-color:transparent}
+.opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) .opus-outline-base{stroke:#278052;stroke-width:2}
+.opus-pay-page .opus-detail-card .opus-float-field[data-invalid=true] .opus-outline-base{stroke:#c83242;stroke-width:1.5}
+.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-stroke,.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-glow{opacity:0}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-stroke{opacity:1}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-glow{opacity:.65}
+.opus-previous-attempts{position:fixed;z-index:30;right:18px;bottom:12px;max-width:min(340px,calc(100vw - 36px));padding:10px 14px;border:1px solid #e0e3e8;border-radius:13px;background:#fffffff2;box-shadow:0 5px 20px #202c4015;font-size:10px;color:#555d6b}
+.opus-previous-attempts summary{cursor:pointer;font-weight:600}.opus-previous-attempts p{font-size:10px;line-height:1.5;margin:8px 0}.opus-previous-attempts a{display:flex;align-items:center;justify-content:space-between;margin-top:6px;color:#293648;text-decoration:underline;text-underline-offset:3px}
+.opus-pay-page[data-keyboard=true] .opus-previous-attempts{top:3px;bottom:auto;right:8px;padding:7px 10px}
+.opus-pay-page .opus-detail-card .opus-float-field:has(input:autofill) .opus-float-caption{left:13px;top:0;transform:translate(0,-50%);font-size:10px;font-weight:700;color:#444b57}
+.opus-pay-page .opus-detail-card .opus-float-field:has(input:autofill) .opus-outline-open{display:block}
+.opus-pay-page .opus-detail-card .opus-float-field:has(input:autofill) .opus-outline-closed{display:none}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .opus-float-field:has(input:autofill) .opus-float-caption{left:7px;font-size:9px}
