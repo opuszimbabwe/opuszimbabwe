@@ -1,0 +1,211 @@
+/* Approved Opus Pay concept, reference canvas 1536 × 1024. */
+@font-face{font-family:OpusPoppins;src:url('/fonts/poppins-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:OpusPoppins;src:url('/fonts/poppins-latin-500-normal.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:OpusPoppins;src:url('/fonts/poppins-latin-600-normal.woff2') format('woff2');font-weight:600;font-display:swap}
+@font-face{font-family:OpusPoppins;src:url('/fonts/poppins-latin-700-normal.woff2') format('woff2');font-weight:700;font-display:swap}
+.opus-pay-page,.opus-pay-page *{box-sizing:border-box}
+.opus-pay-page{font-family:OpusPoppins,Poppins,sans-serif;--opus-ink:#131415;--opus-muted:#73757f;--opus-orange:#ef6719;min-height:100svh;padding:0 24px 45px;color:var(--opus-ink);isolation:isolate;overflow:clip;background:#c8c9d1;background-image:radial-gradient(ellipse at 9% 59%,#e6d2c044 0,transparent 42%),radial-gradient(ellipse at 92% 48%,#ead2c333 0,transparent 42%),radial-gradient(ellipse at 52% 4%,#eef0f2a8 0,transparent 44%),radial-gradient(ellipse at 47% 85%,#ebe9e49c 0,transparent 41%),linear-gradient(126deg,#c5c9d3 0%,#b7bbc8 33%,#d6d4d7 57%,#b9beca 100%);background-attachment:fixed}
+.opus-pay-page::before{position:fixed;inset:-80px;z-index:-1;content:'';width:auto;height:auto;border-radius:0;transform:none;box-shadow:none;background:radial-gradient(ellipse at 18% 18%,#f2ecea66,transparent 29%),radial-gradient(ellipse at 75% 42%,#d8bbac30,transparent 25%),radial-gradient(ellipse at 12% 84%,#969faf40,transparent 35%),radial-gradient(ellipse at 86% 90%,#e0d3c64a,transparent 37%);filter:blur(38px);pointer-events:none}
+.opus-pay-page::after{display:none}
+.opus-pay-page .opus-pay-sheet{width:min(1084px,100%);max-width:none;margin:0 auto;padding:0;border:0;background:none;box-shadow:none;border-radius:0;overflow:visible}
+.opus-pay-sheet::after{display:none}
+.opus-pay-header{height:203px;padding-top:46px;display:flex;justify-content:center;align-items:flex-start}
+.opus-pay-brand{display:flex;align-items:center;flex-direction:column;text-decoration:none;color:inherit;opacity:.67;width:396px;max-width:80vw}
+.opus-pay-wordmark{display:flex;align-items:center;justify-content:center;width:100%;height:55px;gap:7px}
+.opus-pay-original{display:block;width:218px;height:54px;position:relative;overflow:hidden;flex:none}
+.opus-pay-original img{position:absolute;width:235px;max-width:none;height:auto;top:-3px;left:-9px}
+.opus-pay-pay{font-size:55px;line-height:1;font-weight:800;font-style:italic;letter-spacing:-3px;background:linear-gradient(110deg,#d70c24 12%,#fa8813 95%);color:transparent;background-clip:text;-webkit-background-clip:text;transform:skew(-3deg)}
+.opus-pay-wordmark>svg{width:39px;height:39px;flex:none;margin-left:2px}
+.opus-pay-attribution{font-size:25px;font-weight:700;line-height:1.25;color:#636570;margin-top:3px;letter-spacing:-.7px}
+.opus-method-picker{position:relative}
+.opus-method-group{position:relative;isolation:isolate;height:240px;padding:80px 56px 27px}
+.opus-mobile-group{height:336px;margin-top:46px;padding-top:87px}
+.opus-notch{position:absolute;inset:0;width:100%;height:100%;z-index:-1;overflow:visible;filter:drop-shadow(0 18px 17px #2f35452b)}
+.opus-group-title{position:absolute;top:2px;left:50%;transform:translateX(-50%);white-space:nowrap;margin:0!important;font-size:28px!important;line-height:42px!important;font-weight:600!important;letter-spacing:-.65px;color:#747680}
+.opus-logo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;justify-items:center;row-gap:17px;height:100%}
+.opus-method-button{position:relative;display:flex;align-items:center;justify-content:center;width:190px;height:98px;max-width:100%;margin:0;padding:12px 19px;border:0;border-radius:0 0 15px 0;background:transparent;color:inherit;cursor:pointer;transition:box-shadow 110ms ease-out,transform 110ms ease-out;-webkit-tap-highlight-color:transparent}
+.opus-method-button:hover,.opus-method-button[data-cue=true]{box-shadow:9px 13px 15px -8px #333a4c35}
+.opus-method-button:focus-visible{outline:2px solid #b95623;outline-offset:7px;box-shadow:9px 13px 15px -8px #333a4c35}
+.opus-method-button[aria-disabled=true]{cursor:help}
+.opus-method-button:active{transform:translateY(1px)}
+.opus-provider-art{position:relative;display:block;width:150px;height:53px;overflow:hidden;pointer-events:none;flex:none}
+.opus-provider-art img{position:absolute;width:100%;height:100%;object-fit:contain;max-width:none}
+.opus-art-visa{width:112px;height:42px}.opus-art-visa img{width:112px;height:112px;top:-35px}
+.opus-art-mastercard{width:194px;height:44px}
+.opus-art-zimswitch{width:126px;height:58px}.opus-art-zimswitch img{width:140px;height:140px;left:-7px;top:-37px}
+.opus-art-ecocash{width:155px;height:45px}
+.opus-art-innbucks{width:190px;height:45px}.opus-art-innbucks img{width:234px;height:94px;top:-25px;left:-22px}
+.opus-art-omari{width:143px;height:46px}.opus-art-omari img{width:194px;height:103px;top:-30px;left:-31px}
+.opus-art-onemoney{width:125px;height:83px}
+.opus-art-pos2u{width:162px;height:46px}
+.opus-art-telecash{width:187px;height:65px}
+.opus-picker-feedback{position:absolute;top:calc(100% + 14px);left:0;width:100%;text-align:center;font-size:12px;color:#393d48;line-height:1.6}
+.opus-picker-feedback button{margin-left:8px;text-decoration:underline}
+.opus-pay-footer{text-align:center;position:relative;max-width:1084px;margin:73px auto 0;color:#363d50;font-size:17px;line-height:1.5}
+.opus-footer-rule{display:block;width:77px;height:4px;border-radius:3px;background:linear-gradient(90deg,#f5142b,#ff9614);margin:0 auto 20px}
+.opus-pay-footer p{display:flex;align-items:center;justify-content:center;gap:19px;margin:0 0 8px;font-weight:500}
+.opus-pay-footer a{color:inherit;text-decoration:none}.opus-pay-footer a:hover{text-decoration:underline;text-underline-offset:4px}
+.opus-pay-footer small{font-size:15px;display:block;font-weight:400}
+.opus-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.opus-pay-page .payment-form{margin:0}.opus-pay-page .payment-notice{margin:0 auto 16px;max-width:650px}
+.opus-pay-page .opus-detail-card{max-width:620px;margin:0 auto;padding:34px 44px 32px;border:0;border-radius:24px;background:#fff;box-shadow:0 18px 34px #30374824;outline:none}
+.opus-pay-page[data-motion=true] .opus-detail-card{animation:opus-reveal 260ms cubic-bezier(.2,.7,.25,1) both}
+@keyframes opus-reveal{from{opacity:.5;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.opus-selected-method{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:23px;min-height:55px}
+.opus-selected-method button{font-size:12px;color:#646775;text-decoration:underline;text-underline-offset:4px}
+.opus-pay-page .opus-detail-card h1{font-size:23px;font-weight:600;margin:0 0 24px;letter-spacing:-.5px}
+.opus-pay-page .payment-form label{color:#333744;font-size:12px;font-weight:500;gap:7px}
+.opus-pay-page .payment-form input,.opus-pay-page .payment-form select{font-family:inherit;border:1px solid #d0d2d8;border-radius:8px;min-height:49px;padding:11px 14px;color:#181b24;font-size:14px;background:#fff}
+.opus-pay-page .payment-form input:focus-visible,.opus-pay-page .payment-form select:focus-visible{outline:2px solid #da6e30;outline-offset:2px;border-color:transparent}
+.opus-pay-page .payment-form input[aria-invalid=true]{border-color:#be3131}
+.opus-pay-page input:disabled{background:#f5f5f6;color:#6b6e76}
+.opus-reference-field{margin-bottom:20px}.opus-amount-currency{display:grid;grid-template-columns:1fr 110px;gap:12px}
+.opus-email-field{margin-top:18px}.opus-pay-page .payment-field-feedback{font-size:11px;margin:7px 0 13px;color:#727680;line-height:1.5}.opus-pay-page .payment-field-feedback.is-error{color:#ae2424}
+.opus-pay-page .payment-optional{margin:16px 0 22px}.opus-pay-page .payment-optional summary{font-size:12px;color:#737680;cursor:pointer}.opus-pay-page .payment-optional label{margin-top:14px}
+.opus-total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e4e4e7;padding-top:18px;margin-top:22px;font-size:13px;color:#737680}.opus-total strong{font-size:24px;letter-spacing:-.7px;color:#111}
+.opus-pay-page .payment-submit{font-family:inherit;background:#111;color:#fff;border:0;border-radius:9px;box-shadow:none;min-height:51px;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;margin:20px 0 10px}
+.opus-pay-page .payment-submit svg{color:#ee6b23;width:17px}.opus-pay-page .payment-submit:hover:not(:disabled){background:#242424}.opus-pay-page .payment-submit:disabled{background:#787b83;color:#fff;cursor:not-allowed}
+.opus-pay-page .payment-small{font-size:11px;color:#777b85;line-height:1.6}
+.opus-pay-page .payment-receipt{padding:0 30px 35px;max-width:760px;border-radius:0 0 24px 24px;background:#fff}
+.opus-pay-page .payment-receipt .opus-pay-header{height:170px}.opus-pay-page .payment-receipt .payment-outcome h1{font-size:28px}.opus-pay-page .payment-modal{font-family:inherit}
+@media(min-width:1100px) and (max-height:900px){.opus-pay-header{height:160px;padding-top:28px}.opus-method-group{height:205px;padding-top:64px}.opus-mobile-group{height:285px;margin-top:35px;padding-top:68px}.opus-pay-footer{margin-top:46px;font-size:14px}.opus-pay-footer small{font-size:12px}.opus-pay-page{padding-bottom:24px}}
+@media(max-width:750px){.opus-pay-page{padding:0 16px 26px}.opus-pay-header{height:155px;padding-top:31px}.opus-pay-brand{width:300px}.opus-pay-wordmark{transform:scale(.78);transform-origin:center;height:45px;width:396px}.opus-pay-attribution{font-size:18px;margin-top:0}.opus-method-group{padding:63px 13px 20px;height:185px}.opus-mobile-group{height:278px;margin-top:32px;padding-top:65px}.opus-group-title{font-size:clamp(12px,3.1vw,20px)!important;letter-spacing:-.3px;line-height:37px!important;top:1px}.opus-card-group .opus-group-title{font-size:21px!important}.opus-method-button{width:100%;height:83px;padding:4px;border-radius:0 0 9px 0}.opus-provider-art{transform:scale(.63)}.opus-art-mastercard{transform:scale(.48)}.opus-art-innbucks{transform:scale(.51)}.opus-art-telecash{transform:scale(.52)}.opus-art-pos2u{transform:scale(.58)}.opus-art-onemoney{transform:scale(.62)}.opus-logo-grid{row-gap:7px;column-gap:0}.opus-pay-footer{margin-top:50px;font-size:10px}.opus-pay-footer p{gap:9px;flex-wrap:wrap}.opus-pay-footer small{font-size:10px}.opus-footer-rule{width:53px;height:3px;margin-bottom:15px}.opus-pay-page .opus-detail-card{padding:25px 23px;border-radius:20px}.opus-pay-page .payment-receipt{padding:0 18px 28px}.opus-picker-feedback{font-size:10px}.opus-pay-page .payment-form input{font-size:16px}.opus-pay-page .payment-receipt .opus-pay-header{height:150px}}
+@media(prefers-reduced-motion:reduce){.opus-pay-page *,.opus-pay-page *::before,.opus-pay-page *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(max-width:700px){
+ .opus-pay-page{padding:0 15px 28px}.opus-pay-header{height:150px;padding-top:30px}
+ .opus-pay-brand{width:285px}.opus-pay-wordmark{height:42px;gap:4px}.opus-pay-original{width:158px;height:39px}.opus-pay-original img{width:170px;left:-6px;top:-2px}.opus-pay-pay{font-size:40px;letter-spacing:-2px}.opus-pay-wordmark>svg{width:28px;height:28px}.opus-pay-attribution{font-size:18px}
+ .opus-method-group{height:200px;padding:65px 8px 18px}.opus-mobile-group{height:290px;padding-top:66px;margin-top:30px}
+ .opus-group-title{font-size:15px!important;line-height:38px!important;letter-spacing:-.25px}.opus-logo-grid{row-gap:20px}.opus-method-button{width:100%;height:82px;padding:10px 5px;border-radius:0 0 10px 0}
+ .opus-provider-art{transform:scale(.62)}.opus-art-mastercard{transform:scale(.48)}.opus-art-innbucks{transform:scale(.52)}.opus-art-telecash{transform:scale(.53)}.opus-art-pos2u{transform:scale(.6)}.opus-art-onemoney{transform:scale(.66)}.opus-art-ecocash{transform:scale(.6)}
+ .opus-pay-footer{margin-top:60px;font-size:10px}.opus-pay-footer p{gap:10px;flex-wrap:wrap;margin-bottom:7px}.opus-pay-footer small{font-size:10px}.opus-footer-rule{width:51px;height:3px;margin-bottom:17px}
+ .opus-pay-page .opus-detail-card{padding:24px 22px;border-radius:20px}.opus-selected-method{margin-bottom:12px}.opus-selected-method .opus-provider-art{transform:scale(.8);transform-origin:left center}.opus-pay-page .opus-detail-card h1{font-size:21px}.opus-pay-page .payment-form input,.opus-pay-page .payment-form select{font-size:16px}.opus-amount-currency{grid-template-columns:1fr 90px;gap:8px}.opus-pay-page .payment-receipt{padding:0 18px 26px}.opus-pay-page .payment-receipt .opus-pay-header{height:145px}
+ .opus-picker-feedback{font-size:10px;padding:0 8px}
+}
+@media(prefers-reduced-motion:reduce){.opus-pay-page *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{.opus-pay-page{background:white!important}.opus-pay-page::before,.opus-pay-footer{display:none}.opus-pay-page .payment-receipt{box-shadow:none}}
+/* Optical alignment of the original provider artwork; never stretch a logo. */
+.opus-pay-original{height:48px;transform:skew(-8deg)}
+.opus-art-zimswitch{height:66px}
+.opus-art-omari{height:38px}
+.opus-art-telecash{width:187px;height:42px}.opus-art-telecash img{width:239px;height:134px;left:-26px;top:-45px;object-fit:fill}
+.opus-art-onemoney{width:125px;height:69px}.opus-art-onemoney img{width:156px;height:111px;left:-15px;top:-14px;object-fit:fill}
+.opus-pay-footer a{display:inline-flex;align-items:center;gap:5px}
+.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:165px;padding-top:30px}
+.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:38px}
+@media(max-width:700px){.opus-pay-original{height:35px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:140px}}
+
+.opus-pay-footer a{display:inline-flex;align-items:center;gap:4px}.opus-pay-page .payment-optional summary{list-style:none}.opus-pay-page .payment-optional summary::-webkit-details-marker{display:none}
+
+@media(max-width:700px){.opus-pay-footer p,.opus-pay-footer a{font-size:11px}.opus-pay-footer p{flex-wrap:nowrap;gap:7px}.opus-pay-footer a svg{width:11px;height:11px}.opus-group-title{font-size:13px!important}.opus-pay-footer{margin-top:55px}}
+
+/* Provider viewports include complete symbols while excluding parent taglines. */
+.opus-art-zimswitch{width:132px;height:72px;overflow:visible}
+.opus-art-omari{width:151px;height:47px;overflow:visible}
+.opus-art-zimswitch>svg,.opus-art-omari>svg{display:block;width:100%;height:100%;overflow:hidden}
+.opus-art-pos2u{width:162px;height:44px}
+/* Neutralise inherited site paragraph widths: both footer rows share the axis. */
+.opus-pay-page .opus-pay-footer p{width:100%;max-width:none;margin:0 auto 8px;padding:0;font-size:inherit;line-height:1.5;justify-content:center;align-items:center}
+.opus-pay-page .opus-pay-footer a{font-size:inherit;line-height:1.5;flex:none}
+.opus-pay-page .opus-pay-footer small{width:100%;max-width:none;margin:0 auto;text-align:center}
+@media(max-width:700px){.opus-pay-page .opus-pay-footer{font-size:11px}.opus-art-zimswitch{transform:scale(.62)}.opus-art-omari{transform:scale(.62)}}
+/* Compact, viewport-aware layout: preserve the notched design without filling
+   the screen with oversized surfaces, including on short/zoomed desktops. */
+.opus-pay-page{padding:0 24px 28px}
+.opus-pay-page .opus-pay-sheet{width:min(760px,100%)}
+.opus-pay-header{height:140px;padding-top:30px}
+.opus-pay-brand{width:270px;max-width:75vw}
+.opus-pay-wordmark{width:270px;height:40px;gap:5px;transform:none}
+.opus-pay-original{width:149px;height:34px;transform:none}
+.opus-pay-original img{width:161px;left:-6px;top:-2px}
+.opus-pay-pay{font-size:38px;letter-spacing:-1.8px;font-style:normal;transform:none;font-weight:700}
+.opus-pay-wordmark>svg{width:27px;height:27px;margin-left:0}
+.opus-pay-attribution{font-size:17px;letter-spacing:-.4px;margin-top:2px}
+.opus-method-group{height:160px;padding:49px 34px 15px}
+.opus-mobile-group{height:235px;margin-top:32px;padding-top:52px}
+.opus-group-title{font-size:20px!important;line-height:32px!important;top:0;letter-spacing:-.4px}
+.opus-notch{filter:drop-shadow(0 13px 15px #2f354523)}
+.opus-logo-grid{row-gap:10px}
+.opus-method-button{width:152px;height:76px;padding:7px 10px;border-radius:0 0 11px 0}
+.opus-provider-art{transform:scale(.7)}
+.opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.64)}
+.opus-art-zimswitch,.opus-art-omari{transform:scale(.7)}
+.opus-pay-footer{max-width:760px;margin-top:44px;font-size:12px}
+.opus-pay-footer small{font-size:11px}
+.opus-footer-rule{width:55px;height:3px;margin-bottom:15px}
+.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:120px;padding-top:25px}
+.opus-pay-page .opus-detail-card{max-width:520px;padding:24px 32px}
+.opus-selected-method{min-height:42px;margin-bottom:12px}
+.opus-selected-method .opus-provider-art{transform-origin:left center}
+.opus-pay-page .opus-detail-card h1{font-size:21px;margin-bottom:18px}
+.opus-reference-field{margin-bottom:15px}
+@media(min-width:701px) and (max-height:760px){
+ .opus-pay-header{height:105px;padding-top:20px}
+ .opus-method-group{height:140px;padding-top:40px;padding-bottom:11px}
+ .opus-mobile-group{height:200px;margin-top:25px;padding-top:43px}
+ .opus-method-button{height:66px}
+ .opus-pay-footer{margin-top:30px}
+ .opus-pay-page{padding-bottom:22px}
+}
+@media(max-width:700px){
+ .opus-pay-page{padding:0 18px 22px}
+ .opus-pay-page .opus-pay-sheet{width:min(440px,100%)}
+ .opus-pay-header{height:119px;padding-top:24px}
+ .opus-pay-brand,.opus-pay-wordmark{width:245px;max-width:100%;height:auto}
+ .opus-pay-wordmark{height:36px;gap:4px}
+ .opus-pay-original{width:134px;height:31px}
+ .opus-pay-original img{width:145px;left:-5px;top:-2px}
+ .opus-pay-pay{font-size:34px;letter-spacing:-1.5px}
+ .opus-pay-wordmark>svg{width:24px;height:24px}
+ .opus-pay-attribution{font-size:15px;line-height:21px}
+ .opus-method-group{height:145px;padding:42px 7px 11px}
+ .opus-mobile-group{height:215px;margin-top:28px;padding-top:46px}
+ .opus-group-title{font-size:12px!important;line-height:29px!important;letter-spacing:-.3px}
+ .opus-card-group .opus-group-title{font-size:17px!important}
+ .opus-logo-grid{row-gap:7px}
+ .opus-method-button{width:100%;height:65px;padding:5px 2px}
+ .opus-provider-art{transform:scale(.5)}
+ .opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.43)}
+ .opus-art-zimswitch,.opus-art-omari{transform:scale(.5)}
+ .opus-art-ecocash{transform:scale(.48)}
+ .opus-art-pos2u{transform:scale(.49)}
+ .opus-art-onemoney{transform:scale(.52)}
+ .opus-pay-footer{margin-top:39px;font-size:10px}
+ .opus-pay-page .opus-pay-footer p{gap:6px}
+ .opus-pay-footer small{font-size:9px}
+ .opus-footer-rule{width:43px;height:3px;margin-bottom:13px}
+ .opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:110px;padding-top:20px}
+ .opus-pay-page .opus-detail-card{padding:22px 20px}
+}
+@media(min-width:701px) and (max-height:780px){
+ .opus-pay-header{height:102px;padding-top:19px}
+ .opus-method-group{height:140px;padding-top:43px;padding-bottom:12px}
+ .opus-mobile-group{height:195px;margin-top:26px;padding-top:45px}
+ .opus-method-button{height:65px}
+ .opus-pay-footer{margin-top:30px;font-size:11px}
+ .opus-pay-footer small{font-size:10px}
+ .opus-footer-rule{margin-bottom:12px}
+ .opus-pay-page{padding-bottom:20px}
+}
+@media(min-width:701px) and (max-height:680px){
+ .opus-pay-header{height:82px;padding-top:12px}
+ .opus-method-group{height:120px;padding-top:38px;padding-bottom:9px}
+ .opus-mobile-group{height:168px;margin-top:24px;padding-top:39px}
+ .opus-logo-grid{row-gap:4px}
+ .opus-method-button{height:55px}
+ .opus-provider-art{transform:scale(.61)}
+ .opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.56)}
+ .opus-art-zimswitch,.opus-art-omari{transform:scale(.61)}
+ .opus-pay-footer{margin-top:24px}
+ .opus-footer-rule{margin-bottom:10px}
+ .opus-pay-page{padding-bottom:18px}
+}
+@media(max-width:700px) and (max-height:680px){
+ .opus-pay-header{height:100px;padding-top:17px}
+ .opus-method-group{height:128px;padding-top:39px;padding-bottom:8px}
+ .opus-mobile-group{height:185px;margin-top:24px;padding-top:42px}
+ .opus-logo-grid{row-gap:3px}
+ .opus-method-button{height:58px}
+ .opus-pay-footer{margin-top:28px}
+ .opus-footer-rule{margin-bottom:10px}
+ .opus-pay-page{padding-bottom:16px}
+}

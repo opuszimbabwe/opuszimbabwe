@@ -1,28 +1,28 @@
 {
-  "deployment_id": "022dbbd9-eded-4d06-8e67-9ca6f491ff43",
-  "url": "https://022dbbd9.opuszimbabwe.pages.dev",
+  "deployment_id": "e321d631-f2d9-4b46-84a7-aa9d97880ac2",
+  "url": "https://e321d631.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "694f4131b10c58ea738912025da43c5a41dbdc13",
-  "baseline": "9ede74a7-6361-4bd6-8490-97e3b7ed7ffd",
+  "commit": "c79d9607ea3cb9f010b4851c197b8b46f9ab13c1",
+  "baseline": "022dbbd9-eded-4d06-8e67-9ca6f491ff43",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-990cc43f5a434d61.js",
-      "hash": "990cc43f5a434d61d76232ddc2f4af83",
-      "bytes": 39903
+      "file": "/_next/static/chunks/app/payments/page-f5e1921d9b033977.js",
+      "hash": "f5e1921d9b0339770ef224d72df478ab",
+      "bytes": 39911
     },
     {
-      "file": "/_next/static/css/opus-pay-c908331b659961c8.css",
-      "hash": "a42e7ab41fa44caee77604155c7723fd",
-      "bytes": 15357
+      "file": "/_next/static/css/opus-pay-f16428eb033cca61.css",
+      "hash": "d04251d90b6157b0f79811e7427dd0f6",
+      "bytes": 20576
     },
     {
       "file": "/payments/index.html",
-      "hash": "d95a338a936e0b000d82b024a14761b2",
-      "bytes": 12792
+      "hash": "62c784f375f84b65969dcbf9b4ea2e78",
+      "bytes": 12816
     },
     {
       "file": "/payments/index.txt",
-      "hash": "a307294ac45a1c7c110ceca12dca734e",
+      "hash": "1bab0a01d2c85f9da579df3f27050343",
       "bytes": 3557
     },
     {
@@ -42,8 +42,8 @@
     },
     {
       "file": "/images/opus-pay/social-preview.png",
-      "hash": "c0d5536b2905a4009887349f565c7dbd",
-      "bytes": 40346
+      "hash": "df7af60811aefa1dc79b0ea36af6b6d0",
+      "bytes": 36099
     },
     {
       "file": "/images/opus-pay/visa.svg",
@@ -82,28 +82,19 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-compact",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
-  "preview_deployment_id": "96098d76-9b0c-4937-9204-0649c0a7e071",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
-    "github_ci": "https://github.com/opuszimbabwe/opuszimbabwe/actions/runs/44107161193",
     "typecheck": true,
-    "mocked_gateway_tests": true,
-    "reconstructed_handlers_and_workerd": true,
-    "preserved_runtime_browser_tests": true,
-    "responsive_desktop_and_mobile": true,
-    "live_changed_assets_match_tested_release": 15,
-    "html_normalisation": "Cloudflare email-protection rewriting only; decoded address verified",
-    "public_content_structurally_unchanged": true,
-    "nine_live_methods_and_gateway_routing": true,
-    "both_custom_domains_active": true,
-    "admin_authentication": "Cloudflare Access redirects unauthenticated requests to login",
-    "four_supporting_workers_unchanged": true,
-    "database_migrations_applied": false,
-    "real_payment_attempts": 0,
-    "direct_live_browser_capture": "Not performed: Chromium proxy CA is untrusted; automatic approval review rejected changing persistent certificate trust. HTTPS asset/API verification and preserved-runtime browser checks were used."
+    "preserved_runtime_browser": true,
+    "viewport_sizes_tested": 13,
+    "smallest_viewport": "320x568",
+    "largest_viewport": "1920x1080",
+    "all_selector_viewports_fit_without_scroll": true,
+    "upright_brand": true,
+    "backend_unchanged": true
   }
 }
