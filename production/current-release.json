@@ -1,28 +1,28 @@
 {
-  "deployment_id": "013ffabb-e403-47a5-a92d-a95f26808236",
-  "url": "https://013ffabb.opuszimbabwe.pages.dev",
+  "deployment_id": "3c8c980b-d2a3-4781-a3fa-83cf00044fc9",
+  "url": "https://3c8c980b.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "3c95a093c6166ad2ba48b454b81d5ba0d1bd4ce0",
-  "baseline": "8d3c91a9-d45e-4b6d-9cfc-53aacd5d190b",
+  "commit": "6a5de85313bbdbb31c8a00c162e6131f977b70b2",
+  "baseline": "013ffabb-e403-47a5-a92d-a95f26808236",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-6b8db8ca977a06e4.js",
-      "hash": "6b8db8ca977a06e4aa798bb9780edbcd",
-      "bytes": 155174
+      "file": "/_next/static/chunks/app/payments/page-8cd53c02118fd0d4.js",
+      "hash": "8cd53c02118fd0d48025698daca99096",
+      "bytes": 155435
     },
     {
-      "file": "/_next/static/css/opus-pay-8661c601bccf1352.css",
-      "hash": "f9b1a2e6dad424557f4cc68770af691e",
-      "bytes": 73196
+      "file": "/_next/static/css/opus-pay-bc3322e7acfd4578.css",
+      "hash": "6a6e53e0fc4b0a8cbacea978067c494d",
+      "bytes": 76126
     },
     {
       "file": "/payments/index.html",
-      "hash": "40f6c8f0b893d07d8c6eaf824bd38b84",
+      "hash": "1ceaf14023e3136d312b9b5e5fbbd2e9",
       "bytes": 108918
     },
     {
       "file": "/payments/index.txt",
-      "hash": "312144040163f740fed750383793aa40",
+      "hash": "9e93eecbbc34c185ab21553c70f26501",
       "bytes": 3557
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": [],
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-notch-examples",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-rounded-chevron",
   "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -196,11 +196,21 @@
     "horizontal_notch_edge_removed": true,
     "notch_fractional_offset_dpr_checks": [
       1,
+      1.25,
+      1.5,
       2,
       3
     ],
     "reference_example_on_empty_focus": true,
     "omari_code_example_on_empty_focus": true,
-    "examples_are_hints_not_values": true
+    "examples_are_hints_not_values": true,
+    "notches_use_single_continuous_clip": true,
+    "currency_bold_rounded_chevron": true,
+    "currency_chevron_rotates_on_open": true,
+    "currency_picker_interaction_widths": [
+      1366,
+      390,
+      320
+    ]
   }
 }
