@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, ShieldCheck, UserRound, Wallet, CircleAlert } from 'lucide-react';
 import { SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt } from '@/lib/payments';
 
+import OpusFloatingField,{OpusFloatingCurrency} from '@/components/OpusFloatingField';
 import PaymentMethodPicker,{OpusPayBrand,PaymentBrand,motionAllowed} from '@/components/PaymentMethodPicker';
 import {receiptDate} from '@/lib/receipt-date';
 import PaymentReceiptActions from '@/components/PaymentReceiptActions';
@@ -40,6 +41,10 @@ export default function PaymentCheckout() {
  const [resumable, setResumable] = useState(false);
  const [phoneTouched, setPhoneTouched] = useState(false);
  const [amountTouched,setAmountTouched]=useState(false);
+ const [referenceTouched,setReferenceTouched]=useState(false);
+ const [notice,setNotice]=useState('');
+ const [validationPulse,setValidationPulse]=useState(0);
+
  const [configRetry, setConfigRetry] = useState(0);
  const inFlight = useRef(false);
  const attempt = useRef<{ token: string; form: Form;care?:Session;domain?:Session } | null>(null);
@@ -132,7 +137,7 @@ export default function PaymentCheckout() {
   void poll();
   return () => { stopped = true; controller.abort(); clearTimeout(timer); };
  }, [session, checkStatus]);
- function change(key: keyof Form, value: string) { setForm(previous => ({ ...previous, [key]: value, ...(key === 'currency' ? { method: '' } : {}) })); if (key === 'method' || key === 'currency' || key==='phone') setPhoneTouched(false); if(key==='amount'||key==='method')setAmountTouched(false); setError(''); }
+ function change(key: keyof Form, value: string) { setForm(previous => ({ ...previous, [key]: value, ...(key === 'currency' ? { method: '' } : {}) })); if (key === 'method' || key === 'currency' || key==='phone') setPhoneTouched(false); if(key==='amount'||key==='method')setAmountTouched(false); if(key==='method')setReferenceTouched(false); setError(''); }
  async function pay(event: React.FormEvent) {
   event.preventDefault(); if (busy || !config?.configured || configBusy || domainLoading || domainBlocked || careLoading || careBlocked) return;
   if (!selectedMethod) return;
@@ -176,10 +181,12 @@ export default function PaymentCheckout() {
  const amountError = !form.amount ? '' : !/^\d+(\.\d{1,2})?$/.test(form.amount) ? 'Enter an amount with no more than two decimal places.' : selectedMethod && (amountValue < selectedMethod.minimumAmount || amountValue > selectedMethod.maximumAmount) ? `This method accepts ${form.currency} ${selectedMethod.minimumAmount.toFixed(2)}–${selectedMethod.maximumAmount.toFixed(2)}. Check your amount or choose another method.` : '';
  const amountFeedback=amountTouched&&amountError?(!/^\d+(\.\d{1,2})?$/.test(form.amount)?'Amount: use up to 2 decimal places.':`Amount: ${form.currency} ${selectedMethod?.minimumAmount.toFixed(2)}–${selectedMethod?.maximumAmount.toFixed(2)}.`):'';
  const phoneFeedback=phoneError?(network==='ecocash'&&!/^07[789]/.test(form.phone.replace(/^\+263/,'0'))?'Mobile: use an EcoCash number (077, 078 or 079).':'Mobile: check the full number, including 0 or +263.') :'';
- const fieldFeedback=amountFeedback||phoneFeedback;
+ const fieldFeedback=referenceTouched&&!form.invoice.trim()?'Add your invoice or project reference.':amountFeedback||phoneFeedback;
+ useEffect(()=>{if(!fieldFeedback){setNotice('');return}setNotice(fieldFeedback);const timer=setTimeout(()=>setNotice(''),5500);return()=>clearTimeout(timer)},[fieldFeedback,validationPulse]);
  const paid = receipt?.paid === true && !checkError;
  const pending = !receipt || !receipt.terminal;
  return <main className="payment-page opus-pay-page" data-motion={motion} data-keyboard={viewport.height<430}>
+  {notice&&!session&&<div id="opus-field-notice" className="opus-field-notice" role="alert"><span className="opus-notice-icon" aria-hidden="true"><CircleAlert size={20} strokeWidth={2.8}/></span><div><strong>Please check this detail</strong><p>{notice}</p></div><button type="button" aria-label="Dismiss notification" onClick={()=>setNotice('')}>×</button></div>}
   <article className={`payment-sheet ${session ? 'payment-receipt' : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
    {paid&&<div className="receipt-verified-watermark" aria-hidden="true">OPUS<span>VERIFIED</span></div>}
    <header className="opus-pay-header"><OpusPayBrand/></header>
@@ -192,12 +199,10 @@ export default function PaymentCheckout() {
      {!selectedMethod&&<PaymentMethodPicker methods={config?.methods||[]} loading={configBusy} error={configError} onRetry={()=>setConfigRetry(v=>v+1)} disabled={busy||domainLoading||domainBlocked||careLoading||careBlocked} onSelect={method=>{setMotion(motionAllowed());change('method',method.code)}}/>}
      {!configBusy && config && !config.configured && <div className="payment-notice" role="status">Online payments are being set up. {support}</div>}
      {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy||resumable} onClick={()=>change('method','')}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
-      {<div className="opus-reference-field"><label>Invoice or project reference<input name="invoice" required maxLength={120} autoComplete="off" value={form.invoice} onChange={event=>change('invoice',event.target.value)} placeholder="Invoice or project reference" disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></label></div>}
-      {<div className="opus-amount-currency"><label>Amount to pay<input name="amount" type="text" inputMode="decimal" required maxLength={12} value={form.amount} onChange={event=>change('amount',event.target.value)} onBlur={()=>setAmountTouched(true)} aria-invalid={Boolean(amountTouched&&amountError)} aria-describedby={amountFeedback?"payment-field-feedback":undefined} placeholder="0.00" disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></label><label>Currency<select aria-label="Payment currency" value="USD" disabled={busy}><option value="USD">USD</option><option value="ZiG" disabled>ZiG — temporarily unavailable</option></select></label></div>}
-      {network && <div className="payment-mobile-field"><label htmlFor="payment-mobile">{network === 'onemoney' ? 'OneMoney' : 'EcoCash'} mobile number<input id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} onChange={event => change('phone', event.target.value)} onBlur={() => setPhoneTouched(true)} aria-invalid={Boolean(phoneError)} aria-describedby={!amountFeedback&&phoneFeedback?"payment-field-feedback":undefined} placeholder={network === 'onemoney' ? '0710 000 000' : '0770 000 000'} disabled={busy} /></label></div>}
-
-      {!domainAccess&&<><label className="opus-email-field">Receipt email (optional)<input name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} value={form.email} onChange={event=>change('email',event.target.value)} placeholder="Email address" disabled={busy}/></label><label className="opus-payer-field">Payer name (optional)<input name="name" autoComplete="name" maxLength={100} value={form.name} onChange={event=>change('name',event.target.value)} disabled={busy}/></label></>}
-      {<><div className="opus-total" role="group" aria-label="Total to pay"><span id="payment-field-feedback" className={fieldFeedback?"opus-validation-status":""} role={fieldFeedback?"alert":undefined}>{fieldFeedback||'Total to pay'}</span><strong>{form.currency} {Number.isFinite(amountValue)?amountValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}</strong></div>
+      <div className="opus-reference-field"><OpusFloatingField label="Invoice or project reference" name="invoice" required maxLength={120} autoComplete="off" value={form.invoice} valid={Boolean(form.invoice.trim())} invalid={referenceTouched&&!form.invoice.trim()} onChange={value=>{setReferenceTouched(false);change('invoice',value)}} onBlur={()=>{setReferenceTouched(true);setValidationPulse(v=>v+1)}} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></div>
+      <div className="opus-amount-currency"><OpusFloatingField label="Amount to pay" name="amount" type="text" inputMode="decimal" required maxLength={12} value={form.amount} valid={Boolean(form.amount)&&!amountError} invalid={Boolean(amountTouched&&amountError)} onChange={value=>change('amount',value)} onBlur={()=>{setAmountTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={amountFeedback?'opus-field-notice':undefined} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/><OpusFloatingCurrency disabled={busy}/></div>
+      {network&&<div className="payment-mobile-field"><OpusFloatingField label={`${network==='onemoney'?'OneMoney':'EcoCash'} mobile number`} id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} valid={phoneValid} invalid={Boolean(phoneError)} onChange={value=>change('phone',value)} onBlur={()=>{setPhoneTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={phoneFeedback?'opus-field-notice':undefined} disabled={busy}/></div>}
+      {<><div className="opus-total" role="group" aria-label="Total to pay"><span>Total to pay</span><strong>{form.currency} {Number.isFinite(amountValue)?amountValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}</strong></div>
       <button type="submit" className="payment-submit" disabled={form.currency!=='USD' || busy || configBusy || domainLoading || domainBlocked || careLoading || careBlocked || !config?.configured || !phoneValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{directMobile ? 'Request payment' : (selectedMethod?.provider==='paynow'?'Continue to Paynow':'Continue to Pesepay')}</>}</button>
       <p className="payment-small text-center">{directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : `Authorise securely on ${selectedMethod?.provider==='paynow'?'Paynow':'Pesepay'}. We will confirm the result when you return.`}</p></>}
 

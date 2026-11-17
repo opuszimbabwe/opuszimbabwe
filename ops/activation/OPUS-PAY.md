@@ -14,10 +14,11 @@ brand artwork with generated imitations to match a mockup.
   is assumed.
 - Only USD initiations are allowed. ZiG is visible as a disabled option. Existing
   transaction status remains accessible.
-- The logo introduction runs once in the specified order. Pointer movement,
-  keyboard activity or touch cancels it permanently for the tab. Reduced motion,
-  data-saving, slow-connection signals or poor measured frame delivery skip it.
-- Payment details reveal from 50% opacity with an 18px translation, only when
+- The ordered logo-shadow cue runs twice initially, waits 15 seconds, then
+  repeats continuously while idle. Pointer, keyboard, touch or wheel activity
+  pauses it and restarts the 15-second timer. Hidden tabs, reduced motion and
+  data saving suspend it. `test:checkout:floating` verifies this with a clock.
+- Payment details reveal over two seconds from 50% opacity and a 24px translation, only when
   motion is permitted. No card number, PIN or CVV is collected by Opus.
 - Receipts require independent authenticated provider verification. Ambiguous
   initiations never retry; redirects and poll destinations are constrained.
@@ -81,7 +82,7 @@ details stay together in a compact form that also fits the tested keyboard viewp
 
 All fields remain together in one compact responsive form. There is no step
 navigation: reference, amount/currency, mobile number where needed, optional
-email and payer name, total and provider handoff stay visible together. Small
+total and provider handoff stay visible together. Optional entry fields are hidden. Small
 screens reduce spacing and use columns; visualViewport tracks the keyboard.
 Issued receipt documents retain their accessible document layout.
 Run `npm run test:checkout:no-scroll` for visibility and no-step assertions.
@@ -109,3 +110,24 @@ Where height permits, details use a 560px card, 38–40px controls, larger inter
 padding, a 5px label gap and 9–12px row gaps. Mobile inputs retain 16px text.
 Short desktops at least 850px wide gain a 600px two-column form so 38px controls
 fit without clipping. Tiny and keyboard viewports retain compact fallbacks.
+
+## Floating fields and layered method cards
+
+Only required fields are rendered in the entry form: reference, amount/currency
+and mobile number when required by the selected method. Optional name/email
+state is retained for pre-existing orders/attempts but no optional inputs appear.
+OpusFloatingField centres input text and idle captions; focus/content floats the
+caption to the top-left outline with a solid white break behind it. A 1.2-second
+red–orange outline rotates during focus. Valid local values turn green on blur;
+this is input validation, never a gateway/payment confirmation. Invalid blur
+shakes the field and displays a dismissible, 5.5-second white notification.
+Reduced-motion/data-saving settings disable decorative animations.
+
+Desktop hover layers one method family above the other. Leaving the picker or
+pressing Escape restores both. Touch controls choose Cards, Mobile wallets or
+Show both; returning from the form starts with both displayed. Keyboard focus
+can bring a method family forward. The custom currency picker retains native
+semantics and the disabled ZiG option. No PAN/CVV/PIN fields are collected.
+
+Run `npm run test:checkout:floating`, `test:checkout:no-scroll`,
+`test:checkout:browser` and `test:checkout:viewports` against the preserved runtime.

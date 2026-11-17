@@ -33,29 +33,29 @@ function Notch({wide=false}:{wide?:boolean}){
  return <svg className="opus-notch" ref={ref} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true"><path d={`M ${r} 0 H ${left-16} Q ${left-4} 0 ${left} 8 L ${left+(depth-16)/2} ${depth-8} Q ${left+(depth-8)/2} ${depth} ${left+(depth-8)/2+14} ${depth} H ${right-(depth-8)/2-14} Q ${right-(depth-8)/2} ${depth} ${right-(depth-16)/2} ${depth-8} L ${right} 8 Q ${right+4} 0 ${right+16} 0 H ${w-r} Q ${w} 0 ${w} ${r} V ${h-r} Q ${w} ${h} ${w-r} ${h} H ${r} Q 0 ${h} 0 ${h-r} V ${r} Q 0 0 ${r} 0 Z`} fill="white"/></svg>;
 }
 export default function PaymentMethodPicker({methods,loading,error,onRetry,onSelect,disabled=false}:{methods:LocalMethod[];loading:boolean;error:string;onRetry:()=>void;onSelect:(method:LocalMethod)=>void;disabled?:boolean}){
- const [cue,setCue]=useState(-1),[message,setMessage]=useState('');const cancelled=useRef(false),frames=useRef(0),firstFrame=useRef(0);const id='opus-payment';
- function stop(){cancelled.current=true;setCue(-1);try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}}
+ const [cue,setCue]=useState(-1),[message,setMessage]=useState(''),[activeGroup,setActiveGroup]=useState<number|null>(null),[phase,setPhase]=useState('intro'),[round,setRound]=useState(0);
+ const pickerRef=useRef<HTMLDivElement>(null),interrupt=useRef<()=>void>(()=>{});const id='opus-payment';
+ function stop(){interrupt.current()}
+ useEffect(()=>{const node=pickerRef.current,card=node?.querySelector('.opus-card-group');if(!node||!card)return;const observer=new ResizeObserver(()=>{node.style.setProperty('--opus-card-height',(card as HTMLElement).offsetHeight+'px')});observer.observe(card);return()=>observer.disconnect()},[]);
  useEffect(()=>{
-  if(loading||cancelled.current)return;
-  try{if(sessionStorage.getItem('opus-pay-intro-seen'))return}catch{}
-  let raf=0,timer:ReturnType<typeof setTimeout>,index=0,disposed=false;
-  const stopForUser=()=>{cancelled.current=true;setCue(-1);try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}};
-  const connection=(navigator as Navigator&{connection?:EventTarget}).connection;
-  const media=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const preferenceChanged=()=>{if(!motionAllowed())stopForUser()};
-  window.addEventListener('pointermove',stopForUser,{once:true});window.addEventListener('pointerdown',stopForUser,{once:true});window.addEventListener('keydown',stopForUser,{once:true});media.addEventListener('change',preferenceChanged);connection?.addEventListener('change',preferenceChanged);
-  const advance=()=>{if(disposed||cancelled.current||!motionAllowed()||document.hidden){setCue(-1);return}try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}setCue(index++);if(index<9)timer=setTimeout(advance,500);else timer=setTimeout(()=>{setCue(-1);cancelled.current=true},500)};
-  // Sample actual frame delivery before allowing cosmetic motion.
-  const sample=(time:number)=>{if(!firstFrame.current)firstFrame.current=time;frames.current++;if(time-firstFrame.current<180){raf=requestAnimationFrame(sample);return}if(frames.current>=7&&motionAllowed())timer=setTimeout(advance,220);else stopForUser()};
-  let previous=0,slowFrames=0,monitor=0;
-  const measure=(time:number)=>{if(previous&&time-previous>48)slowFrames++;else slowFrames=Math.max(0,slowFrames-1);previous=time;if(slowFrames>=3){stopForUser();return}if(!cancelled.current&&!disposed)monitor=requestAnimationFrame(measure)};
-  if(motionAllowed()){raf=requestAnimationFrame(sample);monitor=requestAnimationFrame(measure)}
-  return()=>{disposed=true;cancelAnimationFrame(raf);cancelAnimationFrame(monitor);clearTimeout(timer);window.removeEventListener('pointermove',stopForUser);window.removeEventListener('pointerdown',stopForUser);window.removeEventListener('keydown',stopForUser);media.removeEventListener('change',preferenceChanged);connection?.removeEventListener('change',preferenceChanged)};
+  if(loading)return;
+  let timer:ReturnType<typeof setTimeout>,index=0,cycle=0,disposed=false,continuous=false;
+  const clear=()=>{clearTimeout(timer);setCue(-1)};
+  const tick=()=>{if(disposed||!motionAllowed()||document.hidden){clear();setPhase('paused');return}if(index===0){cycle++;setRound(cycle)}setPhase(continuous?'idle-loop':'intro');setCue(index++);timer=setTimeout(()=>{if(index===9){index=0;if(!continuous&&cycle===2){clear();setPhase('waiting');timer=setTimeout(()=>{continuous=true;tick()},15000);return}}tick()},500)};
+  const activity=()=>{clear();setPhase('waiting');if(motionAllowed()&&!document.hidden)timer=setTimeout(()=>{index=0;continuous=true;tick()},15000)};
+  interrupt.current=activity;
+  const media=window.matchMedia('(prefers-reduced-motion: reduce)'),connection=(navigator as Navigator&{connection?:EventTarget}).connection;
+  const visibility=()=>{activity();if(document.hidden)setPhase('paused')};
+  for(const name of ['pointermove','pointerdown','keydown','touchstart','wheel'])window.addEventListener(name,activity,{passive:true});
+  document.addEventListener('visibilitychange',visibility);media.addEventListener('change',activity);connection?.addEventListener('change',activity);
+  if(motionAllowed()&&!document.hidden)timer=setTimeout(tick,400);else setPhase('paused');
+  return()=>{disposed=true;clearTimeout(timer);interrupt.current=()=>{};for(const name of ['pointermove','pointerdown','keydown','touchstart','wheel'])window.removeEventListener(name,activity);document.removeEventListener('visibilitychange',visibility);media.removeEventListener('change',activity);connection?.removeEventListener('change',activity)};
  },[loading]);
  function choose(index:number){stop();const brand=paymentBrands[index],method=methods.find(m=>brand.pattern.test(m.name));if(loading)return;if(!method){setMessage(`${brand.name} is temporarily unavailable. Please choose another method or contact payment support.`);return}setMessage('');onSelect(method)}
- return <div className="opus-method-picker" aria-busy={loading} onPointerEnter={stop} onFocusCapture={stop} onTouchStart={stop}>
+ return <div ref={pickerRef} className="opus-method-picker" aria-busy={loading} data-active-group={activeGroup===null?'both':activeGroup} data-cue-phase={phase} data-cue-round={round} onKeyDown={event=>{if(event.key==='Escape'){stop();setActiveGroup(null)}}} onPointerLeave={event=>{if(event.pointerType==='mouse'&&innerWidth>700)setActiveGroup(null)}}>
   <h1 className="opus-sr-only">Choose your payment method</h1>
-  {[{title:'Cards',indexes:[0,1,2]},{title:'Mobile wallet & other payments',indexes:[3,4,5,6,7,8]}].map((group,g)=><section key={group.title} className={`opus-method-group ${g?'opus-mobile-group':'opus-card-group'}`} aria-labelledby={`${id}-${g}`}><Notch wide={Boolean(g)}/><h2 id={`${id}-${g}`} className="opus-group-title">{group.title}</h2><div className="opus-logo-grid">{group.indexes.map(index=>{const b=paymentBrands[index],available=methods.some(m=>b.pattern.test(m.name));return <button key={b.key} type="button" className="opus-method-button" data-cue={cue===index||undefined} data-brand={b.key} data-unavailable={!loading&&!available||undefined} aria-label={`Pay with ${b.name}`} aria-disabled={disabled||loading||!available} onClick={()=>{if(!disabled)choose(index)}} onPointerEnter={stop}><PaymentBrand name={b.name}/></button>})}</div></section>)}
+  <nav className="opus-group-controls" aria-label="Payment groups">{[{title:'Cards',value:0},{title:'Mobile wallets',value:1},{title:'Show both',value:null}].map(item=><button key={item.title} type="button" aria-pressed={activeGroup===item.value} onClick={()=>{stop();setActiveGroup(item.value)}}>{item.title}</button>)}</nav>
+  {[{title:'Cards',indexes:[0,1,2]},{title:'Mobile wallet & other payments',indexes:[3,4,5,6,7,8]}].map((group,g)=><section key={group.title} className={`opus-method-group ${g?'opus-mobile-group':'opus-card-group'}`} aria-labelledby={`${id}-${g}`} onPointerEnter={event=>{if(event.pointerType==='mouse'&&innerWidth>700)setActiveGroup(g)}} onFocusCapture={event=>{if((event.target as HTMLElement).matches(':focus-visible'))setActiveGroup(g)}}><Notch wide={Boolean(g)}/><h2 id={`${id}-${g}`} className="opus-group-title">{group.title}</h2><div className="opus-logo-grid">{group.indexes.map(index=>{const b=paymentBrands[index],available=methods.some(m=>b.pattern.test(m.name));return <button key={b.key} type="button" className="opus-method-button" data-cue={cue===index||undefined} data-brand={b.key} data-unavailable={!loading&&!available||undefined} aria-label={`Pay with ${b.name}`} aria-disabled={disabled||loading||!available} onClick={()=>{if(!disabled)choose(index)}} onPointerEnter={stop}><PaymentBrand name={b.name}/></button>})}</div></section>)}
   <div className="opus-picker-feedback" aria-live="polite">{loading?'Loading available payment methods…':message||error}{error&&<button type="button" onClick={onRetry}>Try again</button>}</div>
  </div>;
 }
