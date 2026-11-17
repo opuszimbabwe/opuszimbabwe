@@ -1,4 +1,4 @@
-import { Pesepay, type Transport, type PaymentResult } from 'pesepay';
+import { isTransactionStatus, Pesepay, type Transport, type PaymentResult } from 'pesepay';
 import type { Env, PagesContext } from './types';
 import type { LocalMethod, PaymentReceipt } from '../../lib/payments';
 import { normaliseMobile } from '../../lib/payments';
@@ -107,7 +107,7 @@ export async function localMethods(currency: string): Promise<LocalMethod[]> {
    Number.isFinite(Number(item.minimumAmount)) && Number(item.minimumAmount) > 0 &&
    Number.isFinite(Number(item.maximumAmount)) && Number(item.maximumAmount) >= Number(item.minimumAmount))
  ))
- .map(item => ({ code: String(item.code), name: String(item.name), minimumAmount: Number(item.minimumAmount) || 0.01, maximumAmount: Number(item.maximumAmount) || 1000000, redirectRequired: item.redirectRequired === true, phoneField: Array.isArray(item.requiredFields) ? item.requiredFields.find((field: { name?: string }) => /^(customerPhoneNumber|phoneNumber|mobileNumber)$/.test(field.name || ''))?.name : undefined }));
+ .map(item => ({ code: String(item.code), name: String(item.name), minimumAmount: Number(item.minimumAmount) || 0.01, maximumAmount: Number(item.maximumAmount) || 1000000, redirectRequired: item.redirectRequired === true, requiresEmail:item.code==='PZW212', flow: item.code==='PZW212'?'innbucks' as const:item.code==='PZW216'?'omari' as const:/ecocash/i.test(String(item.name))&&item.redirectRequired!==true?'mobile' as const:'hosted' as const, phoneField: Array.isArray(item.requiredFields) ? item.requiredFields.find((field: { name?: string }) => /^(customerPhoneNumber|phoneNumber|mobileNumber)$/.test(field.name || ''))?.name : undefined }));
 }
 export function safeRedirect(value: string) {
  const url = new URL(value);
@@ -132,8 +132,10 @@ export async function reconcile(env: Env, row: PaymentRow, fulfil = true, strict
  const started = Date.now();
  const result: PaymentResult = await gateway(env).checkPayment(row.gateway_reference);
  if (result.referenceNumber !== row.gateway_reference) throw new CheckoutError(502, 'Payment confirmation could not be verified. Please contact support@opuszim.co.zw.');
- let status = result.transactionStatus;
+ let status = isTransactionStatus(result.transactionStatus)?result.transactionStatus:'UNCONFIRMED';
  if (status === 'SUCCESS' && (!result.amountDetails || Math.round(result.amountDetails.amount * 100) !== row.amount_minor || result.amountDetails.currencyCode !== row.currency)) status = 'VERIFICATION_FAILED';
+ if(row.method_code==='PZW216'&&!result.isTerminal){const wallet=await env.DB.prepare('SELECT otp_state FROM payment_wallet_state WHERE payment_id=?').bind(row.id).first<{otp_state:string}>();if(wallet&&['SUBMITTING','UNCERTAIN'].includes(wallet.otp_state))status='UNCONFIRMED';}
+ if(row.method_code==='PZW212'){const {innbucksMetadata,saveWallet}=await import('./wallet-checkout');const meta=innbucksMetadata(result);if(meta.code||meta.qrCode)await saveWallet(env,row.id,'innbucks',meta);}
  const payable = status === 'SUCCESS' ? Number(result.amountDetails?.customerPayableAmount ?? result.amountDetails?.totalTransactionAmount ?? result.amountDetails?.amount) : null;
  if (payable !== null && (!Number.isFinite(payable) || Math.round(payable * 100) < row.amount_minor)) status = 'VERIFICATION_FAILED';
  const paidMinor = status === 'SUCCESS' && payable !== null ? Math.round(payable * 100) : null;
@@ -155,7 +157,7 @@ async function reconcilePaynow(env:Env,row:PaymentRow,fulfil:boolean,strict:bool
  if(!strict&&Date.now()-row.checked_at<5000)return row;
  const start=Date.now(),verified=await pollPaynow(env,row.gateway_poll_url);
  if(verified.reference!==row.id||!verified.paynowreference||(row.gateway_reference&&verified.paynowreference!==row.gateway_reference)||amountMinor(verified.amount||'')!==row.amount_minor||(verified.currency&&verified.currency!==row.currency)||(!verified.currency&&row.currency!==(env.PAYNOW_CURRENCY||'USD')))throw new CheckoutError(502,'The verified payment details do not match.');
- const states:Record<string,string>={paid:'SUCCESS',awaitingdelivery:'PENDING',delivered:'SUCCESS',created:'PENDING',sent:'PENDING',cancelled:'CANCELLED',refunded:'REVERSED',disputed:'REVERSED'};
+ const states:Record<string,string>={paid:'SUCCESS',awaitingdelivery:'PENDING',delivered:'SUCCESS',created:'PENDING',sent:'PENDING',cancelled:'CANCELLED',canceled:'CANCELLED',refunded:'REVERSED',disputed:'REVERSED'};
  const status=states[String(verified.status).toLowerCase().replace(/\s+/g,'')]||'PENDING';
  await env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND checked_at<=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN ('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,new Date().toISOString(),start,new Date().toISOString(),row.id,start,status).run();
  const saved=(await findPayment(env,row.id))!;

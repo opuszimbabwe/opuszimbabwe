@@ -9,6 +9,7 @@ const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
   for(const row of [...schema.filter(x=>x.type==='table'),...schema.filter(x=>x.type!=='table')].filter(x=>!x.name.startsWith('_cf_')&&x.name!=='d1_migrations'))await db.prepare(row.sql).run();
   const migration=fs.readFileSync('migrations/0027_reconstructed_pages_features.sql','utf8').replace(/^--.*$/gm,'');
   for(const sql of migration.split(';').map(x=>x.trim()).filter(Boolean))await db.prepare(sql).run();
+  for(const statement of fs.readFileSync('migrations/0028_direct_wallet_checkout.sql','utf8').replace(/^--.*$/gm,'').split(';').map(s=>s.trim()).filter(Boolean))await db.prepare(statement).run();
   const headers={origin:'http://localhost:8788','content-type':'application/json'};
   let r=await mf.dispatchFetch('http://localhost:8788/api/chat/session',{method:'POST',headers,body:JSON.stringify({name:'Runtime fixture'})});assert.equal(r.status,201,await r.clone().text());const session=(await r.json()).session;const cookie=r.headers.get('set-cookie').split(';')[0];
   r=await mf.dispatchFetch('http://localhost:8788/api/chat/messages',{method:'POST',headers:{...headers,cookie},body:JSON.stringify({id:crypto.randomUUID(),body:'Runtime Unicode — 👋'})});assert.equal(r.status,201,await r.clone().text());

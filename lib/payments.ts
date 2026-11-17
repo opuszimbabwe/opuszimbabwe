@@ -1,6 +1,7 @@
 // Public checkout types only. Gateway SDK and secrets stay in Pages Functions.
-export type LocalMethod = { provider?: 'pesepay' | 'paynow'; code: string; name: string; minimumAmount: number; maximumAmount: number; redirectRequired?: boolean; phoneField?: string };
+export type LocalMethod = { provider?: 'pesepay' | 'paynow'; flow?:'hosted'|'mobile'|'innbucks'|'omari'; requiresEmail?:boolean; code: string; name: string; minimumAmount: number; maximumAmount: number; redirectRequired?: boolean; phoneField?: string };
 export type PaymentConfig = { configured: boolean; currencies: { code: string; name: string }[]; methods: LocalMethod[] };
+export type WalletCheckout={kind:'innbucks'|'omari'|'onemoney';instructions:string;code?:string;qr?:string;otpState?:'AWAITING'|'SUBMITTING'|'SUBMITTED'|'UNCERTAIN'|'NOT_REQUIRED'};
 export type PaymentReceipt = {
   id: string; name: string; invoice: string; amount: number; invoiceAmount?: number; currency: string; method: string;
   reference: string | null; status: string; paid: boolean; terminal: boolean; date: string | null;
@@ -26,4 +27,9 @@ export function mobileNumberError(value: string, network: MobileNetwork, complet
  }
  if (number.length > 10 || (complete && number.length !== 10)) return 'Enter the full 10-digit mobile number, including the initial 0, or use +263.';
  return '';
+}
+
+export function isPaymentReceipt(value:unknown):value is PaymentReceipt{
+ if(!value||typeof value!=='object')return false;const r=value as Record<string,unknown>;
+ return ['id','name','invoice','currency','method','status'].every(k=>typeof r[k]==='string')&&typeof r.amount==='number'&&Number.isFinite(r.amount)&&r.amount>=0&&(r.invoiceAmount===undefined||(typeof r.invoiceAmount==='number'&&Number.isFinite(r.invoiceAmount)&&r.invoiceAmount>=0))&&typeof r.paid==='boolean'&&typeof r.terminal==='boolean'&&(!r.paid||(r.status==='SUCCESS'&&r.terminal))&&(r.reference===null||typeof r.reference==='string')&&(r.date===null||typeof r.date==='string');
 }

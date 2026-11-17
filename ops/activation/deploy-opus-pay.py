@@ -1,6 +1,6 @@
 """Deploy only the approved Opus Pay checkout and tested Pages backend.
 
-No database migration, supporting Worker deployment or credential export.
+Only the explicitly selected additive wallet migration; no supporting Worker deployment or credential export.
 
 Default is read-only preflight. Explicit --preview or --activate uploads a release.
 Never exports credential values, customer records or private object contents.
@@ -10,7 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 ACCOUNT = 'bfdd1ae2b409f941958f78ea99348c2e'
 PROJECT = 'opuszimbabwe'
 DATABASE = '885cb934-939a-4080-a48f-40901a111cc2'
-BASELINE = '89ef8fbc-959b-4a1d-b604-557be8d3af80'
+BASELINE = '931052a4-1e22-481f-84f3-e44d4f9178ad'
 API = 'https://api.cloudflare.com/client/v4'
 PREFIX = f'/accounts/{ACCOUNT}/pages/projects/{PROJECT}'
 RELEASE = pathlib.Path('/tmp/opus-pay-release')
@@ -44,7 +44,7 @@ def main():
     action.add_argument('--preview',action='store_true')
     action.add_argument('--activate',action='store_true')
     action.add_argument('--rollback',metavar='DEPLOYMENT_ID')
-    p.add_argument('--apply-migration',action='store_true',help='Unsupported for this checkout-only release; no migration is needed')
+    p.add_argument('--apply-wallet-migration',action='store_true',help='Apply only reviewed additive migration 0028, before production wallet backend activation')
     p.add_argument('--output',default='/tmp/opus-release-result.json')
     args=p.parse_args()
     project=api(PREFIX)
@@ -94,8 +94,15 @@ def main():
     # this project's asset index before checking availability or deploying.
     api('/pages/assets/upsert-hashes',{'hashes':hashes},token=jwt)
     assert not api('/pages/assets/check-missing',{'hashes':hashes},token=jwt),'Not all asset hashes are present'
-    if args.activate:
-        assert not args.apply_migration,'This release requires no database migration'
+    wallet_columns=api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':'PRAGMA table_info(payment_wallet_state)'})[0]['results']
+    if args.apply_wallet_migration:
+        assert args.activate,'Wallet schema changes require production activation'
+        migration=(ROOT/'migrations/0028_direct_wallet_checkout.sql').read_text()
+        assert migration.count('CREATE TABLE IF NOT EXISTS')==1 and ';' not in migration.rstrip().rstrip(';'),'Only the reviewed single additive statement is allowed'
+        api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':migration})
+        wallet_columns=api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':'PRAGMA table_info(payment_wallet_state)'})[0]['results']
+    assert {'payment_id','kind','instructions_json','otp_state','created_at','updated_at'}=={c['name'] for c in wallet_columns},'Reviewed wallet schema must exist before backend activation'
+
     fields={
         'manifest':json.dumps(manifest),'branch':'main' if args.activate else 'opus-pay-design-preview',
         'commit_hash':commit,'commit_message':'Opus Pay checkout redesign with verified card and mobile gateway routing','commit_dirty':'false',
@@ -105,7 +112,7 @@ def main():
     }
     body,content_type=multipart(fields)
     result=api(PREFIX+'/deployments',body,'POST',content_type=content_type)
-    safe={'deployment_id':result['id'],'url':result['url'],'environment':result['environment'],'commit':commit,'baseline':BASELINE,'checkout_changes':changes['changes'],'database_migrations_applied':False}
+    safe={'deployment_id':result['id'],'url':result['url'],'environment':result['environment'],'commit':commit,'baseline':BASELINE,'checkout_changes':changes['changes'],'database_migrations_applied':['0028_direct_wallet_checkout.sql'] if args.apply_wallet_migration else []}
     pathlib.Path(args.output).write_text(json.dumps(safe,indent=2)+'\n')
     print(json.dumps(safe),flush=True)
 

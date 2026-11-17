@@ -1,8 +1,9 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, ShieldCheck, UserRound, Wallet, CircleAlert } from 'lucide-react';
-import { SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt } from '@/lib/payments';
+import { isPaymentReceipt, SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt, type WalletCheckout } from '@/lib/payments';
 
+import WalletPaymentPanel from '@/components/WalletPaymentPanel';
 import OpusFloatingField,{OpusFloatingCurrency} from '@/components/OpusFloatingField';
 import PaymentMethodPicker,{OpusPayBrand,PaymentBrand,motionAllowed} from '@/components/PaymentMethodPicker';
 import {receiptDate} from '@/lib/receipt-date';
@@ -38,6 +39,7 @@ export default function PaymentCheckout() {
  const [configError, setConfigError] = useState('');
  const [session, setSession] = useState<Session | null>(null);
  const [receipt, setReceipt] = useState<PaymentReceipt | null>(null);
+ const [wallet,setWallet]=useState<WalletCheckout|null>(null),[otpBusy,setOtpBusy]=useState(false),[otpError,setOtpError]=useState('');
  const [checking, setChecking] = useState(false);
  const [checkError, setCheckError] = useState('');
  const [pollExpired, setPollExpired] = useState(false);
@@ -57,7 +59,7 @@ export default function PaymentCheckout() {
  const [ready, setReady] = useState(false);
  const [motion,setMotion]=useState(false);
  const [viewport,setViewport]=useState({width:1200,height:1000});
- useEffect(()=>{const update=()=>{const v=window.visualViewport;const height=Math.round(v?.height||innerHeight);setViewport({width:innerWidth,height});document.documentElement.style.setProperty('--opus-viewport-height',height+'px')};update();window.addEventListener('resize',update);window.visualViewport?.addEventListener('resize',update);const bodyOverflow=document.body.style.overflow,htmlOverflow=document.documentElement.style.overflow;if(!session){document.body.style.overflow='hidden';document.documentElement.style.overflow='hidden'}return()=>{window.removeEventListener('resize',update);window.visualViewport?.removeEventListener('resize',update);document.body.style.overflow=bodyOverflow;document.documentElement.style.overflow=htmlOverflow;document.documentElement.style.removeProperty('--opus-viewport-height')}},[session]);
+ useEffect(()=>{const update=()=>{const v=window.visualViewport;const height=Math.round(v?.height||innerHeight);setViewport({width:innerWidth,height});document.documentElement.style.setProperty('--opus-viewport-height',height+'px')};update();window.addEventListener('resize',update);window.visualViewport?.addEventListener('resize',update);const bodyOverflow=document.body.style.overflow,htmlOverflow=document.documentElement.style.overflow;if(!session||(wallet&&!receipt?.terminal)){document.body.style.overflow='hidden';document.documentElement.style.overflow='hidden'}return()=>{window.removeEventListener('resize',update);window.visualViewport?.removeEventListener('resize',update);document.body.style.overflow=bodyOverflow;document.documentElement.style.overflow=htmlOverflow;document.documentElement.style.removeProperty('--opus-viewport-height')}},[session,wallet?.kind,receipt?.terminal]);
  const entryRef=useRef<HTMLElement>(null);
  useEffect(()=>{setMotion(motionAllowed())},[]);
  useEffect(()=>{if(form.method)requestAnimationFrame(()=>entryRef.current?.focus({preventScroll:true}))},[form.method]);
@@ -120,8 +122,9 @@ export default function PaymentCheckout() {
   try {
    const response = await fetch('/api/payments/status?id=' + encodeURIComponent(session.id), { headers: { authorization: 'Bearer ' + session.token }, cache: 'no-store', signal: signal || AbortSignal.timeout(25000) });
    const body = await response.json().catch(()=>{throw new Error('We could not confirm your payment yet.')}); if (!response.ok) throw new Error(body.error || 'We could not confirm your payment yet.');
+   if(!isPaymentReceipt(body.receipt))throw new Error('Payment status could not be verified. Please check again.');
    if (signal?.aborted||liveSession.current?.id!==session.id) return false;
-   setReceipt(body.receipt);if(body.careOrder){setCareOrder(body.careOrder);setCareAccess({id:body.careOrder.id,token:session.token});} if(body.domainOrder)setDomainOrder(body.domainOrder); setCheckError('');
+   setReceipt(body.receipt);setWallet(body.wallet||null);if(body.careOrder){setCareOrder(body.careOrder);setCareAccess({id:body.careOrder.id,token:session.token});} if(body.domainOrder)setDomainOrder(body.domainOrder); setCheckError('');
    if (body.continueUrl) setContinueUrl(body.continueUrl);
    return Boolean(body.receipt.terminal && (!body.domainOrder || body.domainOrder.terminal));
   } catch (reason) {
@@ -158,7 +161,7 @@ export default function PaymentCheckout() {
   if(old){remember(old);const history=[...previousAttempts.filter(p=>p.id!==old!.id),{...old,method:receipt?.method||config?.methods.find(m=>m.code===restored.method)?.name||'Earlier payment'}];setPreviousAttempts(history);try{sessionStorage.setItem(previousKey,JSON.stringify(history));sessionStorage.removeItem(attemptKey)}catch{}attempt.current=null;setResumable(false)}
   else if(saved){attempt.current=saved;setResumable(true)}
   if(saved?.care){setCareAccess(saved.care);setCareBlocked(false)}if(saved?.domain){setDomainAccess(saved.domain);setDomainBlocked(false)}
-  setForm({...restored,method:''});liveSession.current=null;setSession(null);setReceipt(null);setContinueUrl('');setCheckError('');setChecking(false);setError('');setNotice('');setPhoneTouched(false);setAmountTouched(false);setReferenceTouched(false);
+  setForm({...restored,method:''});liveSession.current=null;setSession(null);setReceipt(null);setWallet(null);setOtpError('');setContinueUrl('');setCheckError('');setChecking(false);setError('');setNotice('');setPhoneTouched(false);setAmountTouched(false);setReferenceTouched(false);
   const params=new URLSearchParams();const domain=saved?.domain||domainAccess,care=saved?.care||careAccess;if(domain){params.set('domain_order',domain.id);try{sessionStorage.setItem('opus-domain-'+domain.id,domain.token)}catch{params.set('domain_token',domain.token)}}else if(care){params.set('care_order',care.id);try{sessionStorage.setItem('opus-care-'+care.id,care.token)}catch{params.set('care_token',care.token)}}history.replaceState(null,'','/payments/'+(params.size?'?'+params:''));
  }
  async function pay(event: React.FormEvent) {
@@ -184,36 +187,45 @@ export default function PaymentCheckout() {
     if ([400, 403, 415, 429].includes(response.status)) { attempt.current = null; try { sessionStorage.removeItem(attemptKey); } catch {} }
     throw new Error(body.error || 'We could not start this payment. Please contact support@opuszim.co.zw.');
    }
+   if(typeof body.id!=='string'||!/^[a-zA-Z0-9-]{1,80}$/.test(body.id)||(!body.redirectUrl&&!isPaymentReceipt(body.receipt)))throw new Error('Payment response could not be verified. Check your existing attempt before trying again.');
    const value = { id: body.id, token }; const persisted = remember(value);
    if(attempt.current){attempt.current.id=body.id;try{sessionStorage.setItem(attemptKey,JSON.stringify(attempt.current))}catch{}}
    if (body.redirectUrl) { location.assign(body.redirectUrl); return; }
-   setReceipt(body.receipt); setSession(value);
+   setReceipt(body.receipt);setWallet(body.wallet||null); setSession(value);
    history.replaceState(null, '', '/payments/?payment=' + body.id + (persisted ? '' : '&token=' + token));
   } catch (reason) { setError(reason instanceof Error ? reason.message : 'Connection interrupted. Please check your existing payment before trying again.'); setResumable(Boolean(attempt.current)); }
   finally { setBusy(false); }
  }
+ async function submitOmariCode(code:string){
+  if(!session||otpBusy||!/^\d{6}$/.test(code))return;setOtpBusy(true);setOtpError('');
+  try{const response=await fetch('/api/payments/create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'omari-otp',id:session.id,token:session.token,otp:code}),signal:AbortSignal.timeout(25000)});const body=await response.json();if(!response.ok)throw new Error(body.error||'The code outcome could not be confirmed. Check payment status.');if(!isPaymentReceipt(body.receipt)||!body.wallet)throw new Error('Check payment status before submitting anything else.');setReceipt(body.receipt);setWallet(body.wallet)}catch(reason){setOtpError(reason instanceof Error?reason.message:'Code submission could not be confirmed.');setWallet(value=>value?{...value,otpState:'UNCERTAIN'}:value);void checkStatus()}finally{setOtpBusy(false)}
+ }
  function anotherPayment() {
   try { sessionStorage.removeItem(attemptKey); sessionStorage.removeItem('opus-last-payment'); } catch {}
   attempt.current = null;setPreviousAttempts([]);try{sessionStorage.removeItem(previousKey)}catch{}
-  history.replaceState(null, '', '/payments/'); setSession(null); setReceipt(null); setContinueUrl(''); setCheckError(''); setError(''); setForm(emptyForm); setResumable(false);setDomainOrder(null);setDomainAccess(null);setDomainBlocked(false);setCareOrder(null);setCareAccess(null);setCareBlocked(false);
+  history.replaceState(null, '', '/payments/'); setSession(null); setReceipt(null);setWallet(null);setOtpError(''); setContinueUrl(''); setCheckError(''); setError(''); setForm(emptyForm); setResumable(false);setDomainOrder(null);setDomainAccess(null);setDomainBlocked(false);setCareOrder(null);setCareAccess(null);setCareBlocked(false);
  }
  const selectedMethod = config?.methods.find(method => method.code === form.method);
- const network = selectedMethod && selectedMethod.provider!=='paynow' ? mobileNetwork(selectedMethod.name) : null;
+ const network = selectedMethod&&selectedMethod.flow!=='omari'&&(selectedMethod.provider!=='paynow'||selectedMethod.redirectRequired===false) ? mobileNetwork(selectedMethod.name) : null;
+ const omariMethod=selectedMethod?.flow==='omari';
+ const emailRequired=Boolean(selectedMethod?.requiresEmail);
+ const emailValid=!emailRequired||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
  const directMobile = Boolean(network && !selectedMethod?.redirectRequired);
- const phoneError = network&&phoneTouched ? mobileNumberError(form.phone, network) : '';
- const phoneValid = !network || !mobileNumberError(form.phone, network);
+ const phoneError = network&&phoneTouched ? mobileNumberError(form.phone, network) : omariMethod&&phoneTouched&&!/^07\d{8}$/.test(form.phone.replace(/^(?:\+263|00263|263)/,'0').replace(/[\s()-]/g,''))?'Enter your full Omari mobile number.':'';
+ const phoneValid = omariMethod?/^07\d{8}$/.test(form.phone.replace(/^(?:\+263|00263|263)/,'0').replace(/[\s()-]/g,'')):!network || !mobileNumberError(form.phone, network);
  const amountValue = Number(form.amount);
  const amountError = !form.amount ? '' : !/^\d+(\.\d{1,2})?$/.test(form.amount) ? 'Enter an amount with no more than two decimal places.' : selectedMethod && (amountValue < selectedMethod.minimumAmount || amountValue > selectedMethod.maximumAmount) ? `This method accepts ${form.currency} ${selectedMethod.minimumAmount.toFixed(2)}–${selectedMethod.maximumAmount.toFixed(2)}. Check your amount or choose another method.` : '';
  const amountFeedback=amountTouched&&amountError?(!/^\d+(\.\d{1,2})?$/.test(form.amount)?'Amount: use up to 2 decimal places.':`Amount: ${form.currency} ${selectedMethod?.minimumAmount.toFixed(2)}–${selectedMethod?.maximumAmount.toFixed(2)}.`):'';
  const phoneFeedback=phoneError?(network==='ecocash'&&!/^07[789]/.test(form.phone.replace(/^\+263/,'0'))?'Mobile: use an EcoCash number (077, 078 or 079).':'Mobile: check the full number, including 0 or +263.') :'';
  const fieldFeedback=referenceTouched&&!form.invoice.trim()?'Add your invoice or project reference.':amountFeedback||phoneFeedback;
  useEffect(()=>{if(!fieldFeedback){setNotice('');return}setNotice(fieldFeedback);const timer=setTimeout(()=>setNotice(''),5500);return()=>clearTimeout(timer)},[fieldFeedback,validationPulse]);
+ const walletPending=Boolean(session&&wallet&&!receipt?.terminal);
  const paid = receipt?.paid === true && !checkError;
  const pending = !receipt || !receipt.terminal;
  return <main className="payment-page opus-pay-page" data-motion={motion} data-keyboard={viewport.height<430}>
   {notice&&!session&&<div id="opus-field-notice" className="opus-field-notice" role="alert"><span className="opus-notice-icon" aria-hidden="true"><CircleAlert size={20} strokeWidth={2.8}/></span><div><strong>Please check this detail</strong><p>{notice}</p></div><button type="button" aria-label="Dismiss notification" onClick={()=>setNotice('')}>×</button></div>}
   {!session&&previousAttempts.length>0&&<details className="opus-previous-attempts"><summary>Earlier payment may still complete · review</summary><p>Changing method does not cancel an earlier request. Only complete one payment.</p>{previousAttempts.map((previous,index)=><a key={previous.id} href={attemptLink(previous)}>{previous.method} · attempt {index+1} <ArrowUpRight size={12}/></a>)}</details>}
-  <article className={`payment-sheet ${session ? 'payment-receipt' : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
+  <article className={`payment-sheet ${session ? (walletPending?'payment-wallet-session':'payment-receipt') : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
    {paid&&<div className="receipt-verified-watermark" aria-hidden="true">OPUS<span>VERIFIED</span></div>}
    <header className="opus-pay-header"><OpusPayBrand/></header>
    {!session ? <>
@@ -224,21 +236,22 @@ export default function PaymentCheckout() {
     <form onSubmit={pay} className="payment-form">
      {!selectedMethod&&<PaymentMethodPicker methods={config?.methods||[]} loading={configBusy} error={configError} onRetry={()=>setConfigRetry(v=>v+1)} disabled={busy||domainLoading||domainBlocked||careLoading||careBlocked} onSelect={method=>{setMotion(motionAllowed());change('method',method.code)}}/>}
      {!configBusy && config && !config.configured && <div className="payment-notice" role="status">Online payments are being set up. {support}</div>}
-     {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy} onClick={changePaymentMethod}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
+     {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" data-payment-email={emailRequired} aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy} onClick={changePaymentMethod}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
       <div className="opus-reference-field"><OpusFloatingField label="Invoice or project reference" name="invoice" required maxLength={120} autoComplete="off" value={form.invoice} valid={Boolean(form.invoice.trim())} invalid={referenceTouched&&!form.invoice.trim()} onChange={value=>{setReferenceTouched(false);change('invoice',value)}} onBlur={()=>{setReferenceTouched(true);setValidationPulse(v=>v+1)}} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></div>
       <div className="opus-amount-currency"><OpusFloatingField label="Amount to pay" example="e.g. 25.00" name="amount" type="text" inputMode="decimal" required maxLength={12} value={form.amount} valid={Boolean(form.amount)&&!amountError} invalid={Boolean(amountTouched&&amountError)} onChange={value=>change('amount',value)} onBlur={()=>{setAmountTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={amountFeedback?'opus-field-notice':undefined} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/><OpusFloatingCurrency disabled={busy}/></div>
-      {network&&<div className="payment-mobile-field"><OpusFloatingField label={`${network==='onemoney'?'OneMoney':'EcoCash'} mobile number`} example={network==='onemoney'?'e.g. 0710 000 000':'e.g. 0770 000 000'} id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} valid={phoneValid} invalid={Boolean(phoneError)} onChange={value=>change('phone',value)} onBlur={()=>{setPhoneTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={phoneFeedback?'opus-field-notice':undefined} disabled={busy}/></div>}
+      {(network||omariMethod)&&<div className="payment-mobile-field"><OpusFloatingField label={omariMethod?'Omari mobile number':network==='onemoney'?'OneMoney number':'EcoCash mobile number'} example={network==='onemoney'?'e.g. 0710 000 000':'e.g. 0770 000 000'} id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} valid={phoneValid} invalid={Boolean(phoneError)} onChange={value=>change('phone',value)} onBlur={()=>{setPhoneTouched(true);setValidationPulse(v=>v+1)}} aria-describedby={phoneFeedback?'opus-field-notice':undefined} disabled={busy}/></div>}
+      {emailRequired&&<div className="opus-payment-email"><OpusFloatingField label="Payment email" example="e.g. name@example.com" name="email" type="email" inputMode="email" autoComplete="email" required maxLength={254} value={form.email} onChange={value=>change('email',value)} valid={emailValid} disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></div>}
       {<><div className="opus-total" role="group" aria-label="Total to pay"><span>Total to pay</span><strong>{form.currency} {Number.isFinite(amountValue)?amountValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}</strong></div>
-      <button type="submit" className="payment-submit" disabled={form.currency!=='USD' || busy || configBusy || domainLoading || domainBlocked || careLoading || careBlocked || !config?.configured || !phoneValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{directMobile ? 'Request payment' : (selectedMethod?.provider==='paynow'?'Continue to Paynow':'Continue to Pesepay')}</>}</button>
-      <p className="payment-small text-center">{directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : `Authorise securely on ${selectedMethod?.provider==='paynow'?'Paynow':'Pesepay'}. We will confirm the result when you return.`}</p></>}
+      <button type="submit" className="payment-submit" disabled={form.currency!=='USD' || busy || configBusy || domainLoading || domainBlocked || careLoading || careBlocked || !config?.configured || !phoneValid || !emailValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{omariMethod?'Send Omari code':selectedMethod?.flow==='innbucks'?'Get InnBucks code':directMobile ? 'Request payment' : (selectedMethod?.provider==='paynow'?'Continue to Paynow':'Continue to Pesepay')}</>}</button>
+      <p className="payment-small text-center">{omariMethod?'Omari will send a six-digit code to authorise this payment.':selectedMethod?.flow==='innbucks'?'Approve with your InnBucks app or USSD approval code.':directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : `Authorise securely on ${selectedMethod?.provider==='paynow'?'Paynow':'Pesepay'}. We will confirm the result when you return.`}</p></>}
 
      </section>}
         </form>
-   </> : <>
+   </> : walletPending&&wallet ? <WalletPaymentPanel wallet={wallet} amount={receipt?.invoiceAmount??receipt?.amount??Number(form.amount)} currency={receipt?.currency||form.currency} busy={otpBusy} checking={checking} error={otpError||checkError||(pollExpired?'Approval is taking longer than expected. Check status before starting another payment.':'')} onSubmitCode={submitOmariCode} onCheck={()=>void checkStatus()} onChangeMethod={changePaymentMethod}/> : <>
     <div className="payment-outcome" role="status">
      <div className={`payment-state-icon ${paid ? 'is-paid' : pending && !checkError && !pollExpired ? 'is-pending' : 'is-unconfirmed'}`}>{paid ? <Check size={54} strokeWidth={4} /> : pending && !checkError && !pollExpired ? <LoaderCircle size={54} className="payment-spinner" /> : <CircleAlert size={54} />}</div>
-     <h1>{paid ? 'Payment Successful' : checkError ? 'Confirmation unavailable' : pending ? (pollExpired ? 'Payment awaiting confirmation' : 'Processing Your Payment') : receipt?.status === 'REVERSED' ? 'Payment Reversed' : receipt?.status === 'UNCONFIRMED' || receipt?.status === 'VERIFICATION_FAILED' ? 'Payment needs confirmation' : 'Payment not completed'}</h1>
-     <p>{paid ? 'Your payment has been processed successfully. Thank you for your trust and support.' : checkError || (pending ? (pollExpired ? 'This is taking longer than expected. Check your payment status again or contact support before making another payment.' : receipt?.status === 'UNCONFIRMED' ? 'We are checking whether the payment request reached your provider. Please do not start another payment; use Check payment status or contact support.' : 'Please wait while we securely confirm your transaction with Pesepay.') : 'Please contact our support team with your reference before making another payment.')}</p>
+     <h1>{paid ? 'Payment Successful' : checkError ? 'Confirmation unavailable' : pending ? (pollExpired ? 'Payment awaiting confirmation' : 'Processing Your Payment') : receipt?.status === 'CANCELLED' ? 'Payment cancelled' : ['EXPIRED','TIME_OUT','CLOSED_PERIOD_ELAPSED'].includes(receipt?.status||'') ? 'Payment request expired' : receipt?.status==='INSUFFICIENT_FUNDS'?'Insufficient funds':receipt?.status==='DECLINED'?'Payment declined':receipt?.status==='SERVICE_UNAVAILABLE'?'Payment service unavailable' : receipt?.status === 'AUTHORIZATION_FAILED' ? 'Payment authorisation failed' : receipt?.status === 'FAILED' ? 'Payment failed' : receipt?.status === 'REVERSED' ? 'Payment Reversed' : receipt?.status === 'UNCONFIRMED' || receipt?.status === 'VERIFICATION_FAILED' ? 'Payment needs confirmation' : 'Payment not completed'}</h1>
+     <p>{paid ? 'Your payment has been processed successfully. Thank you for your trust and support.' : checkError || (pending ? (pollExpired ? 'This is taking longer than expected. Check your payment status again or contact support before making another payment.' : receipt?.status === 'UNCONFIRMED' ? 'We are checking whether the payment request reached your provider. Please do not start another payment; use Check payment status or contact support.' : 'We are checking the payment result with your provider. Approve only one request.') : receipt?.status==='CANCELLED'?'Your provider confirmed this payment was cancelled. You can choose another payment method.':['EXPIRED','TIME_OUT','CLOSED_PERIOD_ELAPSED'].includes(receipt?.status||'')?'Your provider confirmed the payment request expired. You can start a new payment.':receipt?.status==='AUTHORIZATION_FAILED'?'Your provider could not authorise this payment. Check your details before trying again.':'Please contact our support team with your reference before making another payment.')}</p>
      {!paid && <div className="payment-small">{support}</div>}
     </div>
     {receipt && (!pending || checkError) && <section className="payment-details" aria-labelledby="payment-details-title"><h2 id="payment-details-title">Payment details</h2>{receipt.name && <div className="payment-payer"><div><span>Payer Name</span><strong>{receipt.name}</strong></div><UserRound size={58} aria-hidden="true" /></div>}<div className="payment-detail-row"><CalendarDays aria-hidden="true" /><div><span>{receiptDate(receipt).label}</span><strong>{receiptDate(receipt).text}</strong></div></div><div className="payment-detail-row"><CreditCard aria-hidden="true" /><div><span>Payment Method</span><strong className="payment-method-value"><MethodLogo name={receipt.method} /></strong></div></div><div className="payment-detail-row"><ShieldCheck aria-hidden="true" /><div><span>Transaction Reference / Approval Code</span><strong>{receipt.reference || receipt.id}</strong></div></div><div className="payment-detail-row"><Wallet aria-hidden="true" /><div><span>Invoice / Project Reference</span><strong>{receipt.invoice}</strong></div></div><div className={`payment-amount-panel ${paid ? 'is-paid' : ''}`}><Coins size={48} aria-hidden="true" /><div><span>{paid ? 'Amount Paid' : 'Payment Amount'}</span><strong>{receipt.currency} {receipt.amount.toFixed(2)}</strong>{paid && receipt.invoiceAmount !== undefined && receipt.invoiceAmount !== receipt.amount && <span className="payment-small">Invoice amount: {receipt.currency} {receipt.invoiceAmount.toFixed(2)}</span>}</div></div></section>}

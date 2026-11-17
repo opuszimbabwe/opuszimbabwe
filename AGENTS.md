@@ -23,5 +23,5 @@
   Do not run the old full Next build or re-enable automatic GitHub deployment.
 
 - The Opus Pay checkout release uses `ops/activation/OPUS-PAY.md`. It preserves
-  the existing frontend outside checkout, applies no database migration, and
+  the existing frontend outside checkout, uses only the explicit additive 0028 wallet migration when activating direct wallet flows, and
   leaves the four supporting Workers and automatic deployment protection intact.

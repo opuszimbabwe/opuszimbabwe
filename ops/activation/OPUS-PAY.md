@@ -9,7 +9,8 @@ brand artwork with generated imitations to match a mockup.
 
 - Cards: Visa, Mastercard and ZimSwitch, hosted by Pesepay.
 - Other methods: EcoCash, InnBucks and Omari through Pesepay; OneMoney, POS2U and
-  Telecash initiate Paynow's hosted checkout. Paynow controls merchant method
+  Telecash use Paynow. OneMoney uses its signed remote mobile flow; POS2U and
+  Telecash retain hosted checkout pending direct-support confirmation. Paynow controls merchant method
   availability on its hosted page; no undocumented method-preselection parameter
   is assumed.
 - Only USD initiations are allowed. ZiG is visible as a disabled option. Existing
@@ -53,7 +54,7 @@ remain available. No supporting Worker is redeployed.
 
 `deploy-opus-pay.py` pins the previous active deployment, checks all four
 supporting Worker versions, payment binding names, the existing database schema,
-asset hashes and the pushed clean source commit. It applies no migrations and
+asset hashes and the pushed clean source commit. It permits only the explicit additive wallet migration 0028 and
 exports no credentials. Default invocation is a read-only preflight; `--preview`
 uses an isolated preview branch. `--activate` inherits production bindings.
 Never enable the guarded automatic Next deployment.
@@ -138,7 +139,10 @@ toward the centre. Stable untransformed zones avoid edge jitter and restore
 both families when the pointer moves into the gap, without requiring it to
 leave the entire picker. Touch group switching retains its explicit controls.
 
-The stronger orange glow follows the same trace. Completed valid fields use a
+The thin focus outline has no glow or blur. After the 3.6-second trace ends,
+a 1.5px SVG mask exposes a rotating red/orange conic gradient (4.8 seconds per
+turn). The orange highlight is brighter by colour only. Clicking restarts the
+trace, while blur restores the normal or confirmed-green outline. Completed valid fields use a
 2px green border without tick icons. Empty amount/mobile fields show centred
 examples only while focused, after their labels float out of the way. Examples
 are placeholders, never values. Reference meaning, required status, label and
@@ -172,3 +176,52 @@ create an actual label-sized border gap; the field's border itself is transparen
 Autofill-coloured backgrounds therefore blend through the caption rather than
 showing a white rectangle. Valid/invalid colours are rendered on the SVG base
 path, while the focus tracer overlays it.
+
+The outline regression test verifies the trace-to-rotation handoff, a changing
+gradient angle, equal 1.5px trace/mask thickness, absence of a glow layer and
+filter/box-shadow on the rotating layer, and restarting the trace on click.
+
+## Direct wallets and slow initial loading (17 November 2026)
+
+InnBucks PZW212 uses Pesepay seamless initiation, returning the provider's approval
+code and embedded PNG QR. Pesepay requires a customer identity, so a payment email
+is required for InnBucks. Omari PZW216 collects the wallet phone, sends an SMS code
+via seamless initiation, then accepts a six-digit OTP for its separate documented
+charge endpoint. A conditional D1 claim permits exactly one OTP submission. OTPs
+are never stored or logged. An ambiguous response disables replay until status
+verification resolves it. OneMoney uses Paynow remotetransaction with a required
+wallet phone and payment email. Signed poll results independently verify reference,
+amount and currency. No customer PIN or card data enters Opus fields.
+
+Apply only migrations/0028_direct_wallet_checkout.sql with the activation flag
+--apply-wallet-migration. It adds wallet presentation and submission state, without
+changing existing payment rows. Never apply the legacy migration backlog.
+
+Provider-confirmed CANCELLED displays Payment cancelled; timeout/period-elapsed,
+authorisation failure, insufficient funds and declines have distinct headings.
+Closing a phone prompt does not itself prove cancellation: pending stays pending
+until the provider reports a terminal result. Unknown Pesepay statuses remain
+UNCONFIRMED. Browser/network failures never imply success or cancellation.
+
+Artwork is technically cropped/compressed from the existing marks into inline
+WebP/SVG data in components/payment-artwork.ts. There is no image HTTP request or
+hydration opacity gate for critical logos. CSS masks size notch geometry before
+hydration; the loading status uses the gap above the first group, clear of footer.
+Original artwork and supplied JPEG remain retained. A system font fallback also
+fits when the Poppins download is blocked.
+
+Black-box and white-box verification:
+- scripts/test-direct-wallets.cjs: encrypted/signed provider fixtures, capability
+  checks, concurrency, idempotency, wrong OTP, ambiguous debit, private state,
+  cancellation, all documented failure/partial states and unknown statuses.
+- scripts/test-opus-pay-wallets.cjs: actual preserved runtime, required fields,
+  in-page wallet approval, OTP, cancellation and switching, normal desktop/mobile,
+  small mobile and keyboard-height viewport; verified outcome headings.
+- scripts/test-opus-pay-first-paint.cjs: JavaScript disabled, image/font requests
+  blocked, delayed chunks, simulated data saving/2G, stable geometry and footer.
+- Existing reconstructed API/workerd, receipts/domain/care, loading/retry,
+  no-scroll/viewports, hover, floating-label and method-switch suites remain.
+
+All charge/SMS/OTP/provider tests are mocked. Merchant-enabled real wallet approval
+has not been exercised with customer funds. Live verification is read-only config,
+deployment metadata and downloaded artifact parity.

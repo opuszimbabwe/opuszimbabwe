@@ -24,7 +24,10 @@
     "test:checkout:switch-method": "node scripts/test-opus-pay-method-switch.cjs",
     "test:checkout:loading": "node scripts/test-opus-pay-loading.cjs",
     "test:checkout:floating": "node scripts/test-opus-pay-floating.cjs",
-    "test:checkout:no-scroll": "node scripts/test-opus-pay-no-scroll.cjs"
+    "test:checkout:no-scroll": "node scripts/test-opus-pay-no-scroll.cjs",
+    "test:checkout:wallets": "node scripts/test-opus-pay-wallets.cjs",
+    "test:checkout:first-paint": "node scripts/test-opus-pay-first-paint.cjs",
+    "test:wallets": "node scripts/test-direct-wallets.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",

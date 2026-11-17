@@ -1,3 +1,5 @@
+import {saveWallet,walletInfo,innbucksMetadata} from '../../_lib/wallet-checkout';
+import {submitOmariCode} from '../../_lib/omari-checkout';
 import {paynowConfigured,paynowMethods,initiatePaynow} from '../../_lib/paynow';
 import {authorisedCareOrder,claimCarePayment,clientProject} from '../../_lib/client-care';
 import { authorisedOrder, prepareDomainPayment, claimDomainPayment } from '../../_lib/domains';
@@ -10,6 +12,7 @@ export const onRequestPost: PagesHandler = async context => {
   const origin = trustedOrigin(context.request);
   if (!configured(context.env)&&!paynowConfigured(context.env)) throw new CheckoutError(503, 'Online payments are being set up. Please contact support@opuszim.co.zw for help paying.');
   const raw = await readPaymentJson(context.request);
+  if(raw.action==='omari-otp')return await submitOmariCode(context,raw);
   if(raw.care_order_id!==undefined&&raw.domain_order_id!==undefined)throw new CheckoutError(400,'A payment can cover only one order.');
   const careOrder=raw.care_order_id!==undefined?await authorisedCareOrder(context.env,raw.care_order_id,raw.care_order_token):null;
   if(careOrder){
@@ -27,18 +30,21 @@ export const onRequestPost: PagesHandler = async context => {
   const tokenHash = await hash(input.token);
   const fingerprint = await hash(JSON.stringify({ ...input, token: undefined, ...(domainOrder ? {domain_order_id:domainOrder.id} : {}),...(careOrder?{care_order_id:careOrder.id}:{}) }));
   const existing = () => context.env.DB.prepare('SELECT * FROM customer_payments WHERE token_hash = ?').bind(tokenHash).first<PaymentRow>();
-  const respond = (row: PaymentRow) => {
+  const respond = async (row: PaymentRow) => {
    if (row.fingerprint !== fingerprint) throw new CheckoutError(409, 'This payment attempt already exists with different details. Please check its status before starting another.');
-   return json({ id: row.id, redirectUrl: row.redirect_url, receipt: receipt(row) }, row.redirect_url ? 200 : 202, { 'cache-control': 'no-store' });
+   return json({ id: row.id, redirectUrl: row.redirect_url, receipt: receipt(row),wallet:await walletInfo(context.env,row.id) }, row.redirect_url ? 200 : 202, { 'cache-control': 'no-store' });
   };
-  const previous = await existing(); if (previous) return respond(previous);
+  const previous = await existing(); if (previous) return await respond(previous);
   if(domainOrder)await prepareDomainPayment(context.env,domainOrder.id,raw.domain_order_token);
   const paynowMethod=paynowMethods(context.env,input.currency).find(item=>item.code===input.method);
   const method = paynowMethod || (await localMethods(input.currency)).filter(item=>! /one\s?money|pos2u|telecash/i.test(item.name)).find(item => item.code === input.method);
   if (!method) throw new CheckoutError(400, 'Please choose an available payment method for the selected currency.');
   const amount = input.minor / 100;
   if (amount < method.minimumAmount || amount > method.maximumAmount) throw new CheckoutError(400, `This method accepts ${input.currency} ${method.minimumAmount.toFixed(2)}–${method.maximumAmount.toFixed(2)}. Please choose another method or contact support@opuszim.co.zw.`);
-  const network = paynowMethod?null:mobileNetwork(method.name);
+  const network = paynowMethod?(method.name==='OneMoney'?'onemoney':null):mobileNetwork(method.name);
+  const omari=method.code==='PZW216',innbucks=method.code==='PZW212';
+  if(omari&&!/^07\d{8}$/.test(input.phone))throw new CheckoutError(400,'Enter your full Omari mobile number, including 0 or +263.');
+  if(method.requiresEmail&&!input.email)throw new CheckoutError(400,method.name+' requires a valid payment email.');
   if (network) { const error = mobileNumberError(input.phone, network); if (error) throw new CheckoutError(400, error); }
   await limitAttempts(context);
   const id = crypto.randomUUID(), now = new Date().toISOString();
@@ -46,22 +52,25 @@ export const onRequestPost: PagesHandler = async context => {
   if(careOrder)await claimCarePayment(context.env,careOrder,id);
   try {
    await context.env.DB.prepare('INSERT INTO customer_payments (id, token_hash, fingerprint, payer_name, payer_email, payer_phone, invoice, amount_minor, currency, method_code, method_name, created_at, updated_at, care_order_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
-   .bind(id, tokenHash, fingerprint, input.name, input.email, network ? input.phone : '', input.invoice, input.minor, input.currency, method.code, method.name, now, now,careOrder?.id||null).run();
-  } catch (error) { const concurrent = await existing(); if (concurrent) return respond(concurrent); if(domainOrder)await context.env.DB.prepare("UPDATE domain_orders SET state='QUOTED',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(domainOrder.id,id,id).run();if(careOrder)await context.env.DB.prepare("UPDATE care_orders SET state='OPEN',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(careOrder.id,id,id).run();throw error; }
+   .bind(id, tokenHash, fingerprint, input.name, input.email, network||omari ? input.phone : '', input.invoice, input.minor, input.currency, method.code, method.name, now, now,careOrder?.id||null).run();
+  } catch (error) { const concurrent = await existing(); if (concurrent) return await respond(concurrent); if(domainOrder)await context.env.DB.prepare("UPDATE domain_orders SET state='QUOTED',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(domainOrder.id,id,id).run();if(careOrder)await context.env.DB.prepare("UPDATE care_orders SET state='OPEN',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(careOrder.id,id,id).run();throw error; }
   try {
    if(paynowMethod){
     await context.env.DB.prepare("UPDATE customer_payments SET gateway_provider='paynow' WHERE id=?").bind(id).run();
-    const result=await initiatePaynow(context.env,{id,amount:(input.minor/100).toFixed(2),invoice:input.invoice,email:input.email,method:method.name,resultUrl:origin+'/api/payments/paynow-webhook',returnUrl:origin+'/payments/?payment='+id+'&token='+input.token});
-    await context.env.DB.prepare("UPDATE customer_payments SET gateway_poll_url=?,gateway_reference=?,redirect_url=?,status='INITIATED',updated_at=? WHERE id=? AND status='CREATING'").bind(result.pollUrl,result.reference,result.redirectUrl,new Date().toISOString(),id).run();
+    const result=await initiatePaynow(context.env,{id,amount:(input.minor/100).toFixed(2),invoice:input.invoice,email:input.email,phone:input.phone,method:method.name,resultUrl:origin+'/api/payments/paynow-webhook',returnUrl:origin+'/payments/?payment='+id+'&token='+input.token});
+    if(!result.redirectUrl)await saveWallet(context.env,id,'onemoney',{instructions:result.instructions});
+   await context.env.DB.prepare("UPDATE customer_payments SET gateway_poll_url=?,gateway_reference=?,redirect_url=?,status=?,updated_at=? WHERE id=? AND status='CREATING'").bind(result.pollUrl,result.reference,result.redirectUrl,result.redirectUrl?'INITIATED':'PENDING',new Date().toISOString(),id).run();
    }else{
    const client = gateway(context.env, { resultUrl: origin + '/api/payments/webhook', returnUrl: origin + '/payments/?payment=' + id + '&token=' + input.token });
    const request = { amount, currencyCode: input.currency, reasonForPayment: 'Opus Zimbabwe — ' + input.invoice, merchantReference: id, paymentMethodCode: method.code, paymentMetadata: { paymentId: id } };
-   const directMobile = Boolean(network && !method.redirectRequired);
+   const directMobile = Boolean(network && !method.redirectRequired)||omari||innbucks;
    const result = directMobile
-    ? await client.makeSeamlessPayment({ ...request, customer: { phoneNumber: input.phone, ...(input.email ? { email: input.email } : {}) }, requiredFields: { [method.phoneField || 'customerPhoneNumber']: input.phone } })
+    ? await client.makeSeamlessPayment({ ...request, customer: { ...(input.phone?{phoneNumber:omari?'263'+input.phone.slice(1):input.phone}:{}), ...(input.email ? { email: input.email } : {}) }, requiredFields: innbucks?{}:{ [method.phoneField || 'customerPhoneNumber']: omari?'263'+input.phone.slice(1):input.phone } })
     : await client.initiateTransaction(request);
    if (!result.referenceNumber || result.referenceNumber.length > 200) throw new Error('Invalid reference');
    await context.env.DB.prepare('UPDATE customer_payments SET gateway_reference = ?, updated_at = ? WHERE id = ?').bind(result.referenceNumber, new Date().toISOString(), id).run();
+   if(innbucks)await saveWallet(context.env,id,'innbucks',innbucksMetadata(result));
+   if(omari)await saveWallet(context.env,id,'omari');
    if (directMobile) {
     // Even an immediate gateway SUCCESS must pass the independent status and
     // amount verification before our receipt is marked paid.
@@ -81,6 +90,6 @@ export const onRequestPost: PagesHandler = async context => {
    // Never retry an ambiguous initiation: the gateway may have received it.
    await context.env.DB.prepare("UPDATE customer_payments SET status = 'UNCONFIRMED', updated_at = ? WHERE id = ? AND status = 'CREATING'").bind(new Date().toISOString(), id).run();
   }
-  return respond((await existing())!);
+  return await respond((await existing())!);
  } catch (error) { return fail(error); }
 };

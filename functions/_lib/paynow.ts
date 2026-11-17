@@ -16,20 +16,21 @@ export function amountMinor(value:string){if(!/^\d{1,8}(?:\.\d{1,2})?$/.test(val
 export const paynowConfigured=(env:Env)=>Boolean(env.PAYNOW_INTEGRATION_ID?.trim()&&env.PAYNOW_INTEGRATION_KEY?.trim());
 export function paynowMethods(env:Env,currency:string):LocalMethod[]{
  if(!paynowConfigured(env)||currency!==(env.PAYNOW_CURRENCY||'USD')||currency!=='USD')return [];
- return ['OneMoney','POS2U','Telecash'].map(name=>({code:'PAYNOW_'+name.toUpperCase(),name,provider:'paynow' as const,minimumAmount:.01,maximumAmount:1000000,redirectRequired:true}));
+ return ['OneMoney','POS2U','Telecash'].map(name=>({code:'PAYNOW_'+name.toUpperCase(),name,provider:'paynow' as const,minimumAmount:.01,maximumAmount:1000000,redirectRequired:name!=='OneMoney',flow:name==='OneMoney'?'mobile' as const:'hosted' as const,...(name==='OneMoney'?{requiresEmail:true,phoneField:'phone'}:{})}));
 }
 export function paynowRedirect(value:string){const u=new URL(value);if(u.protocol!=='https:'||u.hostname!=='www.paynow.co.zw'||u.username||u.password||u.port)throw new CheckoutError(502,'Unexpected Paynow checkout address.');return u.href}
-export async function initiatePaynow(env:Env,input:{id:string;amount:string;invoice:string;email:string;method:string;returnUrl:string;resultUrl:string}){
+export async function initiatePaynow(env:Env,input:{id:string;amount:string;invoice:string;email:string;method:string;phone?:string;returnUrl:string;resultUrl:string}){
  if(!paynowConfigured(env))throw new CheckoutError(503,'Paynow is not configured.');
- const fields:Record<string,string>={resulturl:input.resultUrl,returnurl:input.returnUrl,reference:input.id,amount:input.amount,id:env.PAYNOW_INTEGRATION_ID!,additionalinfo:'Opus Zimbabwe — '+input.invoice+' — '+input.method,authemail:input.email,status:'Message'};
+ const remote=input.method==='OneMoney';if(remote&&(!input.phone||!input.email))throw new CheckoutError(400,'OneMoney requires your wallet number and payment email.');
+ const fields:Record<string,string>={resulturl:input.resultUrl,returnurl:input.returnUrl,reference:input.id,amount:input.amount,id:env.PAYNOW_INTEGRATION_ID!,additionalinfo:'Opus Zimbabwe — '+input.invoice+' — '+input.method,authemail:input.email,...(remote?{phone:input.phone!,method:'onemoney'}:{}),status:'Message'};
  // Match Paynow's official SDK: encode each value before signing.
  for(const name of Object.keys(fields))fields[name]=encodeURI(fields[name]);
  fields.hash=paynowSignature(fields,env.PAYNOW_INTEGRATION_KEY!);
  // A timed-out initiation is ambiguous. Never retry a request that may charge.
- const response=await fetch('https://www.paynow.co.zw/interface/initiatetransaction',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams(fields).toString(),redirect:'manual',signal:AbortSignal.timeout(20000)});
+ const response=await fetch('https://www.paynow.co.zw/interface/'+(remote?'remotetransaction':'initiatetransaction'),{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams(fields).toString(),redirect:'manual',signal:AbortSignal.timeout(20000)});
  if(!response.ok)throw new CheckoutError(502,'Paynow could not confirm the payment request.');
  const values=paynowForm(new TextDecoder().decode(await bytes(response,20000)));
- if(!verifyPaynow(values,env.PAYNOW_INTEGRATION_KEY!)||values.status?.toLowerCase()!=='ok'||!values.pollurl||!values.browserurl)throw new CheckoutError(502,'Paynow could not authenticate the checkout response.');
- const poll=pollUrl(values.pollurl).href,redirect=paynowRedirect(values.browserurl);
- return {pollUrl:poll,redirectUrl:redirect,reference:values.paynowreference||null};
+ if(!verifyPaynow(values,env.PAYNOW_INTEGRATION_KEY!)||values.status?.toLowerCase()!=='ok'||!values.pollurl||(!remote&&!values.browserurl))throw new CheckoutError(502,'Paynow could not authenticate the checkout response.');
+ const poll=pollUrl(values.pollurl).href,redirect=remote?null:paynowRedirect(values.browserurl);
+ return {pollUrl:poll,redirectUrl:redirect,reference:values.paynowreference||null,instructions:remote?(values.instructions||'Confirm the OneMoney request on your phone.'):undefined};
 }

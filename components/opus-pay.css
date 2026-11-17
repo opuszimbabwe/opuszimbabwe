@@ -518,8 +518,7 @@
 .opus-pay-page .opus-detail-card .opus-float-field{--opus-caption-x:13px;--opus-caption-size:10px;--opus-caption-padding:5px}
 .opus-pay-page .opus-detail-card .opus-field-orbit{padding:0;background:none;mask:none;overflow:visible;animation:none!important}
 .opus-pay-page .opus-detail-card .opus-field-orbit path{stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100}
-.opus-pay-page .opus-detail-card .opus-outline-stroke{stroke-width:2}
-.opus-pay-page .opus-detail-card .opus-outline-glow{stroke-width:5;filter:blur(2px);opacity:.65}
+.opus-pay-page .opus-detail-card .opus-outline-stroke{stroke-width:1.5}
 .opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-field-orbit path{animation:opus-outline-trace 3.6s linear both}
 @keyframes opus-outline-trace{0%{stroke-dashoffset:100;animation-timing-function:cubic-bezier(.25,.1,.4,1)}70%{stroke-dashoffset:29;animation-timing-function:cubic-bezier(.7,.02,.95,.5)}94%,100%{stroke-dashoffset:0}}
 .opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) input{border-width:2px;border-color:#278052}
@@ -548,9 +547,8 @@
 .opus-pay-page .opus-detail-card .opus-float-field input,.opus-pay-page .opus-detail-card .opus-float-field select,.opus-pay-page .opus-detail-card .opus-float-field input:focus,.opus-pay-page .opus-detail-card .opus-float-field select:focus,.opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) input,.opus-pay-page .opus-detail-card .opus-float-field[data-invalid=true] input{border-color:transparent}
 .opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) .opus-outline-base{stroke:#278052;stroke-width:2}
 .opus-pay-page .opus-detail-card .opus-float-field[data-invalid=true] .opus-outline-base{stroke:#c83242;stroke-width:1.5}
-.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-stroke,.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-glow{opacity:0}
+.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-stroke{opacity:0}
 .opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-stroke{opacity:1}
-.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-outline-glow{opacity:.65}
 .opus-previous-attempts{position:fixed;z-index:30;right:18px;bottom:12px;max-width:min(340px,calc(100vw - 36px));padding:10px 14px;border:1px solid #e0e3e8;border-radius:13px;background:#fffffff2;box-shadow:0 5px 20px #202c4015;font-size:10px;color:#555d6b}
 .opus-previous-attempts summary{cursor:pointer;font-weight:600}.opus-previous-attempts p{font-size:10px;line-height:1.5;margin:8px 0}.opus-previous-attempts a{display:flex;align-items:center;justify-content:space-between;margin-top:6px;color:#293648;text-decoration:underline;text-underline-offset:3px}
 .opus-pay-page[data-keyboard=true] .opus-previous-attempts{top:3px;bottom:auto;right:8px;padding:7px 10px}
@@ -558,3 +556,60 @@
 .opus-pay-page .opus-detail-card .opus-float-field:has(input:autofill) .opus-outline-open{display:block}
 .opus-pay-page .opus-detail-card .opus-float-field:has(input:autofill) .opus-outline-closed{display:none}
 .opus-pay-page[data-keyboard=true] .opus-detail-card .opus-float-field:has(input:autofill) .opus-float-caption{left:7px;font-size:9px}
+
+/* Thin, unblurred trace hands off to a brighter moving orange segment. */
+.opus-pay-page .opus-detail-card .opus-field-orbit .opus-outline-mask{stroke-dasharray:none;stroke-dashoffset:0;stroke-linecap:round;stroke-linejoin:round;animation:none!important}
+.opus-outline-rotating-layer{opacity:0;pointer-events:none}
+.opus-outline-rotating-gradient{width:100%;height:100%;filter:none;box-shadow:none;background:conic-gradient(from var(--opus-orbit-angle),#d92d3f 0deg,#dc303b 220deg,#f26325 250deg,#ff9828 276deg,#ffac34 295deg,#ef562a 320deg,#d92d3f 350deg,#d92d3f 360deg)}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-field-orbit[data-outline-phase=rotating] .opus-outline-stroke{opacity:0}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-field-orbit[data-outline-phase=rotating] .opus-outline-rotating-layer{opacity:1}
+.opus-pay-page .opus-detail-card .opus-float-field:focus-within .opus-field-orbit[data-outline-phase=rotating] .opus-outline-rotating-gradient{animation:opus-orbit 4.8s linear infinite}
+.opus-pay-page[data-motion=false] .opus-outline-rotating-layer{display:none}
+.opus-pay-page[data-motion=false] .opus-outline-rotating-gradient{animation:none!important}
+@media(prefers-reduced-motion:reduce){.opus-pay-page .opus-outline-rotating-layer{display:none}.opus-pay-page .opus-outline-rotating-gradient{animation:none!important}}
+/* Almost-white field fill, just enough contrast against the white payment card. */
+.opus-pay-page .opus-detail-card .opus-float-field input,.opus-pay-page .opus-detail-card .opus-float-field select,.opus-pay-page .opus-detail-card .opus-float-field input:focus,.opus-pay-page .opus-detail-card .opus-float-field select:focus,.opus-pay-page .opus-detail-card .opus-float-field[data-confirmed=true]:not(:focus-within) input{background-color:#fafbfc}
+.opus-detail-card>.opus-payment-email{grid-column:1/-1}
+@media(max-height:700px){.opus-pay-page .opus-detail-card[data-payment-email=true]{padding:16px 20px;row-gap:14px}.opus-pay-page .opus-detail-card[data-payment-email=true] .opus-float-field{height:44px}}
+@media(max-height:600px){.opus-pay-page .opus-detail-card[data-payment-email=true]{padding:14px 18px;row-gap:12px}.opus-pay-page .opus-detail-card[data-payment-email=true] .opus-float-field{height:40px}}
+.opus-pay-page[data-keyboard=true] .opus-detail-card>.opus-payment-email{grid-column:auto}
+.opus-pay-page[data-keyboard=true] .opus-detail-card[data-payment-email=true]{padding:12px;row-gap:8px}
+.opus-wallet-panel{max-width:560px;margin:0 auto;padding:26px 30px;border-radius:22px;background:#fff;box-shadow:0 14px 30px #30374818;text-align:center}
+.opus-wallet-panel .opus-selected-method{height:32px;min-height:32px;margin:0 0 16px}.opus-wallet-panel .opus-provider-art{transform:scale(.55);transform-origin:left center}.opus-wallet-panel .opus-selected-method button{font-size:11px;color:#646c78;text-decoration:underline}
+.opus-wallet-panel h1{font-size:20px;margin:0 0 12px;font-weight:600}.opus-wallet-instructions,.opus-wallet-waiting{font-size:12px;line-height:1.6;color:#667080;margin:0 auto 18px;max-width:430px}.opus-innbucks-authorisation{display:flex;align-items:center;justify-content:center;gap:22px;margin:16px 0 20px}.opus-wallet-qr{display:block;width:142px;height:142px;object-fit:contain;background:white}.opus-innbucks-authorisation span{display:block;font-size:11px;color:#777f8b}.opus-innbucks-authorisation strong{display:block;font-size:25px;letter-spacing:2px;margin:8px 0}.opus-innbucks-authorisation button,.opus-wallet-check{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border:1px solid #dce0e6;border-radius:9px;background:#fff;font:500 12px OpusPoppins,Poppins,sans-serif;color:#414b5b}
+.opus-wallet-panel small{display:block;margin-top:16px;font-size:9px;color:#7a818e}.opus-wallet-error{color:#b42d3a;font-size:11px;line-height:1.5}.opus-otp-form{display:grid;gap:18px;margin:24px auto;max-width:310px}.opus-otp-form .opus-float-field{position:relative;display:block;height:56px;border-radius:12px;background:#fafbfc;--opus-caption-x:13px;--opus-caption-size:10px;--opus-caption-padding:5px}.opus-otp-form input{width:100%;height:56px;border:1px solid #dce0e6;border-radius:12px;text-align:center;font:500 20px OpusPoppins,Poppins,sans-serif;letter-spacing:5px;outline:none;background:#fafbfc}.opus-otp-form .opus-float-caption{position:absolute;top:0;left:13px;transform:translateY(-50%);font:600 10px OpusPoppins,Poppins,sans-serif;color:#676f7a;padding:0 5px;letter-spacing:0}.opus-otp-form .payment-submit{margin:0;min-height:44px}.opus-pay-page:has(.payment-wallet-session) .opus-pay-header{height:115px;padding-top:22px}.opus-pay-page:has(.payment-wallet-session) .opus-pay-footer{margin-top:28px}
+@media(max-width:700px){.opus-wallet-panel{padding:22px 20px}.opus-wallet-panel h1{font-size:18px}.opus-wallet-instructions{font-size:11px}.opus-innbucks-authorisation{gap:14px}.opus-wallet-qr{width:120px;height:120px}.opus-innbucks-authorisation strong{font-size:21px}.opus-pay-page:has(.payment-wallet-session) .opus-pay-header{height:98px;padding-top:16px}}
+@media(max-height:650px){.opus-wallet-panel{padding:18px 22px}.opus-wallet-panel h1{font-size:17px}.opus-wallet-qr{width:100px;height:100px}.opus-wallet-instructions,.opus-wallet-waiting{font-size:10px;margin-bottom:12px}.opus-pay-page:has(.payment-wallet-session) .opus-pay-header{height:84px;padding-top:10px}.opus-pay-page:has(.payment-wallet-session) .opus-pay-footer{margin-top:16px}}
+.opus-pay-page[data-keyboard=true] .opus-wallet-panel{padding:10px 18px}.opus-pay-page[data-keyboard=true] .opus-wallet-panel .opus-selected-method{margin-bottom:5px;height:22px;min-height:22px}.opus-pay-page[data-keyboard=true] .opus-wallet-panel h1{font-size:15px;margin-bottom:6px}.opus-pay-page[data-keyboard=true] .opus-wallet-instructions{font-size:10px;margin-bottom:6px}.opus-pay-page[data-keyboard=true] .opus-otp-form{gap:8px;margin:12px auto}.opus-pay-page[data-keyboard=true] .opus-otp-form input,.opus-pay-page[data-keyboard=true] .opus-otp-form .opus-float-field{height:40px}.opus-pay-page[data-keyboard=true] .opus-wallet-panel small{display:none}.opus-pay-page[data-keyboard=true] .opus-wallet-check{padding:6px 12px;font-size:10px}
+
+.opus-wallet-panel .opus-otp-form.opus-detail-card{display:grid;grid-template-columns:1fr;gap:18px;max-width:310px;width:100%;padding:0;margin:24px auto;background:transparent;border:0;border-radius:0;box-shadow:none}
+.opus-wallet-total{display:flex;align-items:center;justify-content:space-between;gap:18px;max-width:330px;margin:16px auto;font-size:11px;color:#6d7582}.opus-wallet-total strong{font-size:18px;color:#20242d}
+.opus-pay-page[data-keyboard=true] .opus-wallet-panel .opus-otp-form.opus-detail-card{gap:8px;margin:12px auto}.opus-pay-page[data-keyboard=true] .opus-wallet-total{margin:8px auto;font-size:10px}.opus-pay-page[data-keyboard=true] .opus-wallet-total strong{font-size:15px}
+
+/* Critical artwork is embedded: no hydration, image probe or network gate at first paint. */
+.opus-provider-art.opus-embedded-art img{top:0;left:0;width:100%;height:100%;object-fit:contain}
+.opus-official-logo{object-fit:contain}
+.opus-picker-feedback{top:auto;bottom:calc(100% + 8px);font-size:11px;line-height:1.4}
+.opus-notch{container-type:inline-size;--opus-notch-size:min(237px,calc(100cqw - 48px));--opus-notch-depth:36px}
+.opus-notch-wide{--opus-notch-size:min(472px,calc(100cqw - 24px))}
+.opus-notch-surface{position:absolute;inset:0;background:#fff;border-radius:20px;
+mask-image:linear-gradient(#fff 0 0),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 36'%3E%3Cpath fill='white' d='M0 0H44V36Q30 36 26 28L16 8Q12 0 0 0Z'/%3E%3C/svg%3E"),linear-gradient(#fff 0 0),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 36'%3E%3Cpath fill='white' d='M0 0H44Q32 0 28 8L18 28Q14 36 0 36Z'/%3E%3C/svg%3E");
+mask-size:100% 100%,44px var(--opus-notch-depth),calc(var(--opus-notch-size) - 88px) var(--opus-notch-depth),44px var(--opus-notch-depth);
+mask-position:0 0,calc(50% - (var(--opus-notch-size) - 44px)/2) 0,50% 0,calc(50% + (var(--opus-notch-size) - 44px)/2) 0;mask-repeat:no-repeat;mask-composite:exclude,add,add}
+@media(max-width:700px){.opus-notch{--opus-notch-depth:33px}.opus-notch-surface{border-radius:19px}}
+/* Required wallet email shares the phone row where there is room. */
+@media(min-width:600px){.opus-pay-page .opus-detail-card[data-payment-email=true]:has(.payment-mobile-field)>.payment-mobile-field,.opus-pay-page .opus-detail-card[data-payment-email=true]:has(.payment-mobile-field)>.opus-payment-email{grid-column:auto}}
+@media(max-width:599px){.opus-pay-page .opus-detail-card[data-payment-email=true]{row-gap:17px;padding:20px}.opus-pay-page .opus-detail-card[data-payment-email=true] .opus-float-field{height:50px}.opus-pay-page:has(.opus-detail-card[data-payment-email=true]) .opus-pay-header{height:108px;padding-top:16px}}
+@media(max-width:599px) and (max-height:650px){.opus-pay-page .opus-detail-card[data-payment-email=true]{row-gap:12px;padding:14px 16px}.opus-pay-page .opus-detail-card[data-payment-email=true] .opus-float-field{height:40px}.opus-pay-page:has(.opus-detail-card[data-payment-email=true]) .opus-pay-header{height:74px;padding-top:8px}}
+.opus-pay-page[data-keyboard=true] .opus-detail-card[data-payment-email=true]{padding:8px 12px;row-gap:6px}.opus-pay-page[data-keyboard=true] .opus-detail-card[data-payment-email=true] .opus-float-field{height:36px}.opus-pay-page[data-keyboard=true]:has(.opus-detail-card[data-payment-email=true]) .opus-pay-header{height:35px;padding-top:3px}
+@media(max-height:430px){
+ .opus-pay-page:has(.payment-wallet-session) .opus-pay-header{height:35px;padding-top:3px}
+ .opus-wallet-panel{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;padding:8px 14px}
+ .opus-wallet-panel>.opus-selected-method,.opus-wallet-panel>.opus-wallet-instructions,.opus-wallet-panel>.opus-wallet-waiting,.opus-wallet-panel>.opus-innbucks-authorisation,.opus-wallet-panel>.opus-otp-form,.opus-wallet-panel>.opus-wallet-error{grid-column:1/-1}
+ .opus-wallet-panel h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+ .opus-wallet-panel .opus-selected-method{margin:0;height:22px;min-height:22px}
+ .opus-wallet-instructions,.opus-wallet-waiting{font-size:9px;line-height:1.4;margin:0}
+ .opus-innbucks-authorisation{margin:3px 0;gap:16px}.opus-wallet-qr{width:72px;height:72px}.opus-innbucks-authorisation strong{font-size:18px;margin:3px 0}.opus-innbucks-authorisation button{padding:4px 8px;font-size:9px}
+ .opus-pay-page[data-keyboard=true] .opus-wallet-panel .opus-otp-form.opus-detail-card{margin:5px auto;gap:8px}.opus-pay-page .opus-wallet-panel .opus-otp-form .payment-submit{min-height:32px;font-size:11px}
+ .opus-pay-page[data-keyboard=true] .opus-wallet-total{margin:0;gap:8px;font-size:9px}.opus-wallet-panel .opus-wallet-check{padding:6px;font-size:10px;align-self:center}.opus-wallet-panel small{display:none}
+}
