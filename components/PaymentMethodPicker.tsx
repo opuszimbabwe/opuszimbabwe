@@ -25,11 +25,11 @@ export function motionAllowed(){
  return !window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!connection?.saveData;
 }
 function Notch({wide=false}:{wide?:boolean}){return <span className={`opus-notch${wide?' opus-notch-wide':''}`} aria-hidden="true"><span className="opus-notch-surface"/></span>}
-export default function PaymentMethodPicker({methods,loading,error,onRetry,onSelect,disabled=false}:{methods:LocalMethod[];loading:boolean;error:string;onRetry:()=>void;onSelect:(method:LocalMethod)=>void;disabled?:boolean}){
- const [cue,setCue]=useState(-1),[message,setMessage]=useState(''),[activeGroup,setActiveGroup]=useState<number|null>(null),[phase,setPhase]=useState('intro'),[round,setRound]=useState(0);
+export default function PaymentMethodPicker({methods,loading,error,onRetry,onSelect,onNotice,disabled=false}:{methods:LocalMethod[];loading:boolean;error:string;onRetry:()=>void;onSelect:(method:LocalMethod)=>void;onNotice?:(message:string)=>void;disabled?:boolean}){
+ const [cue,setCue]=useState(-1),[activeGroup,setActiveGroup]=useState<number|null>(null),[phase,setPhase]=useState('intro'),[round,setRound]=useState(0);
  const pickerRef=useRef<HTMLDivElement>(null),interrupt=useRef<()=>void>(()=>{});const id='opus-payment';
  function stop(){interrupt.current()}
- useEffect(()=>{if(loading||error){setActiveGroup(null);setMessage('')}},[loading,error]);
+ useEffect(()=>{if(loading||error){setActiveGroup(null);onNotice?.('')}},[loading,error]);
  useEffect(()=>{const node=pickerRef.current,card=node?.querySelector('.opus-card-group');if(!node||!card)return;const observer=new ResizeObserver(()=>{node.style.setProperty('--opus-card-height',(card as HTMLElement).offsetHeight+'px')});observer.observe(card);return()=>observer.disconnect()},[]);
  useEffect(()=>{
   if(loading||error||!methods.length){setCue(-1);setPhase('paused');return;}
@@ -46,11 +46,11 @@ export default function PaymentMethodPicker({methods,loading,error,onRetry,onSel
   return()=>{disposed=true;clearTimeout(timer);interrupt.current=()=>{};for(const name of ['pointermove','pointerdown','keydown','touchstart','wheel'])window.removeEventListener(name,activity);document.removeEventListener('visibilitychange',visibility);media.removeEventListener('change',activity);connection?.removeEventListener('change',activity)};
  },[loading,error,methods.length]);
  function hoverGroup(group:number,event:{pointerType:string;clientX:number;clientY:number;currentTarget:HTMLElement}){if(event.pointerType!=='mouse'||innerWidth<=700||loading||Boolean(error))return;const box=event.currentTarget.getBoundingClientRect();if(event.clientX>=box.left&&event.clientX<=box.right&&event.clientY>=box.top&&event.clientY<=box.bottom)setActiveGroup(group)}
- function choose(index:number){stop();const brand=paymentBrands[index],method=methods.find(m=>brand.pattern.test(m.name));if(loading)return;if(!method){setMessage(`${brand.name} is temporarily unavailable. Please choose another method or contact payment support.`);return}setMessage('');onSelect(method)}
+ function choose(index:number){stop();const brand=paymentBrands[index],method=methods.find(m=>brand.pattern.test(m.name));if(loading)return;if(!method){onNotice?.(`${brand.name} is temporarily unavailable. Please choose another method or contact payment support.`);return}onNotice?.('');onSelect(method)}
  return <div ref={pickerRef} className="opus-method-picker" aria-busy={loading} data-active-group={activeGroup===null?'both':activeGroup} data-cue-phase={phase} data-cue-round={round} onKeyDown={event=>{if(event.key==='Escape'){stop();setActiveGroup(null)}}} onPointerLeave={event=>{if(event.pointerType==='mouse'&&innerWidth>700)setActiveGroup(null)}}>
   <h1 className="opus-sr-only">Choose your payment method</h1>
   <nav className="opus-group-controls" aria-label="Payment groups">{[{title:'Cards',value:0},{title:'Mobile wallets',value:1},{title:'Show both',value:null}].map(item=><button key={item.title} type="button" disabled={loading||Boolean(error)} aria-pressed={activeGroup===item.value} onClick={()=>{stop();setActiveGroup(item.value)}}>{item.title}</button>)}</nav>
   {[{title:'Cards',indexes:[0,1,2]},{title:'Mobile wallet & other payments',indexes:[3,4,5,6,7,8]}].map((group,g)=><div key={group.title} className={`opus-group-hover-zone ${g?'opus-mobile-zone':''}`} onPointerEnter={event=>hoverGroup(g,event)} onPointerMove={event=>hoverGroup(g,event)} onPointerLeave={event=>{if(event.pointerType==='mouse'&&innerWidth>700)setActiveGroup(current=>current===g?null:current)}}><section className={`opus-method-group ${g?'opus-mobile-group':'opus-card-group'}`} aria-labelledby={`${id}-${g}`} onFocusCapture={event=>{if(!loading&&!error&&(event.target as HTMLElement).matches(':focus-visible'))setActiveGroup(g)}}><Notch wide={Boolean(g)}/><h2 id={`${id}-${g}`} className="opus-group-title">{group.title}</h2><div className="opus-logo-grid">{group.indexes.map(index=>{const b=paymentBrands[index],available=methods.some(m=>b.pattern.test(m.name));return <button key={b.key} type="button" className="opus-method-button" data-cue={cue===index||undefined} data-brand={b.key} data-unavailable={!loading&&!available||undefined} aria-label={`Pay with ${b.name}`} aria-disabled={disabled||loading||!available} onClick={()=>{if(!disabled)choose(index)}} onPointerEnter={stop}><PaymentBrand name={b.name}/></button>})}</div></section></div>)}
-  <div className="opus-picker-feedback" aria-live="polite">{loading?'Loading payment methods…':message||error||(!methods.length?'Payment methods are temporarily unavailable.':'')}{(error||(!loading&&!methods.length))&&<button type="button" onClick={onRetry}>Try again</button>}</div>
+
  </div>;
 }

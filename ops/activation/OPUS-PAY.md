@@ -244,3 +244,20 @@ field switching and the Omari OTP form. Provider calls remain mocked.
 The notch surface uses a single continuous clip polygon with sampled rounded
 transitions and straight slants. There are no additive/excluded mask layers or
 internal cutout joins to create horizontal/vertical white raster seams.
+
+## Checkout notifications
+
+Informational copy is presented in one non-modal, dismissible notification queue:
+saved-attempt recovery, errors/timeouts, method loading/retry, provider instructions,
+OTP submission progress, order guidance and receipt-export messages. Notifications
+are outside the checkout article and do not change form geometry. A compact
+Payment notifications control reopens dismissed messages that are still relevant.
+Routine authorisation help is available on demand rather than covering entry controls. New states prioritise the current warning; repeated polling with the same state
+does not create additional pop-ups. Essential receipt data, approval QR/code,
+transaction headings and payment controls remain part of the page.
+
+The restore/retry/status actions retain their existing handlers. Dismissing a
+message never clears a saved attempt, resets its fingerprint, cancels a provider
+request or triggers a new payment. No backend/schema change is required.
+Run test:checkout:notifications plus loading, method-switch, wallet, keyboard,
+no-scroll and floating-label checks with providers mocked.
