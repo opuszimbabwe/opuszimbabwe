@@ -502,3 +502,14 @@
 .opus-method-group .opus-group-title,.opus-method-group .opus-logo-grid{transition:opacity 200ms ease}
 .opus-method-picker[data-active-group="0"] .opus-mobile-group .opus-group-title,.opus-method-picker[data-active-group="0"] .opus-mobile-group .opus-logo-grid,.opus-method-picker[data-active-group="1"] .opus-card-group .opus-group-title,.opus-method-picker[data-active-group="1"] .opus-card-group .opus-logo-grid{opacity:0}
 @media(prefers-reduced-motion:reduce){.opus-method-group .opus-group-title,.opus-method-group .opus-logo-grid{transition:none!important}}
+/* Stable hover zones prevent edge jitter; leaving a card restores the full layout. */
+.opus-group-hover-zone{display:flow-root;position:relative}
+.opus-mobile-zone{margin-top:var(--opus-deck-gap)}
+.opus-group-hover-zone>.opus-mobile-group{margin-top:0}
+@media(hover:hover) and (min-width:701px){
+ .opus-method-picker[data-active-group="0"] .opus-card-group{transform:translateY(12px) scale(1.025)}
+ .opus-method-picker[data-active-group="1"] .opus-mobile-group{transform:translateY(-12px) scale(1.025)}
+ .opus-method-picker[data-active-group="0"] .opus-mobile-group{transform:translateY(calc(-1 * (var(--opus-card-height) + var(--opus-deck-gap)) + 32px)) scale(.94)}
+ .opus-method-picker[data-active-group="1"] .opus-card-group{transform:translateY(calc(var(--opus-card-height) + var(--opus-deck-gap) + 2px)) scale(.94)}
+ .opus-method-picker[data-active-group="0"] .opus-group-hover-zone:first-of-type,.opus-method-picker[data-active-group="1"] .opus-mobile-zone{z-index:5}
+}

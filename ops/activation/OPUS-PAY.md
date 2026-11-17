@@ -123,7 +123,7 @@ this is input validation, never a gateway/payment confirmation. Invalid blur
 shakes the field and displays a dismissible, 5.5-second white notification.
 Reduced-motion/data-saving settings disable decorative animations.
 
-Desktop hover layers one method family above the other. Leaving the picker or
+Desktop hover layers one method family above the other. Leaving that card's stable hover zone or
 pressing Escape restores both. Touch controls choose Cards, Mobile wallets or
 Show both; returning from the form starts with both displayed. Keyboard focus
 can bring a method family forward. The custom currency picker retains native
@@ -131,3 +131,8 @@ semantics and the disabled ZiG option. No PAN/CVV/PIN fields are collected.
 
 Run `npm run test:checkout:floating`, `test:checkout:no-scroll`,
 `test:checkout:browser` and `test:checkout:viewports` against the preserved runtime.
+
+Desktop hover now nudges the upper card 12px down and the lower card 12px up
+toward the centre. Stable untransformed zones avoid edge jitter and restore
+both families when the pointer moves into the gap, without requiring it to
+leave the entire picker. Touch group switching retains its explicit controls.
