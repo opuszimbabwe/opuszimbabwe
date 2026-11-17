@@ -1,28 +1,28 @@
 {
-  "deployment_id": "e9e0d38f-2614-4775-a6a0-f0fc6b690e2c",
-  "url": "https://e9e0d38f.opuszimbabwe.pages.dev",
+  "deployment_id": "ceb6b8c2-63e5-4c4b-a678-7b0110b17b25",
+  "url": "https://ceb6b8c2.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "cefabc6aea3651b2ac005a8c54a89ec1e104d613",
-  "baseline": "931052a4-1e22-481f-84f3-e44d4f9178ad",
+  "commit": "03fcf20e35ca425edefc8e85382e339921224c94",
+  "baseline": "e9e0d38f-2614-4775-a6a0-f0fc6b690e2c",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-3ae93992dd016971.js",
-      "hash": "3ae93992dd016971c17bd826a0c18d10",
-      "bytes": 151942
+      "file": "/_next/static/chunks/app/payments/page-635e0f416413b0b9.js",
+      "hash": "635e0f416413b0b9dbf6d9b8903caf1f",
+      "bytes": 155110
     },
     {
-      "file": "/_next/static/css/opus-pay-5c5a777f08a50246.css",
-      "hash": "f8be21d643b91557675d7dfe341110eb",
-      "bytes": 72517
+      "file": "/_next/static/css/opus-pay-436a6a7b07e33a29.css",
+      "hash": "d8524d167bb5a84710e55c014e634b98",
+      "bytes": 73091
     },
     {
       "file": "/payments/index.html",
-      "hash": "09b52c7927d62bcd0708fe6dd7aef837",
+      "hash": "e25b6d50ed9fa48b2921c2a3c737fc06",
       "bytes": 108918
     },
     {
       "file": "/payments/index.txt",
-      "hash": "295b51973d207741917bdc1ecae4d9cd",
+      "hash": "fb083c8f32faa5e2d11b62dc64fbd693",
       "bytes": 3557
     },
     {
@@ -91,10 +91,8 @@
       "bytes": 7816
     }
   ],
-  "database_migrations_applied": [
-    "0028_direct_wallet_checkout.sql"
-  ],
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-direct-wallets",
+  "database_migrations_applied": [],
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-keyboard-stack",
   "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -118,7 +116,7 @@
     "touch_group_switch_show_both_back": true,
     "reduced_motion_and_data_saving_respected": true,
     "provider_handoffs_mock_tested": true,
-    "backend_unchanged": false,
+    "backend_unchanged": true,
     "supporting_workers_unchanged": true,
     "rear_card_captions_hidden_when_layered": true,
     "desktop_card_exit_restores_both": true,
@@ -181,6 +179,13 @@
     "provider_logos_survive_blocked_image_requests": true,
     "live_public_config_direct_wallet_flows_verified": true,
     "published_asset_hashes_match_tested_build": true,
-    "live_payment_or_sms_initiated": false
+    "live_payment_or_sms_initiated": false,
+    "keyboard_preserves_normal_stacked_geometry": true,
+    "keyboard_submit_bottom_clearance_px": 8,
+    "keyboard_helper_copy_may_be_obscured": true,
+    "keyboard_viewport_test_cases": 16,
+    "keyboard_visual_only_resize_and_pan_tested": true,
+    "keyboard_close_restores_normal_layout": true,
+    "keyboard_otp_and_method_switch_cleanup_tested": true
   }
 }
