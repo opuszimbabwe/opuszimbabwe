@@ -117,8 +117,9 @@ Only required fields are rendered in the entry form: reference, amount/currency
 and mobile number when required by the selected method. Optional name/email
 state is retained for pre-existing orders/attempts but no optional inputs appear.
 OpusFloatingField centres input text and idle captions; focus/content floats the
-caption to the top-left outline with a solid white break behind it. A 1.2-second
-red–orange outline rotates during focus. Valid local values turn green on blur;
+caption to the top-left outline with a solid white break behind it. A 3.6-second
+red–orange SVG stroke traces from the left label cut to the right cut on focus,
+accelerating into the final segment. It draws once per click/focus. Valid local values turn green on blur;
 this is input validation, never a gateway/payment confirmation. Invalid blur
 shakes the field and displays a dismissible, 5.5-second white notification.
 Reduced-motion/data-saving settings disable decorative animations.
@@ -136,3 +137,19 @@ Desktop hover now nudges the upper card 12px down and the lower card 12px up
 toward the centre. Stable untransformed zones avoid edge jitter and restore
 both families when the pointer moves into the gap, without requiring it to
 leave the entire picker. Touch group switching retains its explicit controls.
+
+The stronger orange glow follows the same trace. Completed valid fields use a
+2px green border without tick icons. Empty amount/mobile fields show centred
+examples only while focused, after their labels float out of the way. Examples
+are placeholders, never values. Reference meaning, required status, label and
+example remain unchanged pending the owner's discussion. Reduced-motion and
+data-saving modes show the focus stroke immediately without tracing.
+
+Chooser resilience checks cover server errors, invalid JSON, malformed method
+records, empty method lists, a 15-second GET timeout and manual retry recovery.
+No unverified configuration enables payment initiation. Provider image failures
+show readable method names rather than broken image icons; an online event retries
+artwork. The two group surfaces remain mounted in loading/error states, layering
+resets on failure and decorative cues pause. `test:checkout:loading` exercises
+these conditions without gateway requests. The authorisation paragraph spans
+the form width and is explicitly centred on desktop and mobile.
