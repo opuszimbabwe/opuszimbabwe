@@ -1,0 +1,118 @@
+{
+  "deployment_id": "6e7b2011-2e67-4220-8c60-8f6d09d8b905",
+  "url": "https://6e7b2011.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "344414220421e30b0ca730078361e2195f2a427e",
+  "baseline": "0b03870b-8f67-4534-a12b-0d67cbdc5145",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-0bd9c740933a12af.js",
+      "hash": "0bd9c740933a12afa3f0e634310b5b3e",
+      "bytes": 40229
+    },
+    {
+      "file": "/_next/static/css/opus-pay-6e364e28514bf4af.css",
+      "hash": "81689f977bd51a099e0b3fa4c7825c25",
+      "bytes": 31295
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "562d18f19923c5ad34abd8f0e4aaec74",
+      "bytes": 12674
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "c67a2cc73fac49250de215d0c92c9e15",
+      "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/official-logo-transparent.png",
+      "hash": "f8825b9e22ec8894f013d26965f5afc4",
+      "bytes": 344210
+    },
+    {
+      "file": "/images/opus-pay/official-logo.jpg",
+      "hash": "788e75d478ecc57c692598750583d167",
+      "bytes": 803731
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "80fb209a942218d3cedcc7af5b7ac78f",
+      "bytes": 40336
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
+    }
+  ],
+  "database_migrations_applied": false,
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-single-form",
+  "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
+  "activated_on": "2026-11-17",
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false,
+  "validation": {
+    "typecheck": true,
+    "preserved_runtime_browser": true,
+    "viewport_sizes_tested": 13,
+    "single_form_all_fields_visible": true,
+    "intermediate_steps": false,
+    "smallest_viewport": "320x568",
+    "keyboard_viewport_tested": "390x300",
+    "transparent_logo": true,
+    "larger_group_cards": true,
+    "increased_group_spacing": true,
+    "reveal_works_with_3g_estimate": true,
+    "reduced_motion_and_data_saving_respected": true,
+    "backend_unchanged": true,
+    "straight_notch_sides": true,
+    "live_checkout_artifacts_verified": 17,
+    "supporting_workers_unchanged": true
+  }
+}

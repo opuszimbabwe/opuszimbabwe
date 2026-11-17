@@ -1,28 +1,28 @@
 {
-  "deployment_id": "6e7b2011-2e67-4220-8c60-8f6d09d8b905",
-  "url": "https://6e7b2011.opuszimbabwe.pages.dev",
+  "deployment_id": "b3c5a1ae-8b90-495c-b371-43f9e6b85dc9",
+  "url": "https://b3c5a1ae.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "344414220421e30b0ca730078361e2195f2a427e",
-  "baseline": "0b03870b-8f67-4534-a12b-0d67cbdc5145",
+  "commit": "df6eeba1d74cf48e82391a114115cb184d4d521b",
+  "baseline": "6e7b2011-2e67-4220-8c60-8f6d09d8b905",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-0bd9c740933a12af.js",
-      "hash": "0bd9c740933a12afa3f0e634310b5b3e",
-      "bytes": 40229
+      "file": "/_next/static/chunks/app/payments/page-6100eef0a7c45e2e.js",
+      "hash": "6100eef0a7c45e2e46084fed0e0453c0",
+      "bytes": 40157
     },
     {
-      "file": "/_next/static/css/opus-pay-6e364e28514bf4af.css",
-      "hash": "81689f977bd51a099e0b3fa4c7825c25",
-      "bytes": 31295
+      "file": "/_next/static/css/opus-pay-4072e81c6fc840c2.css",
+      "hash": "47fcb2713ee158d99e32dd1753f5d628",
+      "bytes": 35079
     },
     {
       "file": "/payments/index.html",
-      "hash": "562d18f19923c5ad34abd8f0e4aaec74",
+      "hash": "00e272af15700977bf9283aca828fc51",
       "bytes": 12674
     },
     {
       "file": "/payments/index.txt",
-      "hash": "c67a2cc73fac49250de215d0c92c9e15",
+      "hash": "d35c65506329aecf25c0b0852357f9a1",
       "bytes": 3557
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-single-form",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-refined",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -105,13 +105,14 @@
     "intermediate_steps": false,
     "smallest_viewport": "320x568",
     "keyboard_viewport_tested": "390x300",
-    "transparent_logo": true,
-    "larger_group_cards": true,
-    "increased_group_spacing": true,
-    "reveal_works_with_3g_estimate": true,
+    "modern_currency_picker_keyboard_checked": true,
+    "disabled_zig_preserved": true,
+    "extra_logo_spacing": true,
+    "amount_hint_removed": true,
+    "form_reveal_seconds": 2,
+    "logo_cue_dwell_ms": 500,
     "reduced_motion_and_data_saving_respected": true,
     "backend_unchanged": true,
-    "straight_notch_sides": true,
     "live_checkout_artifacts_verified": 17,
     "supporting_workers_unchanged": true
   }
