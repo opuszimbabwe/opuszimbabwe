@@ -66,3 +66,13 @@ wordmark reconstruction pending an original downloadable vector. The supplied
 chat images are visual references; their original attachment files are not
 mounted in this workspace. The merchant lockup uses the existing Opus artwork
 and a typeset Pay extension. Poppins' OFL license is shipped with the fonts.
+
+## Compact responsive revision
+
+The selector now caps desktop card width at 760px. Surface heights, logo artwork,
+heading sizes and header/footer spacing shrink together on short windows and
+small screens. The merchant logo uses upright lettering with no added skew or
+italic styling. `npm run test:checkout:viewports` checks 13 sizes from 320×568 to
+1920×1080, including a 1280×640 desktop viewport representative of browser zoom.
+All initial selectors fit without scrolling at those tested sizes; payment forms
+may scroll naturally when a mobile keyboard is open.

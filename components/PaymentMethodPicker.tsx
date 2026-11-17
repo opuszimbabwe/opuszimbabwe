@@ -28,7 +28,7 @@ export function motionAllowed(){
 function Notch({wide=false}:{wide?:boolean}){
  const ref=useRef<SVGSVGElement>(null),[size,setSize]=useState({width:1084,height:wide?336:240});
  useEffect(()=>{const el=ref.current;if(!el)return;const observer=new ResizeObserver(entries=>{const r=entries[0].contentRect;setSize({width:r.width,height:r.height})});observer.observe(el);return()=>observer.disconnect()},[]);
- const {width:w,height:h}=size,depth=w<600?42:46,n=Math.min(w-100,wide?590:260),left=(w-n)/2,right=(w+n)/2,r=24;
+ const {width:w,height:h}=size,depth=w<600?33:36,n=Math.min(w-80,wide?440:205),left=(w-n)/2,right=(w+n)/2,r=w<600?19:20;
  return <svg className="opus-notch" ref={ref} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden="true"><path d={`M ${r} 0 H ${left-20} Q ${left-5} 0 ${left+2} 16 L ${left+10} ${depth-13} Q ${left+16} ${depth} ${left+32} ${depth} H ${right-32} Q ${right-16} ${depth} ${right-10} ${depth-13} L ${right-2} 16 Q ${right+5} 0 ${right+20} 0 H ${w-r} Q ${w} 0 ${w} ${r} V ${h-r} Q ${w} ${h} ${w-r} ${h} H ${r} Q 0 ${h} 0 ${h-r} V ${r} Q 0 0 ${r} 0 Z`} fill="white"/></svg>;
 }
 export default function PaymentMethodPicker({methods,loading,error,onRetry,onSelect,disabled=false}:{methods:LocalMethod[];loading:boolean;error:string;onRetry:()=>void;onSelect:(method:LocalMethod)=>void;disabled?:boolean}){

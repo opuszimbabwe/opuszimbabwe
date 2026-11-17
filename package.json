@@ -19,7 +19,8 @@
     "test:checkout:artifacts": "node scripts/test-opus-pay-release.cjs",
     "test:checkout:browser": "node scripts/test-opus-pay-browser.cjs",
     "test:paynow": "node scripts/test-opus-pay-paynow.cjs",
-    "preview:checkout": "node scripts/serve-opus-pay-preview.cjs"
+    "preview:checkout": "node scripts/serve-opus-pay-preview.cjs",
+    "test:checkout:viewports": "node scripts/test-opus-pay-viewports.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",
