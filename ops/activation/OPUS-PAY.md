@@ -91,3 +91,14 @@ with a gentle trailing ease. The one-time logo cue dwells 500ms per method. Redu
 motion and explicit data saving disable it. Estimated network speed does not
 predict local CSS animation performance; introductory frame sampling only
 cancels the logo cue, rather than permanently disabling later form reveals.
+
+## Compact details and restrained validation
+
+Details use a 520px surface, 13px desktop control text, smaller labels and
+viewport-height breakpoints for short desktops and browser zoom. Mobile inputs
+retain 16px text to avoid automatic focus zoom. All fields remain on one form.
+Validation is evaluated for safety continuously, but advice appears after blur
+in one status area beside the total. Editing clears displayed advice, and
+routine network hints are omitted. Nine detail sizes, including 892×530, 768×432
+and the 390×300 keyboard viewport, check the whole form and visible footer,
+not just the submit button. EcoCash invalid-number feedback must also fit.
