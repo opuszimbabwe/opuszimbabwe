@@ -66,7 +66,7 @@ def main():
     assert {changes['checkout_chunk'],changes['checkout_css'],'/payments/index.html','/payments/index.txt'}.issubset(changed)
     assert all(name in {'/payments/index.html','/payments/index.txt',changes['checkout_chunk'],changes['checkout_css'],'/fonts/OFL.txt'} or name.startswith(('/images/opus-pay/','/images/payments/','/fonts/poppins-latin-')) for name in changed),'Only checkout assets may change'
     columns=api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':'PRAGMA table_info(customer_payments)'})[0]['results']
-    assert {'gateway_provider','gateway_poll_url','care_order_id'}.issubset({c['name'] for c in columns}),'Existing production payment schema is incomplete' 
+    assert {'gateway_provider','gateway_poll_url','care_order_id'}.issubset({c['name'] for c in columns}),'Existing production payment schema is incomplete'
     assert all(manifest[f]==h for f,h in original.items() if f not in changed)
     for directory in (ROOT/'production/workers').iterdir():
         expected=json.loads((directory/'deployment.json').read_text())

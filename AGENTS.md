@@ -5,7 +5,7 @@
   handlers now have reconstructed implementations, not recovered originals.
   The root frontend and some supporting code still predate the working site.
 - The working Pages deployment is recorded in `production/current-release.json`
-  (currently `9ede74a7-6361-4bd6-8490-97e3b7ed7ffd`). The original
+  (currently `022dbbd9-eded-4d06-8e67-9ca6f491ff43`). The original
   `18a7f56e-775d-4ac4-a15f-91083eebd122` remains the rollback baseline.
   Preserve the current frontend assets and all supporting Worker versions.
 - Preserve the production build guard. Do not use `build:legacy` for production
@@ -21,3 +21,7 @@
   must use `ops/activation/README.md`: preserve the original frontend manifest,
   patch only checkout artifacts and retain all four supporting Worker versions.
   Do not run the old full Next build or re-enable automatic GitHub deployment.
+
+- The Opus Pay checkout release uses `ops/activation/OPUS-PAY.md`. It preserves
+  the existing frontend outside checkout, applies no database migration, and
+  leaves the four supporting Workers and automatic deployment protection intact.

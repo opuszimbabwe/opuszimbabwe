@@ -4,9 +4,10 @@ Original approved Pages deployment: `18a7f56e-775d-4ac4-a15f-91083eebd122`. This
 preserves its recoverable artifacts and the Workers serving the website.
 Nothing was redeployed to create this original snapshot.
 
-The current activation is recorded in `current-release.json`; the exact four
+The current activation is recorded in `current-release.json`; the latest Opus Pay
 checkout artifacts, complete deployed Pages worker bundle and resulting manifest
-are in `releases/2026-11-16-mastercard/`. Original recovery files stay unchanged.
+are in `releases/2026-11-17-opus-pay/`. The preceding Mastercard release remains
+preserved in `releases/2026-11-16-mastercard/`. Original recovery files stay unchanged.
 
 - `pages-assets/`: 455 exact files, 33,351,180 bytes. Each file's Cloudflare
   BLAKE3 hash matches the original deployment manifest.

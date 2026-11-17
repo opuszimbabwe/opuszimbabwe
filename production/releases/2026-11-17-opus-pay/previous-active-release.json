@@ -1,0 +1,59 @@
+{
+  "deployment_id": "9ede74a7-6361-4bd6-8490-97e3b7ed7ffd",
+  "url": "https://9ede74a7.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "a180b915b528bb71a5bd7d2d952861048fe4f538",
+  "baseline": "18a7f56e-775d-4ac4-a15f-91083eebd122",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-7fcf1634b9382e9c.js",
+      "hash": "7fcf1634b9382e9ccc634ea715ac73d7",
+      "bytes": 37039
+    },
+    {
+      "file": "/images/payments/mastercard.svg",
+      "hash": "c424524e990e2ff05f55eae825ef2d37",
+      "bytes": 228
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "236872282d49e311b53e77a634bbc621",
+      "bytes": 10333
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "8d63acb3af51cdd48e8e18d90ae169ab",
+      "bytes": 3557
+    }
+  ],
+  "migration_0027_applied": true,
+  "activated_on": "2026-11-16",
+  "artifact_directory": "production/releases/2026-11-16-mastercard",
+  "backend_bundle_sha256": "26c2d370066ffc796dbac2aa846e48622b04070f73689d6fa3b933094ad03aee",
+  "preview_deployment_id": "4a7b0433-9028-4e4f-8065-879b8c350b73",
+  "preview_browser_check": "blocked by existing Cloudflare Access; not counted as passing",
+  "validation": {
+    "github_ci": "https://github.com/opuszimbabwe/opuszimbabwe/actions/runs/43786056095",
+    "typecheck": true,
+    "sixteen_reconstructed_handlers_mock_and_workerd": true,
+    "payment_domain_receipt_care_regressions": true,
+    "live_content_exact_structural_match": true,
+    "live_checkout_mobile_and_desktop": true,
+    "admin_unauthorized_access_denied": true,
+    "chat_session_endpoint_healthy": true,
+    "all_459_original_asset_paths_retained": true,
+    "protected_admin_asset_hashes_unchanged": true,
+    "all_four_supporting_worker_versions_unchanged": true,
+    "live_pesepay_mastercard_hosted_initiation": {
+      "attempts": 1,
+      "amount_usd": 0.1,
+      "state": "INITIATED",
+      "provider_host": "pay.pesepay.com",
+      "hosted_page_status": 200,
+      "card_details_entered": false,
+      "payment_completed": false
+    }
+  },
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false
+}

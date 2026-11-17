@@ -1,59 +1,109 @@
 {
-  "deployment_id": "9ede74a7-6361-4bd6-8490-97e3b7ed7ffd",
-  "url": "https://9ede74a7.opuszimbabwe.pages.dev",
+  "deployment_id": "022dbbd9-eded-4d06-8e67-9ca6f491ff43",
+  "url": "https://022dbbd9.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "a180b915b528bb71a5bd7d2d952861048fe4f538",
-  "baseline": "18a7f56e-775d-4ac4-a15f-91083eebd122",
+  "commit": "694f4131b10c58ea738912025da43c5a41dbdc13",
+  "baseline": "9ede74a7-6361-4bd6-8490-97e3b7ed7ffd",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-7fcf1634b9382e9c.js",
-      "hash": "7fcf1634b9382e9ccc634ea715ac73d7",
-      "bytes": 37039
+      "file": "/_next/static/chunks/app/payments/page-990cc43f5a434d61.js",
+      "hash": "990cc43f5a434d61d76232ddc2f4af83",
+      "bytes": 39903
     },
     {
-      "file": "/images/payments/mastercard.svg",
-      "hash": "c424524e990e2ff05f55eae825ef2d37",
-      "bytes": 228
+      "file": "/_next/static/css/opus-pay-c908331b659961c8.css",
+      "hash": "a42e7ab41fa44caee77604155c7723fd",
+      "bytes": 15357
     },
     {
       "file": "/payments/index.html",
-      "hash": "236872282d49e311b53e77a634bbc621",
-      "bytes": 10333
+      "hash": "d95a338a936e0b000d82b024a14761b2",
+      "bytes": 12792
     },
     {
       "file": "/payments/index.txt",
-      "hash": "8d63acb3af51cdd48e8e18d90ae169ab",
+      "hash": "a307294ac45a1c7c110ceca12dca734e",
       "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "c0d5536b2905a4009887349f565c7dbd",
+      "bytes": 40346
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
     }
   ],
-  "migration_0027_applied": true,
-  "activated_on": "2026-11-16",
-  "artifact_directory": "production/releases/2026-11-16-mastercard",
-  "backend_bundle_sha256": "26c2d370066ffc796dbac2aa846e48622b04070f73689d6fa3b933094ad03aee",
-  "preview_deployment_id": "4a7b0433-9028-4e4f-8065-879b8c350b73",
-  "preview_browser_check": "blocked by existing Cloudflare Access; not counted as passing",
-  "validation": {
-    "github_ci": "https://github.com/opuszimbabwe/opuszimbabwe/actions/runs/43786056095",
-    "typecheck": true,
-    "sixteen_reconstructed_handlers_mock_and_workerd": true,
-    "payment_domain_receipt_care_regressions": true,
-    "live_content_exact_structural_match": true,
-    "live_checkout_mobile_and_desktop": true,
-    "admin_unauthorized_access_denied": true,
-    "chat_session_endpoint_healthy": true,
-    "all_459_original_asset_paths_retained": true,
-    "protected_admin_asset_hashes_unchanged": true,
-    "all_four_supporting_worker_versions_unchanged": true,
-    "live_pesepay_mastercard_hosted_initiation": {
-      "attempts": 1,
-      "amount_usd": 0.1,
-      "state": "INITIATED",
-      "provider_host": "pay.pesepay.com",
-      "hosted_page_status": 200,
-      "card_details_entered": false,
-      "payment_completed": false
-    }
-  },
+  "database_migrations_applied": false,
+  "artifact_directory": "production/releases/2026-11-17-opus-pay",
+  "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
+  "activated_on": "2026-11-17",
+  "preview_deployment_id": "96098d76-9b0c-4937-9204-0649c0a7e071",
   "automatic_github_next_deployment_enabled": false,
-  "original_functions_source_recovered": false
+  "original_functions_source_recovered": false,
+  "validation": {
+    "github_ci": "https://github.com/opuszimbabwe/opuszimbabwe/actions/runs/44107161193",
+    "typecheck": true,
+    "mocked_gateway_tests": true,
+    "reconstructed_handlers_and_workerd": true,
+    "preserved_runtime_browser_tests": true,
+    "responsive_desktop_and_mobile": true,
+    "live_changed_assets_match_tested_release": 15,
+    "html_normalisation": "Cloudflare email-protection rewriting only; decoded address verified",
+    "public_content_structurally_unchanged": true,
+    "nine_live_methods_and_gateway_routing": true,
+    "both_custom_domains_active": true,
+    "admin_authentication": "Cloudflare Access redirects unauthenticated requests to login",
+    "four_supporting_workers_unchanged": true,
+    "database_migrations_applied": false,
+    "real_payment_attempts": 0,
+    "direct_live_browser_capture": "Not performed: Chromium proxy CA is untrusted; automatic approval review rejected changing persistent certificate trust. HTTPS asset/API verification and preserved-runtime browser checks were used."
+  }
 }

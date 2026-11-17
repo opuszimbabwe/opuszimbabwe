@@ -37,7 +37,10 @@ if(fs.existsSync(currentPath)){
  const baseline=read('production/state/pages-asset-manifest.json');
  for(const [file,hash] of Object.entries(baseline))if(!changed.has(file))assert.equal(manifest[file],hash,file);
  for(const item of current.checkout_changes){const bytes=fs.readFileSync(path.join(folder,'assets',item.file));assert.equal(bytes.length,item.bytes);assert.equal(blake3.hash(bytes.toString('base64')+path.extname(item.file).slice(1)).toString('hex').slice(0,32),manifest[item.file]);}
- assert.equal(changed.size,4);assert.equal(current.automatic_github_next_deployment_enabled,false);
- console.log('Verified current release bundle, four checkout artifacts and preserved baseline asset hashes.');
+ assert.equal(changed.size,current.checkout_changes.length,'Duplicate release artifact paths');
+ assert.ok(changed.size>=4);
+ for(const file of changed)assert.ok(/^\/payments\/index\.(html|txt)$|^\/_next\/static\/(chunks\/app\/payments\/|css\/opus-pay-)|^\/images\/(payments|opus-pay)\/|^\/fonts\/(poppins-latin-|OFL\.txt$)/.test(file),'Non-checkout release artifact: '+file);
+ assert.equal(current.automatic_github_next_deployment_enabled,false);
+ console.log('Verified current release bundle, '+changed.size+' checkout artifacts and preserved baseline asset hashes.');
 }
 console.log(JSON.stringify({worker_modules_verified:workerModules,exact_pages_assets_verified:assets,source_files_verified:sourceFiles,database_schema_objects:schema.length,pages_function_source_complete:false}));
