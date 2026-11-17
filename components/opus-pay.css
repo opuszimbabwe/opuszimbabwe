@@ -308,3 +308,36 @@
 .opus-pay-page .opus-detail-card .payment-submit{line-height:1.3;padding:8px}
 @media(max-width:700px) and (max-height:680px){.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:35px}.opus-pay-page .opus-detail-card label{font-size:10px}.opus-pay-page .opus-detail-card .payment-small{font-size:9px;line-height:1.3}.opus-pay-page .opus-detail-card .opus-total{font-size:11px}.opus-pay-page .opus-detail-card .opus-total strong{font-size:18px}}
 .opus-pay-page[data-keyboard=true] .opus-detail-card input,.opus-pay-page[data-keyboard=true] .opus-detail-card select{height:30px}
+
+/* Give the merchant mark its own space above the first payment surface. */
+.opus-pay-header{height:168px}
+.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:128px}
+@media(min-width:701px) and (max-height:760px){.opus-pay-header{height:129px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:116px}}
+@media(max-width:700px){.opus-pay-header{height:151px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:112px}}
+@media(max-width:700px) and (max-height:680px){.opus-pay-header{height:104px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:84px}}
+
+/* Quiet, precision-shaped controls with clear hover, focus and invalid states. */
+.opus-pay-page .opus-detail-card label{color:#626773;font-weight:500;letter-spacing:.01em}
+.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{border:1px solid #e2e4e9;border-radius:11px;background:#f7f8fa;box-shadow:0 1px 2px #18223803;transition:background-color 180ms ease,border-color 180ms ease,box-shadow 180ms ease;color:#20242d}
+.opus-pay-page .opus-detail-card input::placeholder{color:#9a9eaa;font-weight:400}
+.opus-pay-page .opus-detail-card input:hover:not(:disabled),.opus-pay-page .opus-detail-card select:hover:not(:disabled){background:#fcfcfd;border-color:#c8cdd6}
+.opus-pay-page .opus-detail-card input:focus,.opus-pay-page .opus-detail-card select:focus-visible{outline:none;background:#fff;border-color:#d98553;box-shadow:0 0 0 3px #e58a4a16,0 2px 4px #202b3d05}
+.opus-pay-page .opus-detail-card input[aria-invalid=true]{border-color:#c94949;background:#fffafa}
+.opus-pay-page .opus-detail-card input:disabled{color:#717783;background:#f0f1f4}
+.opus-pay-page .opus-detail-card select{cursor:pointer;font-weight:500;appearance:none;padding-right:27px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23777e8c' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+/* Native keyboard/screen-reader behaviour, with a styled picker where supported. */
+@supports (appearance:base-select){
+ .opus-pay-page .opus-detail-card select,.opus-pay-page .opus-detail-card select::picker(select){appearance:base-select}
+ .opus-pay-page .opus-detail-card select{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-right:10px;background-image:none}
+ .opus-pay-page .opus-detail-card select::picker-icon{color:#7b8190;transition:rotate 200ms ease;font-size:11px}
+ .opus-pay-page .opus-detail-card select:open::picker-icon{rotate:180deg}
+ .opus-pay-page .opus-detail-card select::picker(select){border:1px solid #e5e7ec;border-radius:13px;padding:5px;background:#fff;box-shadow:0 10px 30px #2632471c;min-width:220px;margin-top:7px;overflow:hidden}
+ .opus-pay-page .opus-detail-card option{font-family:OpusPoppins,Poppins,sans-serif;font-size:12px;line-height:1.5;padding:11px 12px;border-radius:8px;gap:12px;color:#323845}
+ .opus-pay-page .opus-detail-card option:checked{background:#f2f4f7;font-weight:600}
+ .opus-pay-page .opus-detail-card option::checkmark{color:#db7438}
+ .opus-pay-page .opus-detail-card option:disabled{color:#a2a7b1;background:none;font-weight:400}
+}
+/* A two-second settle: visible from the first frame, with a smooth trailing glide. */
+.opus-pay-page[data-motion=true] .opus-detail-card{animation:opus-reveal 2s cubic-bezier(.22,.61,.36,1) both;transform-origin:50% 0}
+@keyframes opus-reveal{from{opacity:.5;transform:translate3d(0,24px,0) scale(.99)}to{opacity:1;transform:translate3d(0,0,0) scale(1)}}
+.opus-method-button{transition:box-shadow 260ms cubic-bezier(.22,.61,.36,1),transform 180ms ease-out}

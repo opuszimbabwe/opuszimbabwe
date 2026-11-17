@@ -75,7 +75,7 @@ small screens. The merchant logo uses upright lettering with no added skew or
 italic styling. `npm run test:checkout:viewports` checks 13 sizes from 320×568 to
 1920×1080, including a 1280×640 desktop viewport representative of browser zoom.
 All initial selectors fit without scrolling at those tested sizes. Compact payment
-details use focused steps that also fit when the mobile keyboard is open.
+details stay together in a compact form that also fits the tested keyboard viewport.
 
 ## One-screen payment details
 
@@ -86,7 +86,8 @@ screens reduce spacing and use columns; visualViewport tracks the keyboard.
 Issued receipt documents retain their accessible document layout.
 Run `npm run test:checkout:no-scroll` for visibility and no-step assertions.
 
-CSS form reveal runs from 50% opacity and an 18px offset over 360ms. Reduced
+CSS form reveal runs from 50% opacity and a 24px offset over two seconds,
+with a gentle trailing ease. The one-time logo cue dwells 500ms per method. Reduced
 motion and explicit data saving disable it. Estimated network speed does not
 predict local CSS animation performance; introductory frame sampling only
 cancels the logo cue, rather than permanently disabling later form reveals.

@@ -44,7 +44,7 @@ export default function PaymentMethodPicker({methods,loading,error,onRetry,onSel
   const media=window.matchMedia('(prefers-reduced-motion: reduce)');
   const preferenceChanged=()=>{if(!motionAllowed())stopForUser()};
   window.addEventListener('pointermove',stopForUser,{once:true});window.addEventListener('pointerdown',stopForUser,{once:true});window.addEventListener('keydown',stopForUser,{once:true});media.addEventListener('change',preferenceChanged);connection?.addEventListener('change',preferenceChanged);
-  const advance=()=>{if(disposed||cancelled.current||!motionAllowed()||document.hidden){setCue(-1);return}try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}setCue(index++);if(index<9)timer=setTimeout(advance,210);else timer=setTimeout(()=>{setCue(-1);cancelled.current=true},210)};
+  const advance=()=>{if(disposed||cancelled.current||!motionAllowed()||document.hidden){setCue(-1);return}try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}setCue(index++);if(index<9)timer=setTimeout(advance,500);else timer=setTimeout(()=>{setCue(-1);cancelled.current=true},500)};
   // Sample actual frame delivery before allowing cosmetic motion.
   const sample=(time:number)=>{if(!firstFrame.current)firstFrame.current=time;frames.current++;if(time-firstFrame.current<180){raf=requestAnimationFrame(sample);return}if(frames.current>=7&&motionAllowed())timer=setTimeout(advance,220);else stopForUser()};
   let previous=0,slowFrames=0,monitor=0;
