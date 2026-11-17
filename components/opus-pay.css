@@ -498,3 +498,7 @@
 @media(max-width:700px) and (min-height:651px) and (max-height:680px){.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:12px}}
 @media(max-width:700px) and (min-height:651px) and (max-height:680px){.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:8px}}
 @media(max-width:360px) and (min-height:431px) and (max-height:600px){.opus-pay-page .opus-detail-card{padding:17px 19px;row-gap:15px}.opus-pay-page .opus-detail-card .opus-float-field{height:46px}}
+/* Rear cards retain their surface, without text ghosting through the front notch. */
+.opus-method-group .opus-group-title,.opus-method-group .opus-logo-grid{transition:opacity 200ms ease}
+.opus-method-picker[data-active-group="0"] .opus-mobile-group .opus-group-title,.opus-method-picker[data-active-group="0"] .opus-mobile-group .opus-logo-grid,.opus-method-picker[data-active-group="1"] .opus-card-group .opus-group-title,.opus-method-picker[data-active-group="1"] .opus-card-group .opus-logo-grid{opacity:0}
+@media(prefers-reduced-motion:reduce){.opus-method-group .opus-group-title,.opus-method-group .opus-logo-grid{transition:none!important}}
