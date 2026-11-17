@@ -1,0 +1,102 @@
+{
+  "deployment_id": "748929af-e92a-4ee6-a640-5f8eef86e5c2",
+  "url": "https://748929af.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "557d3e00cc79047c56c711acb5195b1dfaf2826c",
+  "baseline": "e321d631-f2d9-4b46-84a7-aa9d97880ac2",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-f5e1921d9b033977.js",
+      "hash": "f5e1921d9b0339770ef224d72df478ab",
+      "bytes": 39911
+    },
+    {
+      "file": "/_next/static/css/opus-pay-e377c861d61900dc.css",
+      "hash": "da6657515d3f3a5a6b38ad713ac1f61e",
+      "bytes": 21001
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "3626a3afe86e5ab65987e57b33787ea6",
+      "bytes": 12816
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "1bab0a01d2c85f9da579df3f27050343",
+      "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "df7af60811aefa1dc79b0ea36af6b6d0",
+      "bytes": 36099
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
+    }
+  ],
+  "database_migrations_applied": false,
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-compact-spacing",
+  "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
+  "activated_on": "2026-11-17",
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false,
+  "validation": {
+    "typecheck": true,
+    "preserved_runtime_browser": true,
+    "viewport_sizes_tested": 13,
+    "smallest_viewport": "320x568",
+    "largest_viewport": "1920x1080",
+    "all_selector_viewports_fit_without_scroll": true,
+    "upright_brand": true,
+    "increased_inter_group_spacing": true,
+    "backend_unchanged": true,
+    "database_migrations_applied": false
+  }
+}
