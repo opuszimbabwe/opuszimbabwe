@@ -225,3 +225,18 @@ Black-box and white-box verification:
 All charge/SMS/OTP/provider tests are mocked. Merchant-enabled real wallet approval
 has not been exercised with customer funds. Live verification is read-only config,
 deployment metadata and downloaded artifact parity.
+
+## Mobile keyboard lift
+
+A focused mobile input records the normal stacked card geometry before a keyboard
+opens. A visual-viewport reduction of at least 100px then lifts that same card so
+the submit button ends 8px above the visible window bottom. Field sizes, row gaps
+and grid placement are preserved. Copy and card padding below the button may sit
+behind the keyboard. The brand/footer yield their space while typing. Closing the
+keyboard restores all temporary styles, without replaying the entry animation.
+Rotation and switching methods clear the old geometry. The ordinary small-window
+layout remains available when no keyboard-induced viewport reduction occurred.
+
+`npm run test:checkout:keyboard` checks 16 method/device combinations, visual-only
+viewport shrink and panning, normal-layout restoration, no document scrolling,
+field switching and the Omari OTP form. Provider calls remain mocked.

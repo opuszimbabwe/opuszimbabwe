@@ -27,7 +27,8 @@
     "test:checkout:no-scroll": "node scripts/test-opus-pay-no-scroll.cjs",
     "test:checkout:wallets": "node scripts/test-opus-pay-wallets.cjs",
     "test:checkout:first-paint": "node scripts/test-opus-pay-first-paint.cjs",
-    "test:wallets": "node scripts/test-direct-wallets.cjs"
+    "test:wallets": "node scripts/test-direct-wallets.cjs",
+    "test:checkout:keyboard": "node scripts/test-opus-pay-keyboard.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",

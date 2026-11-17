@@ -613,3 +613,10 @@ mask-position:0 0,calc(50% - (var(--opus-notch-size) - 44px)/2) 0,50% 0,calc(50%
  .opus-pay-page[data-keyboard=true] .opus-wallet-panel .opus-otp-form.opus-detail-card{margin:5px auto;gap:8px}.opus-pay-page .opus-wallet-panel .opus-otp-form .payment-submit{min-height:32px;font-size:11px}
  .opus-pay-page[data-keyboard=true] .opus-wallet-total{margin:0;gap:8px;font-size:9px}.opus-wallet-panel .opus-wallet-check{padding:6px;font-size:10px;align-self:center}.opus-wallet-panel small{display:none}
 }
+
+/* A real mobile keyboard lifts the normal stack instead of squeezing it. */
+.opus-pay-page[data-mobile-keyboard=true] .opus-pay-header,.opus-pay-page[data-mobile-keyboard=true] .opus-pay-footer{visibility:hidden}
+.opus-pay-page[data-mobile-keyboard=true] .opus-detail-card .opus-float-field{--opus-caption-x:13px;--opus-caption-size:10px;--opus-caption-padding:5px}
+.opus-pay-page[data-mobile-keyboard=true] .opus-detail-card .opus-float-field input{font-size:16px}
+
+.opus-pay-page[data-motion=true] .opus-detail-card[data-keyboard-settled=true]{animation:none!important}

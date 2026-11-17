@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, ShieldCheck, UserRound, Wallet, CircleAlert } from 'lucide-react';
 import { isPaymentReceipt, SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt, type WalletCheckout } from '@/lib/payments';
 
+import useMobileKeyboardLift from '@/components/useMobileKeyboardLift';
 import WalletPaymentPanel from '@/components/WalletPaymentPanel';
 import OpusFloatingField,{OpusFloatingCurrency} from '@/components/OpusFloatingField';
 import PaymentMethodPicker,{OpusPayBrand,PaymentBrand,motionAllowed} from '@/components/PaymentMethodPicker';
@@ -24,6 +25,7 @@ function remember(session: Session) {
 }
 function MethodLogo({name}:{name:string;decorative?:boolean}) {return <PaymentBrand name={name}/>;}
 export default function PaymentCheckout() {
+ const pageRef=useRef<HTMLElement>(null),keyboardOpen=useMobileKeyboardLift(pageRef);
  const [careOrder,setCareOrder]=useState<PublicCareOrder|null>(null);
  const [careAccess,setCareAccess]=useState<Session|null>(null);
  const [careLoading,setCareLoading]=useState(false),[careBlocked,setCareBlocked]=useState(false);
@@ -222,7 +224,7 @@ export default function PaymentCheckout() {
  const walletPending=Boolean(session&&wallet&&!receipt?.terminal);
  const paid = receipt?.paid === true && !checkError;
  const pending = !receipt || !receipt.terminal;
- return <main className="payment-page opus-pay-page" data-motion={motion} data-keyboard={viewport.height<430}>
+ return <main ref={pageRef} className="payment-page opus-pay-page" data-motion={motion} data-keyboard={viewport.height<430&&!keyboardOpen}>
   {notice&&!session&&<div id="opus-field-notice" className="opus-field-notice" role="alert"><span className="opus-notice-icon" aria-hidden="true"><CircleAlert size={20} strokeWidth={2.8}/></span><div><strong>Please check this detail</strong><p>{notice}</p></div><button type="button" aria-label="Dismiss notification" onClick={()=>setNotice('')}>×</button></div>}
   {!session&&previousAttempts.length>0&&<details className="opus-previous-attempts"><summary>Earlier payment may still complete · review</summary><p>Changing method does not cancel an earlier request. Only complete one payment.</p>{previousAttempts.map((previous,index)=><a key={previous.id} href={attemptLink(previous)}>{previous.method} · attempt {index+1} <ArrowUpRight size={12}/></a>)}</details>}
   <article className={`payment-sheet ${session ? (walletPending?'payment-wallet-session':'payment-receipt') : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
