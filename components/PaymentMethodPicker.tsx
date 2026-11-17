@@ -12,7 +12,8 @@ export const paymentBrands = [
  {key:'pos2u',name:'POS2U',pattern:/pos2u/i,src:'/images/opus-pay/pos2u.svg'},
  {key:'telecash',name:'Telecash',pattern:/telecash/i,src:'/images/payments/telecash.png'},
 ];
-export function OpusPayBrand(){return <a href="https://opuszim.co.zw/" className="opus-pay-brand" aria-label="Opus Pay by Opus Zimbabwe"><span className="opus-pay-wordmark"><span className="opus-pay-original"><img src="/images/logo-full.png" alt="Opus"/></span><span className="opus-pay-pay">PAY</span><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#29ad56"/><path d="m9 16 5 5 9-10" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/></svg></span><span className="opus-pay-attribution">By Opus Zimbabwe</span></a>}
+export function OpusPayBrand(){return <a href="https://opuszim.co.zw/" className="opus-pay-brand" aria-label="Opus Pay by Opus Zimbabwe"><svg className="opus-official-logo" viewBox="138 878 1772 293" role="img" aria-label="Opus Pay" preserveAspectRatio="xMidYMid meet"><image href="/images/opus-pay/official-logo.jpg" width="2048" height="2048"/></svg><span className="opus-pay-attribution">By Opus Zimbabwe</span></a>}
+
 export function PaymentBrand({name}:{name:string}){
  const brand=paymentBrands.find(b=>b.pattern.test(name));
  if(!brand)return <span>{name}</span>;

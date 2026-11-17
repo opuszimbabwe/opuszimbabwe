@@ -215,3 +215,54 @@
 @media(min-width:701px) and (max-height:680px){.opus-mobile-group{margin-top:38px}}
 @media(max-width:700px){.opus-mobile-group{margin-top:44px}}
 @media(max-width:700px) and (max-height:680px){.opus-mobile-group{margin-top:38px}}
+/* One-screen checkout. Short/mobile forms use focused steps instead of hidden
+   or clipped inputs; visualViewport sizing follows the on-screen keyboard. */
+.opus-pay-page{height:var(--opus-viewport-height,100svh);min-height:0;overflow:hidden;overscroll-behavior:none}
+.opus-pay-page .opus-pay-sheet{width:min(820px,100%)}
+.opus-method-group{height:174px}
+.opus-mobile-group{height:250px}
+.opus-provider-art{transform:scale(.74)}
+.opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.68)}
+.opus-art-zimswitch,.opus-art-omari{transform:scale(.74)}
+.opus-pay-footer{max-width:820px}
+.opus-detail-navigation{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:20px}
+.opus-detail-navigation>button:not(.payment-submit){font:inherit;font-size:12px;color:#626674;text-decoration:underline;text-underline-offset:4px}
+.opus-detail-navigation .payment-submit{margin:0;max-width:280px;margin-left:auto}
+.opus-pay-page[data-compact-details=true] .opus-detail-card{padding:24px 28px}
+.opus-pay-page[data-compact-details=true] .opus-reference-field{margin-bottom:0}
+.opus-pay-page[data-compact-details=true] .opus-email-field{margin-top:0}
+.opus-pay-page[data-compact-details=true] .opus-total{margin-top:0}
+.opus-pay-page[data-compact-details=true]:has(.opus-detail-card) .opus-pay-header{height:116px;padding-top:24px}
+.opus-pay-page[data-compact-details=true]:has(.opus-detail-card) .opus-pay-footer{margin-top:30px}
+@media(min-width:701px) and (max-height:780px){.opus-method-group{height:148px}.opus-mobile-group{height:207px}}
+@media(min-width:701px) and (max-height:680px){.opus-method-group{height:125px}.opus-mobile-group{height:177px}.opus-provider-art{transform:scale(.64)}.opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.58)}.opus-art-zimswitch,.opus-art-omari{transform:scale(.64)}}
+@media(max-width:700px){
+ .opus-pay-page .opus-pay-sheet{width:min(460px,100%)}
+ .opus-method-group{height:155px}.opus-mobile-group{height:228px}
+ .opus-provider-art{transform:scale(.53)}.opus-art-mastercard,.opus-art-innbucks,.opus-art-telecash{transform:scale(.45)}.opus-art-zimswitch,.opus-art-omari{transform:scale(.53)}.opus-art-ecocash{transform:scale(.5)}.opus-art-pos2u{transform:scale(.52)}.opus-art-onemoney{transform:scale(.54)}
+}
+@media(max-width:700px) and (max-height:680px){.opus-method-group{height:133px}.opus-mobile-group{height:193px}.opus-pay-header{height:92px;padding-top:14px}.opus-pay-footer{margin-top:23px}.opus-pay-page{padding-bottom:12px}}
+.opus-pay-page[data-keyboard=true] .opus-pay-header{height:55px!important;padding-top:8px!important}
+.opus-pay-page[data-keyboard=true] .opus-pay-brand{transform:scale(.72);transform-origin:top center}
+.opus-pay-page[data-keyboard=true] .opus-pay-footer{display:none}
+.opus-pay-page[data-keyboard=true] .opus-detail-card{padding:12px 18px}
+.opus-pay-page[data-keyboard=true] .opus-selected-method{min-height:27px;height:27px;margin-bottom:5px}
+.opus-pay-page[data-keyboard=true] .opus-selected-method .opus-provider-art{transform:scale(.5);transform-origin:left center}
+.opus-pay-page[data-keyboard=true] .opus-detail-card h1{font-size:17px;margin-bottom:10px}
+.opus-pay-page[data-keyboard=true] .payment-optional{margin:8px 0}
+.opus-pay-page[data-keyboard=true] .opus-detail-navigation{margin-top:10px}
+.opus-pay-page[data-keyboard=true] .payment-submit{min-height:42px;margin-top:8px;font-size:12px}
+.opus-pay-page[data-keyboard=true] .payment-field-feedback{font-size:10px;line-height:1.35;margin:5px 0}
+.opus-pay-page[data-keyboard=true] .payment-small{font-size:10px;line-height:1.3}
+.opus-pay-page[data-keyboard=true] .payment-notice{font-size:10px;line-height:1.3;margin-bottom:8px;padding:8px}
+.opus-pay-page[data-keyboard=true] .payment-notice p{display:none}
+@media print{.opus-pay-page{height:auto;overflow:visible}.opus-pay-page .payment-receipt{height:auto}}
+.opus-add-payer{font:inherit;font-size:12px;color:#737680;text-align:left;margin-top:14px;text-decoration:underline;text-underline-offset:4px}
+.opus-pay-page[data-keyboard=true] .opus-add-payer{margin-top:7px;font-size:10px}
+
+/* Issued receipts remain accessible documents rather than clipped content. */
+.opus-pay-page:has(.payment-receipt){height:auto;min-height:var(--opus-viewport-height,100svh);overflow:visible}
+
+/* Exact owner-supplied artwork; the SVG viewport removes only blank margins. */
+.opus-official-logo{display:block;width:100%;height:45px;overflow:hidden;transform:none;mix-blend-mode:multiply}
+@media(max-width:700px){.opus-official-logo{height:40px}}

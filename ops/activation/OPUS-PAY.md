@@ -3,7 +3,7 @@
 The approved method-first design uses Poppins, a warm grey background, shallow
 notched white group cards and small original provider artwork. The CSS and SVG
 geometry use the 1536 × 1024 concept as the desktop reference; mobile layouts
-retain accessible targets and allow natural scrolling. Original provider artwork
+retain accessible targets and fit the selector and payment details to the viewport. Original provider artwork
 can differ from the image generator's redrawn wordmarks. Do not replace genuine
 brand artwork with generated imitations to match a mockup.
 
@@ -64,15 +64,25 @@ uses the Simple Icons vector path; Mastercard uses the original vector artwork
 from gilbarbara/logos with a horizontal lockup. POS2U is a lightweight vector
 wordmark reconstruction pending an original downloadable vector. The supplied
 chat images are visual references; their original attachment files are not
-mounted in this workspace. The merchant lockup uses the existing Opus artwork
-and a typeset Pay extension. Poppins' OFL license is shipped with the fonts.
+mounted in this workspace. The merchant lockup now uses the unmodified owner-supplied official JPEG; see
+`docs/OPUS-PAY-ARTWORK.md` for its checksum and display viewport. Poppins' OFL license is shipped with the fonts.
 
 ## Compact responsive revision
 
-The selector now caps desktop card width at 760px. Surface heights, logo artwork,
+The selector now caps desktop card width at 820px. Surface heights, logo artwork,
 heading sizes and header/footer spacing shrink together on short windows and
 small screens. The merchant logo uses upright lettering with no added skew or
 italic styling. `npm run test:checkout:viewports` checks 13 sizes from 320×568 to
 1920×1080, including a 1280×640 desktop viewport representative of browser zoom.
-All initial selectors fit without scrolling at those tested sizes; payment forms
-may scroll naturally when a mobile keyboard is open.
+All initial selectors fit without scrolling at those tested sizes. Compact payment
+details use focused steps that also fit when the mobile keyboard is open.
+
+## One-screen payment details
+
+Small or short screens present reference, amount, phone when needed, optional
+receipt contact, optional payer name and review as focused steps. State persists
+across steps; initiation occurs only from the final review. The form follows
+visualViewport height changes, including the mobile keyboard. Required fields,
+errors and the final action are verified visible rather than merely clipped.
+Issued receipt documents retain their accessible document layout.
+Run `npm run test:checkout:no-scroll` for these cases.

@@ -8,4 +8,8 @@ const html=fs.readFileSync(out+'/assets/payments/index.html','utf8'),flight=fs.r
 for(const text of [html,flight])assert.ok(text.includes(path.basename(metadata.checkout_chunk)));
 assert.match(html,/<meta property="og:image" content="https:\/\/payments.opuszim.co.zw\/images\/opus-pay\/social-preview.png"/);assert.ok(manifest['/images/opus-pay/social-preview.png']);
 const js=fs.readFileSync(path.join(out,'assets',metadata.checkout_chunk),'utf8');assert.ok(!/PESEPAY_INTEGRATION_KEY|PESEPAY_ENCRYPTION_KEY|PAYNOW_INTEGRATION_KEY/.test(js),'Provider credentials must stay server-side');
+const official=fs.readFileSync(path.join(root,'public/images/opus-pay/official-logo.jpg'));
+assert.equal(require('node:crypto').createHash('sha256').update(official).digest('hex'),'4f9ae5eb9d18e70a85ac75f5735b4064c22341c1864fb56c54ad0e71ac858aec','Official owner-supplied logo must remain byte-identical');
+assert.ok(html.includes('/images/opus-pay/official-logo.jpg'));assert.ok(!html.includes('class="opus-pay-pay"'),'No reconstructed lettering in checkout HTML');
+assert.deepEqual(fs.readFileSync(out+'/assets/images/opus-pay/official-logo.jpg'),official);
 console.log('PASS: original 459 paths retained, admin hashes untouched, checkout-only asset changes, content hashes, compatible Next runtime references, method-first SSR and complete social-preview metadata.');
