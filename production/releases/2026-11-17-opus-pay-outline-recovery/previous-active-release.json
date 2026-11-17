@@ -1,0 +1,129 @@
+{
+  "deployment_id": "f57e8218-4ccc-4acb-a529-21d180107b2c",
+  "url": "https://f57e8218.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "6099797e58fe2a296521aa6e022a8d2353a34a29",
+  "baseline": "29ab7188-8c4f-4539-aa99-b371ed0249ef",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-46e0f1dc2c15f8e1.js",
+      "hash": "46e0f1dc2c15f8e10c07eb963acaace4",
+      "bytes": 42517
+    },
+    {
+      "file": "/_next/static/css/opus-pay-66c25baaa971984c.css",
+      "hash": "dbcd933295592b2f4b6138e096772970",
+      "bytes": 55786
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "2699641978cdea9a9f40073f80c765be",
+      "bytes": 13091
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "96e75dd6498f4bf931b1cf06143878c4",
+      "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/official-logo-transparent.png",
+      "hash": "f8825b9e22ec8894f013d26965f5afc4",
+      "bytes": 344210
+    },
+    {
+      "file": "/images/opus-pay/official-logo.jpg",
+      "hash": "788e75d478ecc57c692598750583d167",
+      "bytes": 803731
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "80fb209a942218d3cedcc7af5b7ac78f",
+      "bytes": 40336
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
+    }
+  ],
+  "database_migrations_applied": false,
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-hover-return",
+  "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
+  "activated_on": "2026-11-17",
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false,
+  "validation": {
+    "typecheck": true,
+    "preserved_runtime_browser": true,
+    "selector_viewport_sizes_tested": 13,
+    "details_viewport_sizes_tested": 11,
+    "only_required_fields_visible": true,
+    "single_form": true,
+    "floating_captions_centered_entry": true,
+    "outlined_focus_orbit": true,
+    "local_green_validation_on_blur": true,
+    "invalid_shake_and_notification": true,
+    "two_initial_cue_loops": true,
+    "idle_restart_ms": 15000,
+    "continuous_idle_cue": true,
+    "activity_interrupts_cue": true,
+    "desktop_layered_hover": true,
+    "touch_group_switch_show_both_back": true,
+    "reduced_motion_and_data_saving_respected": true,
+    "provider_handoffs_mock_tested": true,
+    "backend_unchanged": true,
+    "supporting_workers_unchanged": true,
+    "rear_card_captions_hidden_when_layered": true,
+    "desktop_card_exit_restores_both": true,
+    "gap_does_not_activate_rear_card": true,
+    "upper_card_moves_down_px": 12,
+    "lower_card_moves_up_px": 12,
+    "stable_hover_zones": true,
+    "live_checkout_artifacts_verified": 17
+  }
+}
