@@ -6,7 +6,7 @@ Nothing was redeployed to create this original snapshot.
 
 The current activation is recorded in `current-release.json`; the latest Opus Pay
 checkout artifacts, complete deployed Pages worker bundle and resulting manifest
-are in `releases/2026-11-17-opus-pay/`. The preceding Mastercard release remains
+are identified by `artifact_directory` in `current-release.json`. The preceding Mastercard release remains
 preserved in `releases/2026-11-16-mastercard/`. Original recovery files stay unchanged.
 
 - `pages-assets/`: 455 exact files, 33,351,180 bytes. Each file's Cloudflare

@@ -1,9 +1,9 @@
 {
-  "deployment_id": "e321d631-f2d9-4b46-84a7-aa9d97880ac2",
-  "url": "https://e321d631.opuszimbabwe.pages.dev",
+  "deployment_id": "748929af-e92a-4ee6-a640-5f8eef86e5c2",
+  "url": "https://748929af.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "c79d9607ea3cb9f010b4851c197b8b46f9ab13c1",
-  "baseline": "022dbbd9-eded-4d06-8e67-9ca6f491ff43",
+  "commit": "557d3e00cc79047c56c711acb5195b1dfaf2826c",
+  "baseline": "e321d631-f2d9-4b46-84a7-aa9d97880ac2",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-f5e1921d9b033977.js",
@@ -11,13 +11,13 @@
       "bytes": 39911
     },
     {
-      "file": "/_next/static/css/opus-pay-f16428eb033cca61.css",
-      "hash": "d04251d90b6157b0f79811e7427dd0f6",
-      "bytes": 20576
+      "file": "/_next/static/css/opus-pay-e377c861d61900dc.css",
+      "hash": "da6657515d3f3a5a6b38ad713ac1f61e",
+      "bytes": 21001
     },
     {
       "file": "/payments/index.html",
-      "hash": "62c784f375f84b65969dcbf9b4ea2e78",
+      "hash": "3626a3afe86e5ab65987e57b33787ea6",
       "bytes": 12816
     },
     {
@@ -82,7 +82,7 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-compact",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-compact-spacing",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -95,6 +95,8 @@
     "largest_viewport": "1920x1080",
     "all_selector_viewports_fit_without_scroll": true,
     "upright_brand": true,
-    "backend_unchanged": true
+    "increased_inter_group_spacing": true,
+    "backend_unchanged": true,
+    "database_migrations_applied": false
   }
 }
