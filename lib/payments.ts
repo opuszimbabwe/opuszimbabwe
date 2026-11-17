@@ -1,5 +1,5 @@
 // Public checkout types only. Gateway SDK and secrets stay in Pages Functions.
-export type LocalMethod = { code: string; name: string; minimumAmount: number; maximumAmount: number; redirectRequired?: boolean; phoneField?: string };
+export type LocalMethod = { provider?: 'pesepay' | 'paynow'; code: string; name: string; minimumAmount: number; maximumAmount: number; redirectRequired?: boolean; phoneField?: string };
 export type PaymentConfig = { configured: boolean; currencies: { code: string; name: string }[]; methods: LocalMethod[] };
 export type PaymentReceipt = {
   id: string; name: string; invoice: string; amount: number; invoiceAmount?: number; currency: string; method: string;

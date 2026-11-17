@@ -10,6 +10,7 @@ const ORIGINS = new Set(['https://opuszim.co.zw', 'https://www.opuszim.co.zw', '
 const LOCAL = /ecocash|one\s?money|innbucks|zimswitch|zipit|omari|telecash|paygo|bank\s?transfer|rtgs/i;
 export const INTERNATIONAL = /paypal|visa|master\s?card|american\s?express|amex/i;
 export interface PaymentRow {
+ gateway_provider?:string; gateway_poll_url?:string|null;
  care_order_id?:string|null;
  id: string; token_hash: string; fingerprint: string; payer_name: string; payer_email: string; payer_phone: string;
  invoice: string; amount_minor: number; amount_paid_minor: number | null; currency: string; method_code: string; method_name: string;
@@ -99,9 +100,10 @@ export async function localMethods(currency: string): Promise<LocalMethod[]> {
  return (await publicGateway('/v1/payment-methods/for-currency?currencyCode=' + encodeURIComponent(currency)))
  .filter(item => item.active === true && typeof item.name === 'string' && typeof item.code === 'string' && (
   (LOCAL.test(item.name) && !INTERNATIONAL.test(item.name)) ||
-  // This is an explicit USD Mastercard exception, not blanket international
-  // enablement. Hosted BASIC checkout collects all card details on Pesepay.
-  (currency === 'USD' && item.code === 'PZW205' && /^master\s?card$/i.test(item.name) &&
+  // Only the provider's active, recognised USD card methods are eligible.
+  // Hosted BASIC checkout collects all card details on Pesepay.
+  (currency === 'USD' && ((item.code === 'PZW205' && /^master\s?card$/i.test(item.name)) ||
+   (item.code === 'PZW204' && /^visa$/i.test(item.name))) &&
    Number.isFinite(Number(item.minimumAmount)) && Number(item.minimumAmount) > 0 &&
    Number.isFinite(Number(item.maximumAmount)) && Number(item.maximumAmount) >= Number(item.minimumAmount))
  ))
@@ -124,7 +126,8 @@ export async function authorisedPayment(context: PagesContext) {
  return row;
 }
 export async function reconcile(env: Env, row: PaymentRow, fulfil = true, strictSuccess = false) {
- if(strictSuccess&&(!row.gateway_reference||row.status==='REVERSED'))throw new CheckoutError(409,'This payment cannot be issued as a verified receipt.');
+ if(strictSuccess&&((!row.gateway_reference&&row.gateway_provider!=='paynow')||row.status==='REVERSED'))throw new CheckoutError(409,'This payment cannot be issued as a verified receipt.');
+ if(row.gateway_provider==='paynow')return reconcilePaynow(env,row,fulfil,strictSuccess);
  if (!row.gateway_reference || (!strictSuccess && row.status!=='SUCCESS' && Date.now() - row.checked_at < 5000)) { if(fulfil){await (await import('./domains')).fulfilDomainPayment(env,row);if(row.care_order_id)await (await import('./client-care')).fulfilCarePayment(env,row);} return row; }
  const started = Date.now();
  const result: PaymentResult = await gateway(env).checkPayment(row.gateway_reference);
@@ -144,4 +147,19 @@ export async function limitAttempts(context: PagesContext, scope = 'payment', ma
  const row = await context.env.DB.prepare('INSERT INTO payment_rate_limits (bucket, attempts, expires_at) VALUES (?, 1, ?) ON CONFLICT(bucket) DO UPDATE SET attempts = attempts + 1 RETURNING attempts').bind(bucket, now + 600000).first<{ attempts: number }>();
  await context.env.DB.prepare('DELETE FROM payment_rate_limits WHERE expires_at < ?').bind(now).run();
  if (!row || row.attempts > maximum) throw new CheckoutError(429, 'Too many payment attempts. Please wait a few minutes or contact support@opuszim.co.zw.');
+}
+
+async function reconcilePaynow(env:Env,row:PaymentRow,fulfil:boolean,strict:boolean):Promise<PaymentRow>{
+ const {pollPaynow,amountMinor}=await import('./paynow');
+ if(!row.gateway_poll_url){if(strict)throw new CheckoutError(409,'Payment needs merchant reconciliation.');return row;}
+ if(!strict&&Date.now()-row.checked_at<5000)return row;
+ const start=Date.now(),verified=await pollPaynow(env,row.gateway_poll_url);
+ if(verified.reference!==row.id||!verified.paynowreference||(row.gateway_reference&&verified.paynowreference!==row.gateway_reference)||amountMinor(verified.amount||'')!==row.amount_minor||(verified.currency&&verified.currency!==row.currency)||(!verified.currency&&row.currency!==(env.PAYNOW_CURRENCY||'USD')))throw new CheckoutError(502,'The verified payment details do not match.');
+ const states:Record<string,string>={paid:'SUCCESS',awaitingdelivery:'PENDING',delivered:'SUCCESS',created:'PENDING',sent:'PENDING',cancelled:'CANCELLED',refunded:'REVERSED',disputed:'REVERSED'};
+ const status=states[String(verified.status).toLowerCase().replace(/\s+/g,'')]||'PENDING';
+ await env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND checked_at<=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN ('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,new Date().toISOString(),start,new Date().toISOString(),row.id,start,status).run();
+ const saved=(await findPayment(env,row.id))!;
+ if(strict&&saved.status!=='SUCCESS')throw new CheckoutError(409,'Paynow has not confirmed this payment as successful.');
+ if(fulfil){await(await import('./domains')).fulfilDomainPayment(env,saved);if(saved.care_order_id)await(await import('./client-care')).fulfilCarePayment(env,saved);}
+ return saved;
 }

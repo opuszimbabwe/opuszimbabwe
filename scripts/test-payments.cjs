@@ -8,19 +8,19 @@ const key='0123456789abcdef0123456789abcdef',integration='test-merchant-integrat
 function encrypt(body){const cipher=createCipheriv('aes-256-cbc',Buffer.from(key),Buffer.from(key.slice(0,16)));return{payload:Buffer.concat([cipher.update(JSON.stringify(body)),cipher.final()]).toString('base64')}}
 function decrypt(body){const cipher=createDecipheriv('aes-256-cbc',Buffer.from(key),Buffer.from(key.slice(0,16)));return JSON.parse(Buffer.concat([cipher.update(Buffer.from(JSON.parse(body).payload,'base64')),cipher.final()]).toString())}
 const transactions=new Map();let initiations=0,failInitiation=false,badRedirect=false,lastPayload,timeoutAfterAcceptance=false,immediateMobileSuccess=false;
-const methods=[{name:'MasterCard',code:'PZW205',active:true,minimumAmount:0.10,maximumAmount:20000,redirectRequired:false,requiredFields:[{name:'creditCardNumber'},{name:'creditCardSecurityNumber'}]},{name:'Ecocash USD',code:'PZW211',active:true,minimumAmount:0.01,maximumAmount:500},{name:'InnBucks',code:'PZW212',active:true,minimumAmount:1,maximumAmount:1000},{name:'OneMoney USD',code:'PZW299',active:true,minimumAmount:0.01,maximumAmount:1000},{name:'Zimswitch USD',code:'PZW215',active:true},{name:'Omari USD',code:'PZW216',active:true},{name:'Visa',code:'PZW204',active:true},{name:'PayPal',code:'PAYPAL',active:true}];
+const methods=[{name:'MasterCard',code:'PZW205',active:true,minimumAmount:0.10,maximumAmount:20000,redirectRequired:false,requiredFields:[{name:'creditCardNumber'},{name:'creditCardSecurityNumber'}]},{name:'Ecocash USD',code:'PZW211',active:true,minimumAmount:0.01,maximumAmount:500},{name:'InnBucks',code:'PZW212',active:true,minimumAmount:1,maximumAmount:1000},{name:'OneMoney USD',code:'PZW299',active:true,minimumAmount:0.01,maximumAmount:1000},{name:'Zimswitch USD',code:'PZW215',active:true},{name:'Omari USD',code:'PZW216',active:true},{name:'Visa',code:'PZW204',active:true,minimumAmount:.1,maximumAmount:20000},{name:'PayPal',code:'PAYPAL',active:true}];
 global.fetch=async(url,options={})=>{assert.equal(options.redirect,'manual');url=new URL(url);assert.equal(url.hostname,'api.pesepay.com');if(url.pathname.endsWith('/currencies/active'))return Response.json([{code:'USD',name:'US Dollar',active:true},{code:'ZiG',name:'Zimbabwe Gold',active:true}]);if(url.pathname.includes('/payment-methods/'))return Response.json(methods);if(url.pathname.endsWith('/initiate')||url.pathname.endsWith('/make-payment')){assert.equal(options.headers.key,integration);lastPayload=decrypt(options.body);initiations++;if(failInitiation)throw new Error('Ambiguous test timeout');const referenceNumber='TEST-'+initiations;transactions.set(referenceNumber,{referenceNumber,transactionStatus:immediateMobileSuccess&&url.pathname.endsWith('/make-payment')?'SUCCESS':'PENDING',transactionMetadata:lastPayload.paymentMetadata,amountDetails:lastPayload.amountDetails,dateOfTransaction:'2026-10-25T10:00:00Z'});if(timeoutAfterAcceptance&&url.pathname.endsWith('/make-payment'))throw new Error('Simulated timeout after provider acceptance');if(url.pathname.endsWith('/make-payment'))return Response.json(encrypt(transactions.get(referenceNumber)));return Response.json(encrypt({referenceNumber,pollUrl:'https://api.pesepay.com/api/payments-engine/v1/payments/check-payment?referenceNumber='+referenceNumber,redirectUrl:badRedirect?'https://evil.example/pay':'https://payments.pesepay.com/pay/'+referenceNumber}));}if(url.pathname.endsWith('/check-payment'))return Response.json(encrypt(transactions.get(url.searchParams.get('referenceNumber'))));throw new Error('Unexpected gateway request')};
 const details={name:'Test Payer',email:'payer@example.test',phone:'0710123456',invoice:'TEST-INVOICE',amount:'25.10',currency:'USD',method:'PZW212',token:'a'.repeat(64)};
 const ctx=(path,body,headers={},environment=env)=>({env:environment,request:new Request('https://opuszim.co.zw'+path,{method:body?'POST':'GET',headers:{...(body?{'content-type':'application/json',origin:'https://opuszim.co.zw'}:{}),'cf-connecting-ip':body?.token||'test-ip',...headers},...(body?{body:JSON.stringify(body)}:{})}),params:{},data:null});
 const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=?').run(id);
 (async()=>{
- let r=await config(ctx('/api/payments/config'));let data=await r.json();assert.deepEqual(data.methods.map(m=>m.code),['PZW205','PZW211','PZW212','PZW299','PZW215','PZW216']);assert.equal(data.configured,true);
+ let r=await config(ctx('/api/payments/config'));let data=await r.json();assert.deepEqual(data.methods.map(m=>m.code),['PZW205','PZW211','PZW212','PZW215','PZW216','PZW204']);assert.equal(data.configured,true);
  r=await create(ctx('/api/payments/create',details,{}, {DB}));assert.equal(r.status,503);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM customer_payments').get().n,0);
  r=await create(ctx('/api/payments/create',details));assert.equal(r.status,200);data=await r.json();const id=data.id,reference=data.receipt.reference;assert.equal(initiations,1);assert.equal(lastPayload.amountDetails.amount,25.1);assert.equal(lastPayload.paymentMethodCode,'PZW212');assert.match(lastPayload.returnUrl,/payment=/);assert.match(lastPayload.resultUrl,/\/api\/payments\/webhook$/);assert.equal(data.receipt.paid,false);assert.ok(!JSON.stringify(data).includes(integration));
  r=await create(ctx('/api/payments/create',details));assert.equal((await r.json()).id,id);assert.equal(initiations,1);
  r=await create(ctx('/api/payments/create',{...details,amount:'30'}));assert.equal(r.status,409);assert.equal(initiations,1);
  const other={...details,token:'b'.repeat(64)};const simultaneous=await Promise.all([create(ctx('/api/payments/create',other)),create(ctx('/api/payments/create',other))]);const bodies=await Promise.all(simultaneous.map(r=>r.json()));assert.equal(bodies[0].id,bodies[1].id);assert.equal(initiations,2);
- for(const invalid of [{method:'PZW204'},{method:'PAYPAL'},{amount:'-1'},{amount:'1e2'},{amount:'1.234'},{currency:'EUR'}]){r=await create(ctx('/api/payments/create',{...details,token:'c'.repeat(64),...invalid}));assert.equal(r.status,400)}
+ for(const invalid of [{method:'UNKNOWN_CARD'},{method:'PAYPAL'},{amount:'-1'},{amount:'1e2'},{amount:'1.234'},{currency:'EUR'}]){r=await create(ctx('/api/payments/create',{...details,token:'c'.repeat(64),...invalid}));assert.equal(r.status,400)}
  r=await create(ctx('/api/payments/create',{...details,token:'d'.repeat(64)},{origin:'https://evil.example'}));assert.equal(r.status,403);assert.equal(initiations,2);
  const statusContext=(token=details.token,payment=id)=>ctx('/api/payments/status?id='+payment,undefined,{authorization:'Bearer '+token});
  r=await status(statusContext('f'.repeat(64)));assert.equal(r.status,404);assert.ok(!(await r.text()).includes('Test Payer'));
@@ -37,11 +37,11 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
  badRedirect=true;r=await create(ctx('/api/payments/create',{...details,token:'9'.repeat(64)}));data=await r.json();assert.equal(data.redirectUrl,null);assert.equal(data.receipt.paid,false);assert.equal(data.receipt.status,'UNCONFIRMED');
  badRedirect=false;
  const beforeMobile=initiations;
- for(const [method,phone,message] of [['PZW299','0791234567','start with 071'],['PZW299','0781234567','start with 071'],['PZW211','0711234567','077, 078 or 079'],['PZW211','','mobile money number'],['PZW211','079123','full 10-digit']]) {
+ for(const [method,phone,message] of [['PZW211','0711234567','077, 078 or 079'],['PZW211','','mobile money number'],['PZW211','079123','full 10-digit']]) {
   r=await create(ctx('/api/payments/create',{...details,name:'',email:'',method,phone,token:'6'.repeat(64)}));assert.equal(r.status,400);assert.match((await r.json()).error,new RegExp(message));
  }
  assert.equal(initiations,beforeMobile,'Invalid network/length never reaches payment initiation');
- for(const [index,method,phone,normalised] of [[0,'PZW211','0771234567','0771234567'],[1,'PZW211','0781234567','0781234567'],[2,'PZW211','+263 79 1234567','0791234567'],[3,'PZW299','0711234567','0711234567']]) {
+ for(const [index,method,phone,normalised] of [[0,'PZW211','0771234567','0771234567'],[1,'PZW211','0781234567','0781234567'],[2,'PZW211','+263 79 1234567','0791234567']]) {
   const mobile={...details,name:'',email:'',method,phone,token:'8'.repeat(63)+index};
   r=await create(ctx('/api/payments/create',mobile));assert.equal(r.status,202);data=await r.json();assert.equal(data.redirectUrl,null);assert.equal(data.receipt.paid,false);assert.equal(data.receipt.status,'PENDING');
   assert.equal(lastPayload.customer.phoneNumber,normalised);assert.equal(lastPayload.paymentMethodRequiredFields.customerPhoneNumber,normalised);assert.equal(lastPayload.customer.email,undefined);
@@ -71,14 +71,25 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
  assert.equal(lastPayload.paymentMethodRequiredFields,undefined);assert.equal(lastPayload.customer,undefined);
  assert.ok(data.redirectUrl.startsWith('https://payments.pesepay.com/'));assert.equal(data.receipt.paid,false);
  const cardId=data.id,cardReference=data.receipt.reference;
- r=await create(ctx('/api/payments/create',card));assert.equal((await r.json()).id,cardId);assert.equal(initiations,beforeCards+1);
- for(const patch of [{amount:'0.09'},{amount:'20000.01'},{currency:'ZiG'},{method:'PZW204'},{method:'PAYPAL'}]){
+ const visa={...card,method:'PZW204',token:'0'.repeat(63)+'1'};
+ r=await create(ctx('/api/payments/create',visa));const visaResult=await r.json();assert.equal(r.status,200);
+ assert.equal(lastPayload.transactionType,'BASIC');assert.equal(lastPayload.paymentMethodCode,'PZW204');
+ assert.equal(lastPayload.customer,undefined);assert.equal(lastPayload.paymentMethodRequiredFields,undefined);
+ assert.match(visaResult.redirectUrl,/^https:\/\/payments.pesepay.com\//);assert.equal(visaResult.receipt.paid,false);
+ const beforeVisaRetry=initiations;r=await create(ctx('/api/payments/create',visa));assert.equal((await r.json()).id,visaResult.id);assert.equal(initiations,beforeVisaRetry);
+ const visaMethod=methods.find(m=>m.code==='PZW204');
+ for(const patch of [{active:false},{minimumAmount:0},{maximumAmount:'invalid'},{name:'Other Card'}]){
+  const saved={...visaMethod};Object.assign(visaMethod,patch);r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW204'));Object.assign(visaMethod,saved);
+ }
+
+ r=await create(ctx('/api/payments/create',card));assert.equal((await r.json()).id,cardId);assert.equal(initiations,beforeVisaRetry);
+ for(const patch of [{amount:'0.09'},{amount:'20000.01'},{currency:'ZiG'},{method:'PAYPAL'}]){
   r=await create(ctx('/api/payments/create',{...card,...patch,token:'2'.repeat(64)}));assert.equal(r.status,400);
  }
  r=await create(ctx('/api/payments/create',{...card,token:'3'.repeat(64)},{origin:'https://evil.example'}));assert.equal(r.status,403);
  r=await create(ctx('/api/payments/create',{...card,token:'3'.repeat(64),care_order_id:'11111111-1111-4111-a111-111111111111',care_order_token:'4'.repeat(64)}));assert.equal(r.status,404);
  r=await create(ctx('/api/payments/create',{...card,token:'3'.repeat(64),domain_order_id:'11111111-1111-4111-a111-111111111111',domain_order_token:'4'.repeat(64)}));assert.equal(r.status,404);
- assert.equal(initiations,beforeCards+1,'Rejected requests must not initiate a transaction');
+ assert.equal(initiations,beforeVisaRetry,'Rejected requests must not initiate a transaction');
  // The existing, unmodified reconciliation protocol verifies the hosted card.
  const cardTransaction=transactions.get(cardReference);cardTransaction.transactionStatus='SUCCESS';
  cardTransaction.amountDetails={amount:25.1,currencyCode:'USD'};stale(cardId);
@@ -86,6 +97,6 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
  methods[0].active=false;r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
  methods[0].active=true;methods[0].minimumAmount='invalid';r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
  methods[0].minimumAmount=.1;methods[0].name='Other Card';r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
- console.log('PASS: Mastercard USD hosted BASIC flow, limits, disabled/inactive filtering, safe redirects, private-order rejection, duplicate prevention and existing reconciliation.');
+ console.log('PASS: Visa and Mastercard USD hosted BASIC flows, limits, disabled/inactive filtering, safe redirects, private-order rejection, duplicate prevention and existing reconciliation.');
  console.log('PASS: encrypted gateway integration, unconfigured fail-closed, local-method filtering, unsupported-card rejection, amount/currency/reference verification, concurrent idempotency, capability privacy, forged/repeated callbacks, reversals, ambiguous timeout recovery, origin and redirect restrictions. Mobile prefix/length validation, direct mobile requests, optional identity and hosted-provider detail handoff also passed. No real provider requests or charges.');
 })().catch(error=>{console.error(error);process.exit(1)});

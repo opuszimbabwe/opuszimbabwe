@@ -1,8 +1,9 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, LockKeyhole, ShieldCheck, UserRound, Wallet, X, CircleAlert } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, ShieldCheck, UserRound, Wallet, CircleAlert } from 'lucide-react';
 import { SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt } from '@/lib/payments';
 
+import PaymentMethodPicker,{OpusPayBrand,PaymentBrand,motionAllowed} from '@/components/PaymentMethodPicker';
 import {receiptDate} from '@/lib/receipt-date';
 import PaymentReceiptActions from '@/components/PaymentReceiptActions';
 import type {PublicCareOrder} from '@/lib/client-care';
@@ -16,21 +17,7 @@ const support = <>Contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a
 function remember(session: Session) {
  try { sessionStorage.setItem('opus-payment-' + session.id, session.token); sessionStorage.setItem('opus-last-payment', session.id); return true; } catch { return false; }
 }
-function MethodLogo({ name, decorative = false }: { name: string; decorative?: boolean }) {
- if (/^master\s?card$/i.test(name)) return <span className="payment-provider-fallback"><svg width="48" height="32" viewBox="0 0 72 44" aria-hidden="true"><circle cx="26" cy="22" r="21" fill="#eb001b" /><circle cx="46" cy="22" r="21" fill="#f79e1b" /><path d="M36 3.5a21 21 0 0 1 0 37 21 21 0 0 1 0-37" fill="#ff5f00" /></svg><span>Mastercard</span></span>;
- const brands: [RegExp, string, number, number, number, number, number, number][] = [
-  [/ecocash/i, '/images/ecocash-logo.png', 1471, 420, 0, 0, 1471, 420],
-  [/innbucks/i, '/images/payments/innbucks.png', 776, 312, 73, 82, 631, 134],
-  [/one\s?money/i, '/images/payments/onemoney.png', 797, 567, 0, 0, 797, 567],
-  [/zimswitch/i, '/images/payments/zimswitch.png', 500, 500, 25, 132, 450, 235],
-  [/omari/i, '/images/payments/omari.webp', 1553, 825, 246, 241, 1147, 464],
- ];
- const brand = brands.find(([pattern]) => pattern.test(name));
- if (!brand) return <span className="payment-provider-fallback"><Wallet size={22} aria-hidden="true" /><span>{name}</span></span>;
- const [, source, width, height, left, top, cropWidth, cropHeight] = brand;
- return <span className="payment-brand-artwork" style={{ width: `min(180px, calc(var(--brand-height, 42px) * ${cropWidth / cropHeight}))`, aspectRatio: `${cropWidth}/${cropHeight}` }}><img src={source} alt={decorative ? '' : name} style={{ position: 'absolute', maxWidth: 'none', width: `${width / cropWidth * 100}%`, height: `${height / cropHeight * 100}%`, left: `${-left / cropWidth * 100}%`, top: `${-top / cropHeight * 100}%` }} /></span>;
-}
-function PaymentLogo() { return <a href="https://opuszim.co.zw/" aria-label="Opus Zimbabwe home" className="payment-logo"><img src="/images/logo-full.png" alt="Opus Zimbabwe" /></a>; }
+function MethodLogo({name}:{name:string;decorative?:boolean}) {return <PaymentBrand name={name}/>;}
 export default function PaymentCheckout() {
  const [careOrder,setCareOrder]=useState<PublicCareOrder|null>(null);
  const [careAccess,setCareAccess]=useState<Session|null>(null);
@@ -53,10 +40,13 @@ export default function PaymentCheckout() {
  const [resumable, setResumable] = useState(false);
  const [phoneTouched, setPhoneTouched] = useState(false);
  const [configRetry, setConfigRetry] = useState(0);
- const modal = useRef<HTMLDialogElement>(null);
  const inFlight = useRef(false);
  const attempt = useRef<{ token: string; form: Form;care?:Session;domain?:Session } | null>(null);
  const [ready, setReady] = useState(false);
+ const [motion,setMotion]=useState(false);
+ const entryRef=useRef<HTMLElement>(null);
+ useEffect(()=>{setMotion(motionAllowed())},[]);
+ useEffect(()=>{if(form.method)requestAnimationFrame(()=>entryRef.current?.focus({preventScroll:true}))},[form.method]);
  useEffect(() => {
   const url = new URL(location.href), id = url.searchParams.get('payment');
   const careId=url.searchParams.get('care_order');
@@ -175,7 +165,7 @@ export default function PaymentCheckout() {
   history.replaceState(null, '', '/payments/'); setSession(null); setReceipt(null); setContinueUrl(''); setCheckError(''); setError(''); setForm(emptyForm); setResumable(false);setDomainOrder(null);setDomainAccess(null);setDomainBlocked(false);setCareOrder(null);setCareAccess(null);setCareBlocked(false);
  }
  const selectedMethod = config?.methods.find(method => method.code === form.method);
- const network = selectedMethod ? mobileNetwork(selectedMethod.name) : null;
+ const network = selectedMethod && selectedMethod.provider!=='paynow' ? mobileNetwork(selectedMethod.name) : null;
  const directMobile = Boolean(network && !selectedMethod?.redirectRequired);
  const phoneError = network ? mobileNumberError(form.phone, network, phoneTouched) : '';
  const phoneValid = !network || !mobileNumberError(form.phone, network);
@@ -183,29 +173,27 @@ export default function PaymentCheckout() {
  const amountError = !form.amount ? '' : !/^\d+(\.\d{1,2})?$/.test(form.amount) ? 'Enter an amount with no more than two decimal places.' : selectedMethod && (amountValue < selectedMethod.minimumAmount || amountValue > selectedMethod.maximumAmount) ? `This method accepts ${form.currency} ${selectedMethod.minimumAmount.toFixed(2)}–${selectedMethod.maximumAmount.toFixed(2)}. Check your amount or choose another method.` : '';
  const paid = receipt?.paid === true && !checkError;
  const pending = !receipt || !receipt.terminal;
- return <main className="payment-page">
-  <article className={`payment-sheet ${session ? 'payment-receipt' : ''} ${session && pending && !checkError ? 'payment-pending' : ''}`} aria-busy={busy || checking}>
+ return <main className="payment-page opus-pay-page" data-motion={motion}>
+  <article className={`payment-sheet ${session ? 'payment-receipt' : ''} ${session && pending && !checkError ? 'payment-pending' : ''} opus-pay-sheet`} aria-busy={busy || checking}>
    {paid&&<div className="receipt-verified-watermark" aria-hidden="true">OPUS<span>VERIFIED</span></div>}
-   <header className="payment-header"><PaymentLogo /><p><LockKeyhole size={14} aria-hidden="true" /> Secure <span>•</span> Fast <span>•</span> Reliable</p></header>
+   <header className="opus-pay-header"><OpusPayBrand/></header>
    {!session ? <>
-    <div className="payment-heading"><h1>{careOrder?'Monthly maintenance':domainOrder?'Pay for your domain':'Make a payment'}</h1><p>{careOrder?`${careOrder.project} · ${careOrder.period} · US$10.00`:domainOrder?`${domainOrder.domain} · one year · US$${(domainOrder.retail_minor/100).toFixed(2)}`:'Pay your Opus Zimbabwe invoice or project securely with Pesepay.'}</p></div>
     {error && <div className="payment-notice" role="alert">{error}<p>{support}</p></div>}
+    {form.currency!=='USD'&&!session&&<p className="payment-notice" role="alert">ZiG payments are temporarily unavailable. Contact payment support about your saved attempt before starting a USD payment.</p>}
     {resumable && <p className="payment-notice">Your previous payment details have been kept. Continue with the same details to check that attempt safely. <button type="button" className="payment-text-button" onClick={() => { if (attempt.current) setForm(attempt.current.form); }}>Restore previous details</button></p>}
     {careLoading&&<p role="status">Loading your private maintenance order…</p>}{domainLoading&&<p role="status">Loading your verified domain quote…</p>}
     <form onSubmit={pay} className="payment-form">
-     <div className="payment-currency-row"><label htmlFor="payment-currency">Payment currency<select id="payment-currency" aria-label="Payment currency" value={form.currency} onChange={event => change('currency', event.target.value)} disabled={busy || configBusy || (Boolean(domainAccess)||Boolean(careAccess))}>{(config?.currencies.length ? config.currencies : [{ code: 'USD', name: 'US Dollar' }, { code: 'ZiG', name: 'Zimbabwe Gold' }]).map(currency => <option key={currency.code} value={currency.code}>{currency.code}</option>)}</select></label></div>
-     <fieldset className="payment-methods payment-methods-first" disabled={busy}><legend><span className="payment-step-number">1</span> Choose your payment method</legend>
-      {configBusy ? <p role="status">Loading payment methods…</p> : configError ? <div role="alert"><p>{configError}</p><button type="button" className="payment-text-button" onClick={() => setConfigRetry(value => value + 1)}>Try loading methods again</button></div> : config?.methods.length ? <div className="payment-method-grid">{config.methods.map(method => <label key={method.code} className="payment-method" data-selected={form.method === method.code}><input type="radio" name="method" aria-label={method.name} aria-controls="payment-entry" checked={form.method === method.code} onChange={() => change('method', method.code)} /><MethodLogo name={method.name} decorative /></label>)}</div> : <p>No local methods are currently available for this currency. {support}</p>}
-     </fieldset>
-     <div className="payment-international"><p>Other payment methods</p><div>{['PayPal', 'Visa'].map(method => <button key={method} type="button" onClick={() => modal.current?.showModal()}><CreditCard size={18} aria-hidden="true" />{method}</button>)}</div></div>
+     {!selectedMethod&&<PaymentMethodPicker methods={config?.methods||[]} loading={configBusy} error={configError} onRetry={()=>setConfigRetry(v=>v+1)} disabled={busy||domainLoading||domainBlocked||careLoading||careBlocked} onSelect={method=>{setMotion(motionAllowed());change('method',method.code)}}/>}
      {!configBusy && config && !config.configured && <div className="payment-notice" role="status">Online payments are being set up. {support}</div>}
-     {selectedMethod && <section id="payment-entry" className="payment-entry" aria-labelledby="payment-entry-title"><h2 id="payment-entry-title"><span className="payment-step-number">2</span> Payment details</h2>
+     {selectedMethod && <section id="payment-entry" ref={entryRef} tabIndex={-1} className="payment-entry opus-detail-card" aria-labelledby="payment-entry-title"><div className="opus-selected-method"><MethodLogo name={selectedMethod.name}/><button type="button" disabled={busy||resumable} onClick={()=>change('method','')}>Change method</button></div><h1 id="payment-entry-title">Payment details</h1>
+      <div className="opus-reference-field"><label>Invoice or project reference<input name="invoice" required maxLength={120} autoComplete="off" value={form.invoice} onChange={event=>change('invoice',event.target.value)} placeholder="Reference from your quote or invoice" disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></label></div>
+      <div className="opus-amount-currency"><label>Amount to pay<input name="amount" type="text" inputMode="decimal" required maxLength={12} value={form.amount} onChange={event=>change('amount',event.target.value)} aria-invalid={Boolean(amountError)} aria-describedby="payment-amount-feedback" placeholder="0.00" disabled={busy||Boolean(domainAccess)||Boolean(careAccess)}/></label><label>Currency<select aria-label="Payment currency" value="USD" disabled={busy}><option value="USD">USD</option><option value="ZiG" disabled>ZiG — temporarily unavailable</option></select></label></div>
       {network && <div className="payment-mobile-field"><label htmlFor="payment-mobile">{network === 'onemoney' ? 'OneMoney' : 'EcoCash'} mobile number<input id="payment-mobile" name="phone" type="tel" inputMode="tel" autoComplete="tel" required maxLength={24} value={form.phone} onChange={event => change('phone', event.target.value)} onBlur={() => setPhoneTouched(true)} aria-invalid={Boolean(phoneError)} aria-describedby="payment-mobile-feedback" placeholder={network === 'onemoney' ? '0710 000 000' : '0770 000 000'} disabled={busy} /></label><p id="payment-mobile-feedback" className={`payment-field-feedback ${phoneError ? 'is-error' : ''}`} role={phoneError ? 'alert' : undefined}>{phoneError || (network === 'onemoney' ? 'OneMoney: 071. You can also use +263.' : 'EcoCash: 077, 078 or 079. You can also use +263.')}</p></div>}
-      <div className="payment-fields"><label>Amount to pay<input name="amount" type="number" min={selectedMethod.minimumAmount} max={selectedMethod.maximumAmount} step="0.01" inputMode="decimal" required value={form.amount} onChange={event => change('amount', event.target.value)} aria-invalid={Boolean(amountError)} aria-describedby="payment-amount-feedback" placeholder="0.00" disabled={busy || (Boolean(domainAccess)||Boolean(careAccess))} /></label><label>Invoice or project reference<input name="invoice" required maxLength={120} value={form.invoice} onChange={event => change('invoice', event.target.value)} placeholder="Reference from your quote or invoice" disabled={busy || (Boolean(domainAccess)||Boolean(careAccess))} /></label></div>
       <p id="payment-amount-feedback" className={`payment-field-feedback ${amountError ? 'is-error' : ''}`} role={amountError ? 'alert' : undefined}>{amountError || `Use the ${form.currency} amount agreed on your quote or invoice.`}</p>
-      {!domainAccess&&<details className="payment-optional"><summary>Add receipt contact details (optional)</summary><div className="payment-fields"><label>Payer name<input name="name" autoComplete="name" maxLength={100} value={form.name} onChange={event => change('name', event.target.value)} disabled={busy} /></label><label>Email address<input name="email" type="email" autoComplete="email" maxLength={254} value={form.email} onChange={event => change('email', event.target.value)} disabled={busy} /></label></div></details>}
-      <button type="submit" className="payment-submit" disabled={busy || configBusy || domainLoading || domainBlocked || careLoading || careBlocked || !config?.configured || !phoneValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{directMobile ? 'Request payment' : 'Continue to Pesepay'}</>}</button>
-      <p className="payment-small text-center">{directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : 'Enter your payment-authorisation details securely on Pesepay. We will confirm the result when you return.'}</p>
+      {!domainAccess&&<><label className="opus-email-field">Receipt email (optional)<input name="email" type="email" inputMode="email" autoComplete="email" maxLength={254} value={form.email} onChange={event=>change('email',event.target.value)} placeholder="you@example.com" disabled={busy}/></label><details className="payment-optional"><summary>+ Add payer name</summary><label>Payer name<input name="name" autoComplete="name" maxLength={100} value={form.name} onChange={event=>change('name',event.target.value)} disabled={busy}/></label></details></>}
+      <div className="opus-total"><span>Total to pay</span><strong>{form.currency} {Number.isFinite(amountValue)?amountValue.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'0.00'}</strong></div>
+      <button type="submit" className="payment-submit" disabled={form.currency!=='USD' || busy || configBusy || domainLoading || domainBlocked || careLoading || careBlocked || !config?.configured || !phoneValid || !form.amount || !form.invoice.trim() || Boolean(amountError)}>{busy ? <><LoaderCircle size={20} className="payment-spinner" />Starting secure payment…</> : <><ShieldCheck size={20} />{directMobile ? 'Request payment' : (selectedMethod?.provider==='paynow'?'Continue to Paynow':'Continue to Pesepay')}</>}</button>
+      <p className="payment-small text-center">{directMobile ? 'Confirm the payment request on your phone. Enter your PIN only in your provider’s trusted prompt.' : `Authorise securely on ${selectedMethod?.provider==='paynow'?'Paynow':'Pesepay'}. We will confirm the result when you return.`}</p>
      </section>}
         </form>
    </> : <>
@@ -222,8 +210,9 @@ export default function PaymentCheckout() {
     {paid&&session&&<PaymentReceiptActions id={session.id} token={session.token} onVerified={setReceipt}/>}
     {paid && <div className="payment-thanks"><Heart size={30} fill="currentColor" /><h2>Thank You!</h2><p>We appreciate your continued support.</p></div>}
    </>}
-   <footer className="payment-support">{support}<a href="https://opuszim.co.zw/">Back to Opus Zimbabwe</a></footer>
+
   </article>
-  <dialog ref={modal} className="payment-modal" aria-labelledby="international-title" onClick={event => { if (event.target === modal.current) modal.current.close(); }}><div><button type="button" className="payment-modal-close" onClick={() => modal.current?.close()} aria-label="Close unavailable payment method message"><X size={24} /></button><CreditCard size={38} className="text-[#E85D2A]" /><h2 id="international-title">Choose an available payment method</h2><p>This payment method is currently unavailable. Please choose one of the available methods above.</p><p>If you need help, contact <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p><button type="button" className="payment-submit" onClick={() => modal.current?.close()} autoFocus>Choose payment method</button></div></dialog>
+  <footer className="opus-pay-footer"><span className="opus-footer-rule" aria-hidden="true"/><p><a href="https://payments.opuszim.co.zw/">payments.opuszim.co.zw</a><span aria-hidden="true">•</span><a href={`mailto:${SUPPORT_EMAIL}`}>Payment support <ArrowUpRight size={16} aria-hidden="true"/></a></p><small>© {new Date().getFullYear()} Opus Zimbabwe. All rights reserved.</small></footer>
+
  </main>;
 }

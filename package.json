@@ -14,7 +14,12 @@
     "db:check": "node scripts/db-check.mjs",
     "pages:local": "wrangler pages dev --port 8788 --ip 0.0.0.0",
     "checks": "npm run typecheck && npm run build && npm run db:migrate:local && npm run db:check",
-    "release:prepare": "node scripts/build-reconstructed-pages.cjs && node scripts/prepare-mastercard-release.cjs && node scripts/test-preserved-release.cjs"
+    "release:prepare": "node scripts/build-reconstructed-pages.cjs && node scripts/prepare-mastercard-release.cjs && node scripts/test-preserved-release.cjs",
+    "build:checkout": "node scripts/build-opus-pay-release.cjs",
+    "test:checkout:artifacts": "node scripts/test-opus-pay-release.cjs",
+    "test:checkout:browser": "node scripts/test-opus-pay-browser.cjs",
+    "test:paynow": "node scripts/test-opus-pay-paynow.cjs",
+    "preview:checkout": "node scripts/serve-opus-pay-preview.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",

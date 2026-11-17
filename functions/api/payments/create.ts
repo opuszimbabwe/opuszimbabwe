@@ -1,3 +1,4 @@
+import {paynowConfigured,paynowMethods,initiatePaynow} from '../../_lib/paynow';
 import {authorisedCareOrder,claimCarePayment,clientProject} from '../../_lib/client-care';
 import { authorisedOrder, prepareDomainPayment, claimDomainPayment } from '../../_lib/domains';
 import { CheckoutError, configured, fail, gateway, hash, accessToken, limitAttempts, localMethods, paymentInput, readPaymentJson, receipt, safeRedirect, trustedOrigin, type PaymentRow } from '../../_lib/payments';
@@ -7,7 +8,7 @@ import type { PagesHandler } from '../../_lib/types';
 export const onRequestPost: PagesHandler = async context => {
  try {
   const origin = trustedOrigin(context.request);
-  if (!configured(context.env)) throw new CheckoutError(503, 'Online payments are being set up. Please contact support@opuszim.co.zw for help paying.');
+  if (!configured(context.env)&&!paynowConfigured(context.env)) throw new CheckoutError(503, 'Online payments are being set up. Please contact support@opuszim.co.zw for help paying.');
   const raw = await readPaymentJson(context.request);
   if(raw.care_order_id!==undefined&&raw.domain_order_id!==undefined)throw new CheckoutError(400,'A payment can cover only one order.');
   const careOrder=raw.care_order_id!==undefined?await authorisedCareOrder(context.env,raw.care_order_id,raw.care_order_token):null;
@@ -22,6 +23,7 @@ export const onRequestPost: PagesHandler = async context => {
    raw.name=JSON.parse(domainOrder.contact_json).postal_info.name;raw.email=JSON.parse(domainOrder.contact_json).email;raw.invoice='DOMAIN '+domainOrder.domain_name;
   }
   const input = paymentInput(raw);
+  if(input.currency!=='USD')throw new CheckoutError(400,'ZiG payments are temporarily unavailable. Please use USD.');
   const tokenHash = await hash(input.token);
   const fingerprint = await hash(JSON.stringify({ ...input, token: undefined, ...(domainOrder ? {domain_order_id:domainOrder.id} : {}),...(careOrder?{care_order_id:careOrder.id}:{}) }));
   const existing = () => context.env.DB.prepare('SELECT * FROM customer_payments WHERE token_hash = ?').bind(tokenHash).first<PaymentRow>();
@@ -31,11 +33,12 @@ export const onRequestPost: PagesHandler = async context => {
   };
   const previous = await existing(); if (previous) return respond(previous);
   if(domainOrder)await prepareDomainPayment(context.env,domainOrder.id,raw.domain_order_token);
-  const method = (await localMethods(input.currency)).find(item => item.code === input.method);
+  const paynowMethod=paynowMethods(context.env,input.currency).find(item=>item.code===input.method);
+  const method = paynowMethod || (await localMethods(input.currency)).filter(item=>! /one\s?money|pos2u|telecash/i.test(item.name)).find(item => item.code === input.method);
   if (!method) throw new CheckoutError(400, 'Please choose an available payment method for the selected currency.');
   const amount = input.minor / 100;
   if (amount < method.minimumAmount || amount > method.maximumAmount) throw new CheckoutError(400, `This method accepts ${input.currency} ${method.minimumAmount.toFixed(2)}–${method.maximumAmount.toFixed(2)}. Please choose another method or contact support@opuszim.co.zw.`);
-  const network = mobileNetwork(method.name);
+  const network = paynowMethod?null:mobileNetwork(method.name);
   if (network) { const error = mobileNumberError(input.phone, network); if (error) throw new CheckoutError(400, error); }
   await limitAttempts(context);
   const id = crypto.randomUUID(), now = new Date().toISOString();
@@ -46,6 +49,11 @@ export const onRequestPost: PagesHandler = async context => {
    .bind(id, tokenHash, fingerprint, input.name, input.email, network ? input.phone : '', input.invoice, input.minor, input.currency, method.code, method.name, now, now,careOrder?.id||null).run();
   } catch (error) { const concurrent = await existing(); if (concurrent) return respond(concurrent); if(domainOrder)await context.env.DB.prepare("UPDATE domain_orders SET state='QUOTED',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(domainOrder.id,id,id).run();if(careOrder)await context.env.DB.prepare("UPDATE care_orders SET state='OPEN',payment_id=NULL WHERE id=? AND payment_id=? AND NOT EXISTS(SELECT 1 FROM customer_payments WHERE id=?)").bind(careOrder.id,id,id).run();throw error; }
   try {
+   if(paynowMethod){
+    await context.env.DB.prepare("UPDATE customer_payments SET gateway_provider='paynow' WHERE id=?").bind(id).run();
+    const result=await initiatePaynow(context.env,{id,amount:(input.minor/100).toFixed(2),invoice:input.invoice,email:input.email,method:method.name,resultUrl:origin+'/api/payments/paynow-webhook',returnUrl:origin+'/payments/?payment='+id+'&token='+input.token});
+    await context.env.DB.prepare("UPDATE customer_payments SET gateway_poll_url=?,gateway_reference=?,redirect_url=?,status='INITIATED',updated_at=? WHERE id=? AND status='CREATING'").bind(result.pollUrl,result.reference,result.redirectUrl,new Date().toISOString(),id).run();
+   }else{
    const client = gateway(context.env, { resultUrl: origin + '/api/payments/webhook', returnUrl: origin + '/payments/?payment=' + id + '&token=' + input.token });
    const request = { amount, currencyCode: input.currency, reasonForPayment: 'Opus Zimbabwe — ' + input.invoice, merchantReference: id, paymentMethodCode: method.code, paymentMetadata: { paymentId: id } };
    const directMobile = Boolean(network && !method.redirectRequired);
@@ -62,11 +70,12 @@ export const onRequestPost: PagesHandler = async context => {
     const redirect = safeRedirect('redirectUrl' in result ? String(result.redirectUrl) : '');
     await context.env.DB.prepare("UPDATE customer_payments SET redirect_url = ?, status = 'INITIATED', updated_at = ? WHERE id = ? AND status = 'CREATING'").bind(redirect, new Date().toISOString(), id).run();
    }
+   }
   } catch (error) {
    const diagnostic = error as { code?: string; status?: number; message?: string; isEncryptionKeyMismatch?: () => boolean };
    const code = typeof diagnostic.code === 'string' && /^ERR_PESEPAY_[A-Z_]+$/.test(diagnostic.code) ? diagnostic.code : 'GATEWAY_UNCONFIRMED';
    let message = typeof diagnostic.message === 'string' ? diagnostic.message : 'Gateway request could not be confirmed.';
-   for (const secret of [context.env.PESEPAY_INTEGRATION_KEY, context.env.PESEPAY_ENCRYPTION_KEY]) if (secret) message = message.split(secret).join('[redacted]');
+   for (const secret of [context.env.PESEPAY_INTEGRATION_KEY, context.env.PESEPAY_ENCRYPTION_KEY,context.env.PAYNOW_INTEGRATION_KEY]) if (secret) message = message.split(secret).join('[redacted]');
    message = message.replace(/[\u0000-\u001f]/g, ' ').slice(0, 700);
    await context.env.DB.prepare('UPDATE customer_payments SET gateway_error_code = ?, gateway_error_message = ? WHERE id = ?').bind(code, message, id).run();
    // Never retry an ambiguous initiation: the gateway may have received it.

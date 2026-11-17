@@ -1,4 +1,5 @@
 import './globals.css';
+import '@/components/opus-pay.css';
 import localFont from 'next/font/local';
 import SiteShell from '@/components/SiteShell';
 
