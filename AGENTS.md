@@ -5,7 +5,7 @@
   handlers now have reconstructed implementations, not recovered originals.
   The root frontend and some supporting code still predate the working site.
 - The working Pages deployment is recorded in `production/current-release.json`
-  (currently `931052a4-1e22-481f-84f3-e44d4f9178ad`). The original
+  (currently `e9e0d38f-2614-4775-a6a0-f0fc6b690e2c`). The original
   `18a7f56e-775d-4ac4-a15f-91083eebd122` remains the rollback baseline.
   Preserve the current frontend assets and all supporting Worker versions.
 - Preserve the production build guard. Do not use `build:legacy` for production

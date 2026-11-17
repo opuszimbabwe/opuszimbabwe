@@ -1,28 +1,28 @@
 {
-  "deployment_id": "931052a4-1e22-481f-84f3-e44d4f9178ad",
-  "url": "https://931052a4.opuszimbabwe.pages.dev",
+  "deployment_id": "e9e0d38f-2614-4775-a6a0-f0fc6b690e2c",
+  "url": "https://e9e0d38f.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "2f4b9c8b3962074b14c604c3347ca607ae3c90e5",
-  "baseline": "89ef8fbc-959b-4a1d-b604-557be8d3af80",
+  "commit": "cefabc6aea3651b2ac005a8c54a89ec1e104d613",
+  "baseline": "931052a4-1e22-481f-84f3-e44d4f9178ad",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-ce534f796ba4e4a3.js",
-      "hash": "ce534f796ba4e4a307ba3f87619a035b",
-      "bytes": 49428
+      "file": "/_next/static/chunks/app/payments/page-3ae93992dd016971.js",
+      "hash": "3ae93992dd016971c17bd826a0c18d10",
+      "bytes": 151942
     },
     {
-      "file": "/_next/static/css/opus-pay-6d184736808b0c4a.css",
-      "hash": "6104dc1e59321e05f0da737f1f147288",
-      "bytes": 61688
+      "file": "/_next/static/css/opus-pay-5c5a777f08a50246.css",
+      "hash": "f8be21d643b91557675d7dfe341110eb",
+      "bytes": 72517
     },
     {
       "file": "/payments/index.html",
-      "hash": "03b49a07c53de5fab1d0e3c4babfdcf2",
-      "bytes": 13277
+      "hash": "09b52c7927d62bcd0708fe6dd7aef837",
+      "bytes": 108918
     },
     {
       "file": "/payments/index.txt",
-      "hash": "68a8920c0eb308565faf759909116a9e",
+      "hash": "295b51973d207741917bdc1ecae4d9cd",
       "bytes": 3557
     },
     {
@@ -91,9 +91,11 @@
       "bytes": 7816
     }
   ],
-  "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-method-switch",
-  "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
+  "database_migrations_applied": [
+    "0028_direct_wallet_checkout.sql"
+  ],
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-direct-wallets",
+  "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
@@ -116,7 +118,7 @@
     "touch_group_switch_show_both_back": true,
     "reduced_motion_and_data_saving_respected": true,
     "provider_handoffs_mock_tested": true,
-    "backend_unchanged": true,
+    "backend_unchanged": false,
     "supporting_workers_unchanged": true,
     "rear_card_captions_hidden_when_layered": true,
     "desktop_card_exit_restores_both": true,
@@ -141,7 +143,7 @@
       "empty-methods",
       "timeout"
     ],
-    "provider_image_failure_fallback_verified": true,
+    "provider_image_failure_fallback_verified": false,
     "transparent_label_real_outline_gap": true,
     "autofill_colour_blend": true,
     "returned_checkout_change_method": true,
@@ -153,6 +155,32 @@
     "existing_order_linkage_guards_preserved": true,
     "method_switch_does_not_cancel_gateway_request": true,
     "live_checkout_artifacts_verified": 17,
-    "live_public_config_method_count": 9
+    "live_public_config_method_count": 9,
+    "direct_wallets_mock_tested": [
+      "innbucks",
+      "omari",
+      "onemoney"
+    ],
+    "cancelled_pin_provider_status_verified": true,
+    "unknown_status_does_not_imply_cancelled_or_paid": true,
+    "omari_atomic_single_submission": true,
+    "no_otp_storage": true,
+    "no_real_payments_or_sms_tested": true,
+    "inline_first_paint_artwork": true,
+    "no_javascript_blocked_images_fonts_tested": true,
+    "slow_data_saving_first_paint_tested": true,
+    "css_notch_hydration_parity": true,
+    "no_loading_footer_overlap": true,
+    "glow_free_outline_trace_and_rotation": true,
+    "wallet_form_and_approval_viewports": [
+      "1366x768",
+      "390x844",
+      "320x568",
+      "390x300"
+    ],
+    "provider_logos_survive_blocked_image_requests": true,
+    "live_public_config_direct_wallet_flows_verified": true,
+    "published_asset_hashes_match_tested_build": true,
+    "live_payment_or_sms_initiated": false
   }
 }
