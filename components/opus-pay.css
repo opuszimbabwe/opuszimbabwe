@@ -400,3 +400,28 @@
 .opus-pay-page[data-keyboard=true] .opus-detail-card label{font-size:9px;line-height:12px;gap:2px}
 .opus-pay-page[data-keyboard=true] .opus-detail-card input,.opus-pay-page[data-keyboard=true] .opus-detail-card select{height:28px;min-height:28px;padding:3px 6px}
 .opus-pay-page .opus-detail-card .opus-total strong{white-space:nowrap;flex-shrink:0}
+
+/* Balanced sizing: roomy controls when height permits, compact only when needed. */
+@media(min-height:651px){
+ .opus-pay-page .opus-detail-card{max-width:560px;padding:18px 24px;row-gap:9px;column-gap:14px}
+ .opus-pay-page .opus-detail-card h1{font-size:18px}
+ .opus-pay-page .opus-detail-card label{font-size:11px;gap:5px}
+ .opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:38px;min-height:38px;font-size:14px;padding:8px 12px;border-radius:10px}
+ .opus-pay-page .opus-detail-card .opus-selected-method{height:30px;min-height:30px}
+ .opus-pay-page .opus-detail-card .payment-submit{min-height:42px;font-size:13px}
+ .opus-pay-page .opus-detail-card .payment-small{font-size:10px}
+ .opus-pay-page .opus-detail-card .opus-total strong{font-size:20px}
+}
+@media(min-height:701px){.opus-pay-page .opus-detail-card{padding:22px 26px;row-gap:12px}.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:40px;min-height:40px;padding:9px 12px}}
+@media(max-width:700px) and (min-height:651px){.opus-pay-page .opus-detail-card{padding:18px 20px}.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{font-size:16px}}
+/* Short desktops gain horizontal space so larger fields can still fit vertically. */
+@media(min-width:850px) and (min-height:501px) and (max-height:650px){
+ .opus-pay-page .opus-detail-card{max-width:600px;padding:16px 22px;row-gap:8px;column-gap:16px}
+ .opus-pay-page .opus-detail-card label{font-size:11px;gap:5px}
+ .opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:38px;min-height:38px;font-size:14px;padding:8px 11px}
+ .opus-pay-page .opus-detail-card>.opus-reference-field,.opus-pay-page .opus-detail-card>.opus-amount-currency,.opus-pay-page .opus-detail-card>.payment-mobile-field,.opus-pay-page .opus-detail-card>.opus-total{grid-column:auto}
+ .opus-pay-page .opus-detail-card>.opus-total{border-top:0;padding-top:0;align-self:end;height:38px;min-height:38px}
+ .opus-pay-page .opus-detail-card .opus-amount-currency{grid-template-columns:minmax(0,1fr) 84px;gap:10px}
+ .opus-pay-page .opus-detail-card .payment-submit{min-height:40px;font-size:12px}
+}
+@media(max-width:700px) and (min-height:431px) and (max-height:650px){.opus-pay-page .opus-detail-card{row-gap:7px}.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:34px;min-height:34px;padding:6px 9px}.opus-pay-page .opus-detail-card label{gap:4px}}

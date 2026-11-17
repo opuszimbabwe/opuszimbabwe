@@ -99,6 +99,13 @@ viewport-height breakpoints for short desktops and browser zoom. Mobile inputs
 retain 16px text to avoid automatic focus zoom. All fields remain on one form.
 Validation is evaluated for safety continuously, but advice appears after blur
 in one status area beside the total. Editing clears displayed advice, and
-routine network hints are omitted. Nine detail sizes, including 892×530, 768×432
+routine network hints are omitted. Eleven detail sizes, including 892×530, 768×432
 and the 390×300 keyboard viewport, check the whole form and visible footer,
 not just the submit button. EcoCash invalid-number feedback must also fit.
+
+## Balanced field spacing
+
+Where height permits, details use a 560px card, 38–40px controls, larger interior
+padding, a 5px label gap and 9–12px row gaps. Mobile inputs retain 16px text.
+Short desktops at least 850px wide gain a 600px two-column form so 38px controls
+fit without clipping. Tiny and keyboard viewports retain compact fallbacks.

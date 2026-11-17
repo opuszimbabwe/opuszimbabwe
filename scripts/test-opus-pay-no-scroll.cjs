@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),{chromium}=require('../ops/recovery/node_modules/playwright-core');
 const methods=[{name:'Visa',code:'PZW204',minimumAmount:.1,maximumAmount:10000},{name:'EcoCash USD',code:'PZW211',minimumAmount:.01,maximumAmount:500},{name:'OneMoney',code:'PAYNOW_ONEMONEY',provider:'paynow',redirectRequired:true,minimumAmount:.01,maximumAmount:10000}];
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{
-for(const size of [{width:1536,height:1024},{width:1366,height:768},{width:1024,height:600},{width:892,height:530},{width:768,height:432},{width:640,height:480},{width:390,height:844},{width:320,height:568},{width:390,height:300}]){
+for(const size of [{width:1536,height:1024},{width:1366,height:768},{width:1024,height:600},{width:892,height:530},{width:768,height:432},{width:640,height:480},{width:390,height:844},{width:375,height:667},{width:430,height:740},{width:320,height:568},{width:390,height:300}]){
  for(const method of ['Visa','EcoCash','OneMoney']){
  const p=await b.newPage({viewport:size.height<568?{width:size.width,height:844}:size,reducedMotion:'reduce'});await p.route('**/api/payments/config?*',r=>r.fulfill({json:{configured:true,currencies:[{code:'USD'}],methods}}));await p.goto((process.env.OPUS_PAY_TEST_URL||'http://127.0.0.1:8788')+'/payments/');await p.getByRole('button',{name:'Pay with '+method,exact:true}).waitFor();
  if(size.height>=568){for(const element of await p.locator('.opus-method-group,.opus-method-button,.opus-pay-footer').all()){const rect=await element.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=size.height,'Selector content must be visible, not clipped '+JSON.stringify({size,rect}));}}
