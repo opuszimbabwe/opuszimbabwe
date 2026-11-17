@@ -1,28 +1,28 @@
 {
-  "deployment_id": "89ef8fbc-959b-4a1d-b604-557be8d3af80",
-  "url": "https://89ef8fbc.opuszimbabwe.pages.dev",
+  "deployment_id": "931052a4-1e22-481f-84f3-e44d4f9178ad",
+  "url": "https://931052a4.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "2898b5ae8f1c248812ecdcda58fb4fc30a92959f",
-  "baseline": "f57e8218-4ccc-4acb-a529-21d180107b2c",
+  "commit": "2f4b9c8b3962074b14c604c3347ca607ae3c90e5",
+  "baseline": "89ef8fbc-959b-4a1d-b604-557be8d3af80",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-669e20ac63886246.js",
-      "hash": "669e20ac638862461f2f6b4ab59adce6",
-      "bytes": 45748
+      "file": "/_next/static/chunks/app/payments/page-ce534f796ba4e4a3.js",
+      "hash": "ce534f796ba4e4a307ba3f87619a035b",
+      "bytes": 49428
     },
     {
-      "file": "/_next/static/css/opus-pay-4be4ded2d4c4b811.css",
-      "hash": "658759d19d1669bc503c380f53e42b09",
-      "bytes": 58594
+      "file": "/_next/static/css/opus-pay-6d184736808b0c4a.css",
+      "hash": "6104dc1e59321e05f0da737f1f147288",
+      "bytes": 61688
     },
     {
       "file": "/payments/index.html",
-      "hash": "e6ea950472b319330f988aa40d992f7b",
+      "hash": "03b49a07c53de5fab1d0e3c4babfdcf2",
       "bytes": 13277
     },
     {
       "file": "/payments/index.txt",
-      "hash": "761642e99b5cb05aaefbda9febc9c549",
+      "hash": "68a8920c0eb308565faf759909116a9e",
       "bytes": 3557
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-outline-recovery",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-method-switch",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -141,6 +141,18 @@
       "empty-methods",
       "timeout"
     ],
-    "provider_image_failure_fallback_verified": true
+    "provider_image_failure_fallback_verified": true,
+    "transparent_label_real_outline_gap": true,
+    "autofill_colour_blend": true,
+    "returned_checkout_change_method": true,
+    "legacy_browser_back_method_switch": true,
+    "previous_attempt_status_links_preserved": true,
+    "previous_paid_attempt_prevents_new_request": true,
+    "invalid_previous_status_blocks_new_request": true,
+    "unknown_attempt_fingerprint_preserved": true,
+    "existing_order_linkage_guards_preserved": true,
+    "method_switch_does_not_cancel_gateway_request": true,
+    "live_checkout_artifacts_verified": 17,
+    "live_public_config_method_count": 9
   }
 }
