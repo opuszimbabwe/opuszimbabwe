@@ -1,9 +1,9 @@
 {
-  "deployment_id": "ceb6b8c2-63e5-4c4b-a678-7b0110b17b25",
-  "url": "https://ceb6b8c2.opuszimbabwe.pages.dev",
+  "deployment_id": "8d3c91a9-d45e-4b6d-9cfc-53aacd5d190b",
+  "url": "https://8d3c91a9.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "03fcf20e35ca425edefc8e85382e339921224c94",
-  "baseline": "e9e0d38f-2614-4775-a6a0-f0fc6b690e2c",
+  "commit": "323e0b2e550fe331a8f215b60dc83e67678718c4",
+  "baseline": "ceb6b8c2-63e5-4c4b-a678-7b0110b17b25",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-635e0f416413b0b9.js",
@@ -11,13 +11,13 @@
       "bytes": 155110
     },
     {
-      "file": "/_next/static/css/opus-pay-436a6a7b07e33a29.css",
-      "hash": "d8524d167bb5a84710e55c014e634b98",
-      "bytes": 73091
+      "file": "/_next/static/css/opus-pay-a4ed3fdb729200fe.css",
+      "hash": "bf7f77030d1b83c34e15a8b3684b8437",
+      "bytes": 73145
     },
     {
       "file": "/payments/index.html",
-      "hash": "e25b6d50ed9fa48b2921c2a3c737fc06",
+      "hash": "f124208a8b5e50e1b89d0363ca1f6ec3",
       "bytes": 108918
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": [],
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-keyboard-stack",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-notch-seams",
   "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -186,6 +186,12 @@
     "keyboard_viewport_test_cases": 16,
     "keyboard_visual_only_resize_and_pan_tested": true,
     "keyboard_close_restores_normal_layout": true,
-    "keyboard_otp_and_method_switch_cleanup_tested": true
+    "keyboard_otp_and_method_switch_cleanup_tested": true,
+    "notch_white_seams_removed": true,
+    "notch_visual_check_widths": [
+      390,
+      502,
+      1366
+    ]
   }
 }
