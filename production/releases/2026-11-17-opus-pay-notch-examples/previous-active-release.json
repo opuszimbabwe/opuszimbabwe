@@ -1,0 +1,197 @@
+{
+  "deployment_id": "8d3c91a9-d45e-4b6d-9cfc-53aacd5d190b",
+  "url": "https://8d3c91a9.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "323e0b2e550fe331a8f215b60dc83e67678718c4",
+  "baseline": "ceb6b8c2-63e5-4c4b-a678-7b0110b17b25",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-635e0f416413b0b9.js",
+      "hash": "635e0f416413b0b9dbf6d9b8903caf1f",
+      "bytes": 155110
+    },
+    {
+      "file": "/_next/static/css/opus-pay-a4ed3fdb729200fe.css",
+      "hash": "bf7f77030d1b83c34e15a8b3684b8437",
+      "bytes": 73145
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "f124208a8b5e50e1b89d0363ca1f6ec3",
+      "bytes": 108918
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "fb083c8f32faa5e2d11b62dc64fbd693",
+      "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/official-logo-transparent.png",
+      "hash": "f8825b9e22ec8894f013d26965f5afc4",
+      "bytes": 344210
+    },
+    {
+      "file": "/images/opus-pay/official-logo.jpg",
+      "hash": "788e75d478ecc57c692598750583d167",
+      "bytes": 803731
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "80fb209a942218d3cedcc7af5b7ac78f",
+      "bytes": 40336
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
+    }
+  ],
+  "database_migrations_applied": [],
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-notch-seams",
+  "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
+  "activated_on": "2026-11-17",
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false,
+  "validation": {
+    "typecheck": true,
+    "preserved_runtime_browser": true,
+    "selector_viewport_sizes_tested": 13,
+    "details_viewport_sizes_tested": 11,
+    "only_required_fields_visible": true,
+    "single_form": true,
+    "floating_captions_centered_entry": true,
+    "outlined_focus_orbit": false,
+    "local_green_validation_on_blur": true,
+    "invalid_shake_and_notification": true,
+    "two_initial_cue_loops": true,
+    "idle_restart_ms": 15000,
+    "continuous_idle_cue": true,
+    "activity_interrupts_cue": true,
+    "desktop_layered_hover": true,
+    "touch_group_switch_show_both_back": true,
+    "reduced_motion_and_data_saving_respected": true,
+    "provider_handoffs_mock_tested": true,
+    "backend_unchanged": true,
+    "supporting_workers_unchanged": true,
+    "rear_card_captions_hidden_when_layered": true,
+    "desktop_card_exit_restores_both": true,
+    "gap_does_not_activate_rear_card": true,
+    "upper_card_moves_down_px": 12,
+    "lower_card_moves_up_px": 12,
+    "stable_hover_zones": true,
+    "label_gap_outline_trace": true,
+    "outline_animation_seconds": 3.6,
+    "end_segment_magnetic_acceleration": true,
+    "input_ticks": false,
+    "green_border_px": 2,
+    "amount_phone_examples_not_values": true,
+    "reference_label_and_requirement_unchanged": true,
+    "desktop_authorisation_centred": true,
+    "config_timeout_ms": 15000,
+    "chooser_retry_recovery_cases": [
+      "http-error",
+      "invalid-json",
+      "missing-methods",
+      "invalid-method",
+      "empty-methods",
+      "timeout"
+    ],
+    "provider_image_failure_fallback_verified": false,
+    "transparent_label_real_outline_gap": true,
+    "autofill_colour_blend": true,
+    "returned_checkout_change_method": true,
+    "legacy_browser_back_method_switch": true,
+    "previous_attempt_status_links_preserved": true,
+    "previous_paid_attempt_prevents_new_request": true,
+    "invalid_previous_status_blocks_new_request": true,
+    "unknown_attempt_fingerprint_preserved": true,
+    "existing_order_linkage_guards_preserved": true,
+    "method_switch_does_not_cancel_gateway_request": true,
+    "live_checkout_artifacts_verified": 17,
+    "live_public_config_method_count": 9,
+    "direct_wallets_mock_tested": [
+      "innbucks",
+      "omari",
+      "onemoney"
+    ],
+    "cancelled_pin_provider_status_verified": true,
+    "unknown_status_does_not_imply_cancelled_or_paid": true,
+    "omari_atomic_single_submission": true,
+    "no_otp_storage": true,
+    "no_real_payments_or_sms_tested": true,
+    "inline_first_paint_artwork": true,
+    "no_javascript_blocked_images_fonts_tested": true,
+    "slow_data_saving_first_paint_tested": true,
+    "css_notch_hydration_parity": true,
+    "no_loading_footer_overlap": true,
+    "glow_free_outline_trace_and_rotation": true,
+    "wallet_form_and_approval_viewports": [
+      "1366x768",
+      "390x844",
+      "320x568",
+      "390x300"
+    ],
+    "provider_logos_survive_blocked_image_requests": true,
+    "live_public_config_direct_wallet_flows_verified": true,
+    "published_asset_hashes_match_tested_build": true,
+    "live_payment_or_sms_initiated": false,
+    "keyboard_preserves_normal_stacked_geometry": true,
+    "keyboard_submit_bottom_clearance_px": 8,
+    "keyboard_helper_copy_may_be_obscured": true,
+    "keyboard_viewport_test_cases": 16,
+    "keyboard_visual_only_resize_and_pan_tested": true,
+    "keyboard_close_restores_normal_layout": true,
+    "keyboard_otp_and_method_switch_cleanup_tested": true,
+    "notch_white_seams_removed": true,
+    "notch_visual_check_widths": [
+      390,
+      502,
+      1366
+    ]
+  }
+}

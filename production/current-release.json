@@ -1,28 +1,28 @@
 {
-  "deployment_id": "8d3c91a9-d45e-4b6d-9cfc-53aacd5d190b",
-  "url": "https://8d3c91a9.opuszimbabwe.pages.dev",
+  "deployment_id": "013ffabb-e403-47a5-a92d-a95f26808236",
+  "url": "https://013ffabb.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "323e0b2e550fe331a8f215b60dc83e67678718c4",
-  "baseline": "ceb6b8c2-63e5-4c4b-a678-7b0110b17b25",
+  "commit": "3c95a093c6166ad2ba48b454b81d5ba0d1bd4ce0",
+  "baseline": "8d3c91a9-d45e-4b6d-9cfc-53aacd5d190b",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-635e0f416413b0b9.js",
-      "hash": "635e0f416413b0b9dbf6d9b8903caf1f",
-      "bytes": 155110
+      "file": "/_next/static/chunks/app/payments/page-6b8db8ca977a06e4.js",
+      "hash": "6b8db8ca977a06e4aa798bb9780edbcd",
+      "bytes": 155174
     },
     {
-      "file": "/_next/static/css/opus-pay-a4ed3fdb729200fe.css",
-      "hash": "bf7f77030d1b83c34e15a8b3684b8437",
-      "bytes": 73145
+      "file": "/_next/static/css/opus-pay-8661c601bccf1352.css",
+      "hash": "f9b1a2e6dad424557f4cc68770af691e",
+      "bytes": 73196
     },
     {
       "file": "/payments/index.html",
-      "hash": "f124208a8b5e50e1b89d0363ca1f6ec3",
+      "hash": "40f6c8f0b893d07d8c6eaf824bd38b84",
       "bytes": 108918
     },
     {
       "file": "/payments/index.txt",
-      "hash": "fb083c8f32faa5e2d11b62dc64fbd693",
+      "hash": "312144040163f740fed750383793aa40",
       "bytes": 3557
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": [],
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-notch-seams",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-notch-examples",
   "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -192,6 +192,15 @@
       390,
       502,
       1366
-    ]
+    ],
+    "horizontal_notch_edge_removed": true,
+    "notch_fractional_offset_dpr_checks": [
+      1,
+      2,
+      3
+    ],
+    "reference_example_on_empty_focus": true,
+    "omari_code_example_on_empty_focus": true,
+    "examples_are_hints_not_values": true
   }
 }
