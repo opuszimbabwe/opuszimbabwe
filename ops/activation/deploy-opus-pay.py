@@ -98,7 +98,8 @@ def main():
     if args.apply_wallet_migration:
         assert args.activate,'Wallet schema changes require production activation'
         migration=(ROOT/'migrations/0028_direct_wallet_checkout.sql').read_text()
-        assert migration.count('CREATE TABLE IF NOT EXISTS')==1 and ';' not in migration.rstrip().rstrip(';'),'Only the reviewed single additive statement is allowed'
+        statement='\n'.join(line for line in migration.splitlines() if not line.lstrip().startswith('--')).strip()
+        assert statement.startswith('CREATE TABLE IF NOT EXISTS payment_wallet_state (') and statement.count('CREATE TABLE IF NOT EXISTS')==1 and ';' not in statement.rstrip(';'),'Only the reviewed single additive statement is allowed'
         api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':migration})
         wallet_columns=api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':'PRAGMA table_info(payment_wallet_state)'})[0]['results']
     assert {'payment_id','kind','instructions_json','otp_state','created_at','updated_at'}=={c['name'] for c in wallet_columns},'Reviewed wallet schema must exist before backend activation'
