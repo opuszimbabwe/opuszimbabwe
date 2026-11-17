@@ -1,9 +1,9 @@
 {
-  "deployment_id": "cb1a87bf-72c1-45e1-87e7-165972a1d8d3",
-  "url": "https://cb1a87bf.opuszimbabwe.pages.dev",
+  "deployment_id": "8446cd79-4199-4f36-be75-53cdf5c68e2d",
+  "url": "https://8446cd79.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "b482ba53b02091c3c914316594327f7eb5d2f732",
-  "baseline": "b3c5a1ae-8b90-495c-b371-43f9e6b85dc9",
+  "commit": "f16e97cea497ec33bffe4cf40940aaa052cc4fa1",
+  "baseline": "cb1a87bf-72c1-45e1-87e7-165972a1d8d3",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-8f33949154abd1a3.js",
@@ -11,13 +11,13 @@
       "bytes": 40397
     },
     {
-      "file": "/_next/static/css/opus-pay-22aa554ee047d71d.css",
-      "hash": "2cfd6916ceec9abdee18707789b5d109",
-      "bytes": 40530
+      "file": "/_next/static/css/opus-pay-615e5ebdcb539f6b.css",
+      "hash": "120ff9c66c0bdcf15ea28fae5769d23d",
+      "bytes": 43011
     },
     {
       "file": "/payments/index.html",
-      "hash": "78cafbda83bab5ac3baf530588efba72",
+      "hash": "59c956e2de2499fabc75c2cdb3f86db7",
       "bytes": 12674
     },
     {
@@ -92,30 +92,31 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-compact-details",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-balanced",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
-    "typecheck": true,
     "preserved_runtime_browser": true,
     "selector_viewport_sizes_tested": 13,
-    "details_viewport_sizes_tested": 9,
+    "details_viewport_sizes_tested": 11,
     "single_form_all_fields_visible": true,
     "intermediate_steps": false,
-    "short_desktop_sizes": [
-      "892x530",
-      "768x432",
-      "640x480"
-    ],
-    "smallest_portrait": "320x568",
-    "keyboard_viewport_tested": "390x300",
     "whole_form_and_visible_footer_checked": true,
     "ecocash_validation_fits_all_detail_sizes": true,
-    "quiet_validation_after_blur": true,
-    "desktop_input_font_px": 13,
-    "mobile_input_font_px": 16,
+    "larger_controls_height_px": [
+      38,
+      40
+    ],
+    "larger_card_max_width_px": 560,
+    "short_desktop_card_max_width_px": 600,
+    "larger_row_gap_px": [
+      9,
+      12
+    ],
+    "quiet_validation_preserved": true,
+    "two_second_reveal_preserved": true,
     "backend_unchanged": true,
     "live_checkout_artifacts_verified": 17,
     "supporting_workers_unchanged": true
