@@ -6,10 +6,10 @@ for(const size of [{width:1536,height:1024},{width:1366,height:768},{width:390,h
  const p=await b.newPage({viewport:size,reducedMotion:'reduce'});await p.route('**/api/payments/config?*',r=>r.fulfill({json:{configured:true,currencies:[{code:'USD'}],methods}}));await p.goto((process.env.OPUS_PAY_TEST_URL||'http://127.0.0.1:8788')+'/payments/');await p.getByRole('button',{name:'Pay with '+method,exact:true}).waitFor();
  if(size.height>=568){for(const element of await p.locator('.opus-method-group,.opus-method-button,.opus-pay-footer').all()){const rect=await element.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=size.height,'Selector content must be visible, not clipped '+JSON.stringify({size,rect}));}}
  await p.getByRole('button',{name:'Pay with '+method,exact:true}).click();
- for(let step=0;step<7;step++){
+ assert.equal(await p.getByRole('button',{name:'Continue',exact:true}).count(),0,'No intermediate steps');
+ assert.equal(await p.locator('#payment-entry input:visible').count(),method==='EcoCash'?5:4,'All payment fields visible together');
+ for(let step=0;step<1;step++){
   for(const input of await p.locator('#payment-entry input:visible').all()){const name=await input.getAttribute('name');await input.fill(name==='invoice'?'TEST-QUOTE':name==='amount'?'25':name==='phone'?'0791234567':name==='email'?'payer@example.test':'Test Payer');const rect=await input.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=size.height,'Input visible '+JSON.stringify({size,method,name,rect}));}
-  const next=p.getByRole('button',{name:'Continue',exact:true});
-  if(await next.count()){const rect=await next.boundingBox();assert.ok(rect.y+rect.height<=size.height,'Continue visible');await next.click();continue}
   const submit=p.getByRole('button',{name:method==='EcoCash'?'Request payment':method==='OneMoney'?'Continue to Paynow':'Continue to Pesepay',exact:true});const rect=await submit.boundingBox();assert.ok(rect.y>=0&&rect.y+rect.height<=size.height,'Final button visible '+JSON.stringify({size,method,rect}));break;
  }
  assert.ok(await p.evaluate(()=>document.documentElement.scrollHeight<=innerHeight),'No document overflow '+JSON.stringify({size,method}));await p.mouse.wheel(0,700);assert.equal(await p.evaluate(()=>scrollY),0);if(method==='Visa'&&size.width===390&&size.height===844)await p.screenshot({path:'/workspace/scratch/opus-pay-no-scroll-details.png'});await p.close();

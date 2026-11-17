@@ -64,7 +64,7 @@ uses the Simple Icons vector path; Mastercard uses the original vector artwork
 from gilbarbara/logos with a horizontal lockup. POS2U is a lightweight vector
 wordmark reconstruction pending an original downloadable vector. The supplied
 chat images are visual references; their original attachment files are not
-mounted in this workspace. The merchant lockup now uses the unmodified owner-supplied official JPEG; see
+mounted in this workspace. The merchant lockup uses a transparent derivative of the owner-supplied JPEG; see
 `docs/OPUS-PAY-ARTWORK.md` for its checksum and display viewport. Poppins' OFL license is shipped with the fonts.
 
 ## Compact responsive revision
@@ -79,10 +79,14 @@ details use focused steps that also fit when the mobile keyboard is open.
 
 ## One-screen payment details
 
-Small or short screens present reference, amount, phone when needed, optional
-receipt contact, optional payer name and review as focused steps. State persists
-across steps; initiation occurs only from the final review. The form follows
-visualViewport height changes, including the mobile keyboard. Required fields,
-errors and the final action are verified visible rather than merely clipped.
+All fields remain together in one compact responsive form. There is no step
+navigation: reference, amount/currency, mobile number where needed, optional
+email and payer name, total and provider handoff stay visible together. Small
+screens reduce spacing and use columns; visualViewport tracks the keyboard.
 Issued receipt documents retain their accessible document layout.
-Run `npm run test:checkout:no-scroll` for these cases.
+Run `npm run test:checkout:no-scroll` for visibility and no-step assertions.
+
+CSS form reveal runs from 50% opacity and an 18px offset over 360ms. Reduced
+motion and explicit data saving disable it. Estimated network speed does not
+predict local CSS animation performance; introductory frame sampling only
+cancels the logo cue, rather than permanently disabling later form reveals.

@@ -266,3 +266,45 @@
 /* Exact owner-supplied artwork; the SVG viewport removes only blank margins. */
 .opus-official-logo{display:block;width:100%;height:45px;overflow:hidden;transform:none;mix-blend-mode:multiply}
 @media(max-width:700px){.opus-official-logo{height:40px}}
+
+/* One compact form: every field stays on the same screen, without step navigation. */
+.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:96px;padding-top:18px}
+.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:22px}
+.opus-pay-page .opus-detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:14px;row-gap:10px;padding:22px 28px;max-width:600px}
+.opus-detail-card>.opus-selected-method,.opus-detail-card>h1,.opus-detail-card>.opus-reference-field,.opus-detail-card>.opus-amount-currency,.opus-detail-card>.payment-mobile-field,.opus-detail-card>.payment-field-feedback,.opus-detail-card>.opus-total,.opus-detail-card>.payment-submit,.opus-detail-card>.payment-small{grid-column:1/-1}
+.opus-pay-page .opus-detail-card h1{font-size:18px;margin:0 0 2px}
+.opus-detail-card .opus-selected-method{height:32px;min-height:32px;margin:0}
+.opus-detail-card .opus-selected-method .opus-provider-art{transform:scale(.55);transform-origin:left center}
+.opus-detail-card .opus-reference-field,.opus-detail-card .opus-email-field,.opus-detail-card .opus-payer-field{margin:0}
+.opus-pay-page .opus-detail-card label{font-size:11px;gap:4px;min-width:0;display:flex;flex-direction:column}
+.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{width:100%;min-width:0;min-height:40px;padding:8px 10px;font-size:16px}
+.opus-pay-page .opus-detail-card .payment-field-feedback{margin:0;font-size:10px;line-height:1.3}
+.opus-detail-card .payment-mobile-field .payment-field-feedback{margin-top:4px}
+.opus-detail-card .opus-total{margin:0;padding-top:8px}.opus-detail-card .opus-total strong{font-size:20px}
+.opus-pay-page .opus-detail-card .payment-submit{margin:0;min-height:44px;font-size:13px}
+.opus-pay-page .opus-detail-card .payment-small{margin:0;font-size:10px;line-height:1.4}
+.opus-method-group{height:184px}.opus-mobile-group{height:266px;margin-top:68px}
+@media(max-width:700px){.opus-method-group{height:165px}.opus-mobile-group{height:242px;margin-top:56px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:84px;padding-top:12px}.opus-pay-page .opus-detail-card{padding:18px;column-gap:10px;row-gap:8px}.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:18px}}
+@media(min-width:701px) and (max-height:780px){.opus-method-group{height:158px}.opus-mobile-group{height:219px;margin-top:54px}}
+@media(min-width:701px) and (max-height:680px){.opus-method-group{height:133px}.opus-mobile-group{height:187px;margin-top:46px}}
+@media(max-width:700px) and (max-height:680px){.opus-method-group{height:139px}.opus-mobile-group{height:199px;margin-top:44px}.opus-pay-page:has(.opus-detail-card) .opus-pay-header{height:62px;padding-top:6px}.opus-pay-page:has(.opus-detail-card) .opus-pay-brand{width:210px}.opus-pay-page:has(.opus-detail-card) .opus-official-logo{height:28px}.opus-pay-page:has(.opus-detail-card) .opus-pay-attribution{font-size:12px}.opus-pay-page .opus-detail-card{padding:12px 16px;row-gap:6px}.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{min-height:35px;padding:5px 8px}.opus-pay-page:has(.opus-detail-card) .opus-pay-footer{margin-top:12px}.opus-pay-page:has(.opus-detail-card) .opus-footer-rule{margin-bottom:7px}}
+.opus-pay-page[data-keyboard=true]:has(.opus-detail-card){padding:0 8px}
+.opus-pay-page[data-keyboard=true]:has(.opus-detail-card) .opus-pay-header{height:28px!important;padding-top:2px!important}
+.opus-pay-page[data-keyboard=true] .opus-pay-brand{width:130px;transform:none}.opus-pay-page[data-keyboard=true] .opus-official-logo{height:22px}.opus-pay-page[data-keyboard=true] .opus-pay-attribution{display:none}
+.opus-pay-page[data-keyboard=true] .opus-detail-card{padding:7px 12px;gap:4px 8px}
+.opus-pay-page[data-keyboard=true] .opus-detail-card h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .opus-reference-field,.opus-pay-page[data-keyboard=true] .opus-detail-card .payment-mobile-field{grid-column:auto}
+.opus-pay-page[data-keyboard=true] .opus-detail-card input,.opus-pay-page[data-keyboard=true] .opus-detail-card select{min-height:30px;height:30px;padding:3px 6px}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .opus-selected-method{height:22px;min-height:22px}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .payment-submit{min-height:34px;margin:0}
+.opus-pay-page[data-keyboard=true] .opus-total{padding-top:3px}.opus-pay-page[data-keyboard=true] .opus-total strong{font-size:16px}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .payment-field-feedback:not(.is-error){display:none}
+.opus-pay-page[data-keyboard=true] .opus-detail-card .payment-small{font-size:9px;line-height:1.2}
+.opus-pay-page[data-motion=true] .opus-detail-card{animation-duration:360ms}
+.opus-official-logo{mix-blend-mode:normal}
+.opus-pay-page .opus-detail-card label{line-height:1.3}
+.opus-pay-page .opus-detail-card .payment-mobile-field{margin:0}
+.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:40px;line-height:1.25}
+.opus-pay-page .opus-detail-card .payment-submit{line-height:1.3;padding:8px}
+@media(max-width:700px) and (max-height:680px){.opus-pay-page .opus-detail-card input,.opus-pay-page .opus-detail-card select{height:35px}.opus-pay-page .opus-detail-card label{font-size:10px}.opus-pay-page .opus-detail-card .payment-small{font-size:9px;line-height:1.3}.opus-pay-page .opus-detail-card .opus-total{font-size:11px}.opus-pay-page .opus-detail-card .opus-total strong{font-size:18px}}
+.opus-pay-page[data-keyboard=true] .opus-detail-card input,.opus-pay-page[data-keyboard=true] .opus-detail-card select{height:30px}

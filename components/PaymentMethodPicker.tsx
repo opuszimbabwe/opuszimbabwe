@@ -12,7 +12,7 @@ export const paymentBrands = [
  {key:'pos2u',name:'POS2U',pattern:/pos2u/i,src:'/images/opus-pay/pos2u.svg'},
  {key:'telecash',name:'Telecash',pattern:/telecash/i,src:'/images/payments/telecash.png'},
 ];
-export function OpusPayBrand(){return <a href="https://opuszim.co.zw/" className="opus-pay-brand" aria-label="Opus Pay by Opus Zimbabwe"><svg className="opus-official-logo" viewBox="138 878 1772 293" role="img" aria-label="Opus Pay" preserveAspectRatio="xMidYMid meet"><image href="/images/opus-pay/official-logo.jpg" width="2048" height="2048"/></svg><span className="opus-pay-attribution">By Opus Zimbabwe</span></a>}
+export function OpusPayBrand(){return <a href="https://opuszim.co.zw/" className="opus-pay-brand" aria-label="Opus Pay by Opus Zimbabwe"><svg className="opus-official-logo" viewBox="90 190 2000 350" role="img" aria-label="Opus Pay" preserveAspectRatio="xMidYMid meet"><image href="/images/opus-pay/official-logo-transparent.png" width="2172" height="724"/></svg><span className="opus-pay-attribution">By Opus Zimbabwe</span></a>}
 
 export function PaymentBrand({name}:{name:string}){
  const brand=paymentBrands.find(b=>b.pattern.test(name));
@@ -22,9 +22,9 @@ export function PaymentBrand({name}:{name:string}){
  return <span className={`opus-provider-art opus-art-${brand.key}`}><img src={brand.src} alt={brand.name} draggable={false}/></span>;
 }
 export function motionAllowed(){
- if(typeof window==='undefined'||document.documentElement.dataset.opusMotion==='off')return false;
+ if(typeof window==='undefined')return false;
  const connection=(navigator as Navigator&{connection?:{saveData?:boolean;effectiveType?:string;downlink?:number}}).connection;
- return !window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!connection?.saveData&&!/^(slow-2g|2g|3g)$/.test(connection?.effectiveType||'')&&!(connection?.downlink!==undefined&&connection.downlink<1.5);
+ return !window.matchMedia('(prefers-reduced-motion: reduce)').matches&&!connection?.saveData;
 }
 function Notch({wide=false}:{wide?:boolean}){
  const ref=useRef<SVGSVGElement>(null),[size,setSize]=useState({width:1084,height:wide?336:240});
@@ -46,9 +46,9 @@ export default function PaymentMethodPicker({methods,loading,error,onRetry,onSel
   window.addEventListener('pointermove',stopForUser,{once:true});window.addEventListener('pointerdown',stopForUser,{once:true});window.addEventListener('keydown',stopForUser,{once:true});media.addEventListener('change',preferenceChanged);connection?.addEventListener('change',preferenceChanged);
   const advance=()=>{if(disposed||cancelled.current||!motionAllowed()||document.hidden){setCue(-1);return}try{sessionStorage.setItem('opus-pay-intro-seen','1')}catch{}setCue(index++);if(index<9)timer=setTimeout(advance,210);else timer=setTimeout(()=>{setCue(-1);cancelled.current=true},210)};
   // Sample actual frame delivery before allowing cosmetic motion.
-  const sample=(time:number)=>{if(!firstFrame.current)firstFrame.current=time;frames.current++;if(time-firstFrame.current<180){raf=requestAnimationFrame(sample);return}if(frames.current>=7&&motionAllowed())timer=setTimeout(advance,220);else document.documentElement.dataset.opusMotion='off'};
+  const sample=(time:number)=>{if(!firstFrame.current)firstFrame.current=time;frames.current++;if(time-firstFrame.current<180){raf=requestAnimationFrame(sample);return}if(frames.current>=7&&motionAllowed())timer=setTimeout(advance,220);else stopForUser()};
   let previous=0,slowFrames=0,monitor=0;
-  const measure=(time:number)=>{if(previous&&time-previous>48)slowFrames++;else slowFrames=Math.max(0,slowFrames-1);previous=time;if(slowFrames>=3){document.documentElement.dataset.opusMotion='off';stopForUser();return}if(!cancelled.current&&!disposed)monitor=requestAnimationFrame(measure)};
+  const measure=(time:number)=>{if(previous&&time-previous>48)slowFrames++;else slowFrames=Math.max(0,slowFrames-1);previous=time;if(slowFrames>=3){stopForUser();return}if(!cancelled.current&&!disposed)monitor=requestAnimationFrame(measure)};
   if(motionAllowed()){raf=requestAnimationFrame(sample);monitor=requestAnimationFrame(measure)}
   return()=>{disposed=true;cancelAnimationFrame(raf);cancelAnimationFrame(monitor);clearTimeout(timer);window.removeEventListener('pointermove',stopForUser);window.removeEventListener('pointerdown',stopForUser);window.removeEventListener('keydown',stopForUser);media.removeEventListener('change',preferenceChanged);connection?.removeEventListener('change',preferenceChanged)};
  },[loading]);
