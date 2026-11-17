@@ -205,7 +205,7 @@ UNCONFIRMED. Browser/network failures never imply success or cancellation.
 
 Artwork is technically cropped/compressed from the existing marks into inline
 WebP/SVG data in components/payment-artwork.ts. There is no image HTTP request or
-hydration opacity gate for critical logos. CSS masks size notch geometry before
+hydration opacity gate for critical logos. A single CSS clip silhouette sizes notch geometry before
 hydration; the loading status uses the gap above the first group, clear of footer.
 Original artwork and supplied JPEG remain retained. A system font fallback also
 fits when the Poppins download is blocked.
@@ -240,3 +240,7 @@ layout remains available when no keyboard-induced viewport reduction occurred.
 `npm run test:checkout:keyboard` checks 16 method/device combinations, visual-only
 viewport shrink and panning, normal-layout restoration, no document scrolling,
 field switching and the Omari OTP form. Provider calls remain mocked.
+
+The notch surface uses a single continuous clip polygon with sampled rounded
+transitions and straight slants. There are no additive/excluded mask layers or
+internal cutout joins to create horizontal/vertical white raster seams.
