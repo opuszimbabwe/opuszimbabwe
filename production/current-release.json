@@ -1,28 +1,28 @@
 {
-  "deployment_id": "3c8c980b-d2a3-4781-a3fa-83cf00044fc9",
-  "url": "https://3c8c980b.opuszimbabwe.pages.dev",
+  "deployment_id": "dbf8baa3-9777-4a71-8275-dd0b9edd1644",
+  "url": "https://dbf8baa3.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "6a5de85313bbdbb31c8a00c162e6131f977b70b2",
-  "baseline": "013ffabb-e403-47a5-a92d-a95f26808236",
+  "commit": "9576cf2400afa7a891ab35d39993b13e7d2db490",
+  "baseline": "3c8c980b-d2a3-4781-a3fa-83cf00044fc9",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-8cd53c02118fd0d4.js",
-      "hash": "8cd53c02118fd0d48025698daca99096",
-      "bytes": 155435
+      "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
+      "hash": "578696e0225635fa80531fdcbce4a202",
+      "bytes": 158334
     },
     {
-      "file": "/_next/static/css/opus-pay-bc3322e7acfd4578.css",
-      "hash": "6a6e53e0fc4b0a8cbacea978067c494d",
-      "bytes": 76126
+      "file": "/_next/static/css/opus-pay-c1090d39ba0ef678.css",
+      "hash": "156a682ae5558ff926a7ce524cfb17ba",
+      "bytes": 79195
     },
     {
       "file": "/payments/index.html",
-      "hash": "1ceaf14023e3136d312b9b5e5fbbd2e9",
-      "bytes": 108918
+      "hash": "7f8e026ef14a651db2f7591249bbbd7d",
+      "bytes": 109523
     },
     {
       "file": "/payments/index.txt",
-      "hash": "9e93eecbbc34c185ab21553c70f26501",
+      "hash": "04b0d17cbd7bbda31c387f3e7e8cb74c",
       "bytes": 3557
     },
     {
@@ -92,7 +92,7 @@
     }
   ],
   "database_migrations_applied": [],
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-rounded-chevron",
+  "artifact_directory": "production/releases/2026-11-18-opus-pay-notifications",
   "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
@@ -131,7 +131,7 @@
     "green_border_px": 2,
     "amount_phone_examples_not_values": true,
     "reference_label_and_requirement_unchanged": true,
-    "desktop_authorisation_centred": true,
+    "desktop_authorisation_centred": false,
     "config_timeout_ms": 15000,
     "chooser_retry_recovery_cases": [
       "http-error",
@@ -211,6 +211,19 @@
       1366,
       390,
       320
-    ]
+    ],
+    "informational_messages_in_popups": true,
+    "saved_attempt_restore_from_popup": true,
+    "notification_dismiss_and_reopen": true,
+    "notice_dismiss_does_not_reset_attempt": true,
+    "notification_does_not_replay_payment": true,
+    "routine_guidance_on_demand": true,
+    "authorisation_guidance_in_popup": true,
+    "notification_test_viewports": [
+      "1366x768",
+      "390x844",
+      "320x568"
+    ],
+    "customer_business_context_not_committed": true
   }
 }
