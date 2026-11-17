@@ -1,28 +1,28 @@
 {
-  "deployment_id": "8446cd79-4199-4f36-be75-53cdf5c68e2d",
-  "url": "https://8446cd79.opuszimbabwe.pages.dev",
+  "deployment_id": "3b2184df-9680-4592-8bbc-0f327c44a680",
+  "url": "https://3b2184df.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "f16e97cea497ec33bffe4cf40940aaa052cc4fa1",
-  "baseline": "cb1a87bf-72c1-45e1-87e7-165972a1d8d3",
+  "commit": "d4e4f0cc2192830e4652c74a76c40e5190621c17",
+  "baseline": "8446cd79-4199-4f36-be75-53cdf5c68e2d",
   "checkout_changes": [
     {
-      "file": "/_next/static/chunks/app/payments/page-8f33949154abd1a3.js",
-      "hash": "8f33949154abd1a36722e74949bed7c7",
-      "bytes": 40397
+      "file": "/_next/static/chunks/app/payments/page-9f812c9f615fc9e0.js",
+      "hash": "9f812c9f615fc9e0a6c621f9d6eb969c",
+      "bytes": 42165
     },
     {
-      "file": "/_next/static/css/opus-pay-615e5ebdcb539f6b.css",
-      "hash": "120ff9c66c0bdcf15ea28fae5769d23d",
-      "bytes": 43011
+      "file": "/_next/static/css/opus-pay-def427c4f7d62d33.css",
+      "hash": "f7bad2d8b302ff227f321992513e1a60",
+      "bytes": 54159
     },
     {
       "file": "/payments/index.html",
-      "hash": "59c956e2de2499fabc75c2cdb3f86db7",
-      "bytes": 12674
+      "hash": "50ad06d9a80471715885ce5c0d6eca48",
+      "bytes": 12991
     },
     {
       "file": "/payments/index.txt",
-      "hash": "f889de723473565cf8c5323d90137b04",
+      "hash": "c96bdc7f13076cf519d44b5a0b560864",
       "bytes": 3557
     },
     {
@@ -92,31 +92,30 @@
     }
   ],
   "database_migrations_applied": false,
-  "artifact_directory": "production/releases/2026-11-17-opus-pay-balanced",
+  "artifact_directory": "production/releases/2026-11-17-opus-pay-floating",
   "backend_bundle_sha256": "0aec75f3776f9817225e6d16c583951f5c689895b2418340dc02a42f7ec281e3",
   "activated_on": "2026-11-17",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
+    "typecheck": true,
     "preserved_runtime_browser": true,
     "selector_viewport_sizes_tested": 13,
     "details_viewport_sizes_tested": 11,
-    "single_form_all_fields_visible": true,
-    "intermediate_steps": false,
-    "whole_form_and_visible_footer_checked": true,
-    "ecocash_validation_fits_all_detail_sizes": true,
-    "larger_controls_height_px": [
-      38,
-      40
-    ],
-    "larger_card_max_width_px": 560,
-    "short_desktop_card_max_width_px": 600,
-    "larger_row_gap_px": [
-      9,
-      12
-    ],
-    "quiet_validation_preserved": true,
-    "two_second_reveal_preserved": true,
+    "only_required_fields_visible": true,
+    "single_form": true,
+    "floating_captions_centered_entry": true,
+    "outlined_focus_orbit": true,
+    "local_green_validation_on_blur": true,
+    "invalid_shake_and_notification": true,
+    "two_initial_cue_loops": true,
+    "idle_restart_ms": 15000,
+    "continuous_idle_cue": true,
+    "activity_interrupts_cue": true,
+    "desktop_layered_hover": true,
+    "touch_group_switch_show_both_back": true,
+    "reduced_motion_and_data_saving_respected": true,
+    "provider_handoffs_mock_tested": true,
     "backend_unchanged": true,
     "live_checkout_artifacts_verified": 17,
     "supporting_workers_unchanged": true
