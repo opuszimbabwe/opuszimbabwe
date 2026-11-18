@@ -89,3 +89,8 @@ Official sources reviewed through Cloudflare's public documentation repository:
 Direct access to developers.cloudflare.com, Omari's site and public DNS-over-HTTPS
 hosts was denied by the environment's hostname allowlist. The official public
 GitHub documentation was an available source. No network rules were bypassed.
+
+Cookie notifications are centred in the visible viewport. Saving or closing removes
+the complete floating UI, including any confirmation/tab. Cookie preferences can
+be reopened from a normal footer button. Closing alone does not write a consent
+choice; saving still preserves the existing shared 180-day preference.

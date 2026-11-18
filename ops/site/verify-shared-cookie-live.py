@@ -1,7 +1,8 @@
 """Read-only live verification; never requests a payment or chat session."""
-import hashlib,json,os,pathlib,subprocess,urllib.request
+import hashlib,json,os,pathlib,subprocess,urllib.request,argparse
 ROOT=pathlib.Path(__file__).resolve().parents[2];RELEASE=pathlib.Path('/tmp/opus-pay-release');ACCOUNT='bfdd1ae2b409f941958f78ea99348c2e';ZONE='d240c0475f8d4a2897707d247568a8ea'
-expected=json.loads((RELEASE/'changes.json').read_text());result=json.loads(pathlib.Path('/tmp/opus-shared-cookie-release-result.json').read_text())
+parser=argparse.ArgumentParser();parser.add_argument('--result',default='/tmp/opus-shared-cookie-release-result.json');args=parser.parse_args()
+expected=json.loads((RELEASE/'changes.json').read_text());result=json.loads(pathlib.Path(args.result).read_text())
 def api(path):
  with urllib.request.urlopen(urllib.request.Request('https://api.cloudflare.com/client/v4'+path,headers={'Authorization':'Bearer '+os.environ['CF_TOKEN_INFO_OPUSZIM']}),timeout=30)as r:return json.load(r)['result']
 def fetch(path):
