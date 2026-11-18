@@ -1,9 +1,9 @@
 {
-  "deployment_id": "2d20596f-381b-4d82-9758-45c8fd977ce9",
-  "url": "https://2d20596f.opuszimbabwe.pages.dev",
+  "deployment_id": "4fca155a-e1e0-481a-9622-673530063c9b",
+  "url": "https://4fca155a.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "b202cded7cf37e7d4f29bda530bec4ce9885571e",
-  "baseline": "4b2b7b2c-72fd-444f-a495-6df0efb9618b",
+  "commit": "8323930c23c5623981b733e879d360ccb0f1d540",
+  "baseline": "2d20596f-381b-4d82-9758-45c8fd977ce9",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
@@ -102,28 +102,28 @@
     },
     {
       "file": "/about/index.html",
-      "hash": "ab38a5fd62c6b66e51214138ee8aedc7",
-      "bytes": 38267
+      "hash": "2d9ee4411fa2455078a25f5e09033b6e",
+      "bytes": 38326
     },
     {
       "file": "/care/index.html",
-      "hash": "e0cbcf6307770a67b70ac64b0c57ee86",
-      "bytes": 35863
+      "hash": "58b90905e032c457dfb99b8849d4100e",
+      "bytes": 36890
     },
     {
       "file": "/company/index.html",
-      "hash": "e35c8f274f44932aac4dc5fcb5745c19",
-      "bytes": 40701
+      "hash": "7fc9ea7ef55a97b278521dedea37451a",
+      "bytes": 40762
     },
     {
       "file": "/contact/index.html",
-      "hash": "e1187af7e689680117a9815c208e1aa1",
-      "bytes": 46053
+      "hash": "86e82d327b4162edb83e921f818e32b6",
+      "bytes": 46114
     },
     {
       "file": "/documents/index.html",
-      "hash": "a5ba31515d72b559ef3beb8e8ba35335",
-      "bytes": 39439
+      "hash": "a88af146130de17466d1ac2b7dfd8bf8",
+      "bytes": 39502
     },
     {
       "file": "/documents/website-brief/index.html",
@@ -132,8 +132,8 @@
     },
     {
       "file": "/domains/index.html",
-      "hash": "ff24218ebf3dc168ed6865ac502ff22b",
-      "bytes": 53213
+      "hash": "d17cbe0947aa77c240b7a374247eb0c1",
+      "bytes": 53274
     },
     {
       "file": "/domains/register/index.html",
@@ -142,13 +142,13 @@
     },
     {
       "file": "/faq/index.html",
-      "hash": "4202be271d5e0609895b533db8f31dbb",
-      "bytes": 51328
+      "hash": "72a139af921568bfcb0ef386dd134231",
+      "bytes": 51385
     },
     {
       "file": "/index.html",
-      "hash": "40b503c252cbe42b9b832f9ce908c3a9",
-      "bytes": 86700
+      "hash": "cbe87cb4985abdfb80aa4157f6cb74fd",
+      "bytes": 86753
     },
     {
       "file": "/loaners/index.html",
@@ -167,63 +167,63 @@
     },
     {
       "file": "/privacy/index.html",
-      "hash": "3167a3d951998edb61c7fdf5d9599be0",
-      "bytes": 91458
+      "hash": "b9a526a2bcb01028ca14a327cd39652a",
+      "bytes": 91519
     },
     {
       "file": "/projects/index.html",
-      "hash": "b159cc3658e3bda4eb9b7dabfe47c690",
-      "bytes": 46626
+      "hash": "0306a37d7866cf950e0aa6b4d1f95899",
+      "bytes": 46688
     },
     {
       "file": "/services/ai-automation/index.html",
-      "hash": "c904d31538896d7b5bec18c65d5c0a6c",
-      "bytes": 55787
+      "hash": "86cc4435e38c3b3afe41f49210a71c07",
+      "bytes": 55863
     },
     {
       "file": "/services/api-integrations/index.html",
-      "hash": "0836c7d9584c81defd01313316c498d2",
-      "bytes": 58817
+      "hash": "e2f722ce4b915a826138b8a0bf1fe1b7",
+      "bytes": 58896
     },
     {
       "file": "/services/app-development/index.html",
-      "hash": "6faaae4ca98978556c88635a02a57810",
-      "bytes": 54443
+      "hash": "7ed61a573479340cc15aa7397dc0f8ce",
+      "bytes": 54521
     },
     {
       "file": "/services/business-email/index.html",
-      "hash": "46e208f1264645ed7726ea16437c35a2",
-      "bytes": 46604
+      "hash": "1a69e5004b9293e08876a94e10bd2699",
+      "bytes": 46681
     },
     {
       "file": "/services/domain-hosting/index.html",
-      "hash": "bf1bbe480510c417862eb3594d2829d2",
-      "bytes": 63104
+      "hash": "5af4418ab80e096bf1e8cce013bd2642",
+      "bytes": 63182
     },
     {
       "file": "/services/domains-hosting/index.html",
-      "hash": "ee79a2156502d06caf62a5caa5e9eb4f",
-      "bytes": 63110
+      "hash": "c6f454dd5ac18e0853afbad691854b7c",
+      "bytes": 63188
     },
     {
       "file": "/services/graphic-design-branding/index.html",
-      "hash": "3d060d5fa684a491347863cf2879c214",
-      "bytes": 46285
+      "hash": "86138e315689da5d63e67d511a49c6d7",
+      "bytes": 46362
     },
     {
       "file": "/services/graphic-design/index.html",
-      "hash": "611c8d3b77c0cdbffdffcf32f24cc4c6",
-      "bytes": 46231
+      "hash": "eaf7b8ce96bde779414df33ca33f2e01",
+      "bytes": 46308
     },
     {
       "file": "/services/index.html",
-      "hash": "af4593724ab86de2eeb3fe6f4d90dd4a",
-      "bytes": 64270
+      "hash": "b04a872b8ce0b7f9e9a9f7c59a570322",
+      "bytes": 64332
     },
     {
       "file": "/services/software-development/index.html",
-      "hash": "2bbf16c81f1c9d76ac4153f6accea29e",
-      "bytes": 59806
+      "hash": "a885ce9fd469b8d8107e4dd57905b8ac",
+      "bytes": 59889
     },
     {
       "file": "/services/software-systems/index.html",
@@ -232,38 +232,53 @@
     },
     {
       "file": "/services/video-advert-production/index.html",
-      "hash": "5d4288b41d14a7fca17796fca9c3b177",
-      "bytes": 54741
+      "hash": "20b9f143f0156d845ab347ab25a9ec1a",
+      "bytes": 54827
     },
     {
       "file": "/services/web-design-development/index.html",
-      "hash": "670b3b7952d8524362667b12e71a0272",
-      "bytes": 66213
+      "hash": "6bb4b08024002e30bfbf9640aa9578ae",
+      "bytes": 66286
     },
     {
       "file": "/services/web-design/index.html",
-      "hash": "f7268e664d6885eff72ab12ade5698ab",
-      "bytes": 66141
+      "hash": "2bd2a8b4e02ee16ada6f8ebe01cffddc",
+      "bytes": 66214
     },
     {
       "file": "/sitemap/index.html",
-      "hash": "4b5ba74d930031d862f5dec8a28fd47a",
-      "bytes": 53474
+      "hash": "96cf767ba946d1ae1f610186ee7d9231",
+      "bytes": 53535
     },
     {
       "file": "/templates/index.html",
-      "hash": "7b3cb107f84f857c2c6443135c66bb93",
-      "bytes": 42135
+      "hash": "745496d940825523071a2dfba928c30f",
+      "bytes": 42198
     },
     {
       "file": "/terms/index.html",
-      "hash": "9b39538c1f137959814a6a8b1ef0337d",
-      "bytes": 82573
+      "hash": "3c5570418e0a8e5d4d121851e36f4363",
+      "bytes": 82632
     },
     {
       "file": "/cookie-policy/index.html",
-      "hash": "30f221186a944e02b4893e65e9c719fd",
-      "bytes": 4730
+      "hash": "ab4c734d0cde7e243364bd1b999d4521",
+      "bytes": 4797
+    },
+    {
+      "file": "/_next/static/chunks/app/care/page-249182b8083838e7.js",
+      "hash": "2ba3932f702fd840029558a3844c15f0",
+      "bytes": 6385
+    },
+    {
+      "file": "/care/index.txt",
+      "hash": "65697d3bceb8d7f904964815bae1b2a3",
+      "bytes": 3591
+    },
+    {
+      "file": "/sitemap.xml",
+      "hash": "3d084afe7cbf7b5065db3ec5b04852f8",
+      "bytes": 1533
     }
   ],
   "database_migrations_applied": [],
@@ -308,8 +323,8 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-18-centred-cookie-choice",
-  "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
+  "artifact_directory": "production/releases/2026-11-18-public-indexing",
+  "backend_bundle_sha256": "4de38613fbb30865b6c7afc39b4eb13c62a4ac172d63200fb9fa3f2b2868aa37",
   "activated_on": "2026-11-18",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
@@ -462,6 +477,50 @@
     "cookie_popup_centred": true,
     "cookie_popup_close_and_save_remove_all_floating_ui": true,
     "cookie_footer_reopen": true,
-    "cookie_mobile_320x568_footer_fit": true
+    "cookie_mobile_320x568_footer_fit": true,
+    "public_canonical_urls_verified": 24,
+    "canonical_http_headers_verified": true,
+    "duplicate_service_redirects_verified": 3,
+    "sitemap_only_canonical_public_urls": true,
+    "care_ssr_and_hydration_verified": true,
+    "care_no_javascript_and_delayed_api_verified": true,
+    "explicit_and_unknown_error_pages_return_404": true,
+    "search_console_validation_not_performed": true,
+    "google_indexing_not_guaranteed": true
+  },
+  "seo_release": {
+    "assets": [
+      "/_next/static/chunks/app/care/page-249182b8083838e7.js",
+      "/care/index.html",
+      "/care/index.txt",
+      "/index.html",
+      "/about/index.html",
+      "/services/index.html",
+      "/domains/index.html",
+      "/projects/index.html",
+      "/templates/index.html",
+      "/faq/index.html",
+      "/contact/index.html",
+      "/company/index.html",
+      "/documents/index.html",
+      "/privacy/index.html",
+      "/terms/index.html",
+      "/sitemap/index.html",
+      "/cookie-policy/index.html",
+      "/services/web-design/index.html",
+      "/services/software-development/index.html",
+      "/services/ai-automation/index.html",
+      "/services/graphic-design/index.html",
+      "/services/domains-hosting/index.html",
+      "/services/api-integrations/index.html",
+      "/services/app-development/index.html",
+      "/services/business-email/index.html",
+      "/services/video-advert-production/index.html",
+      "/services/web-design-development/index.html",
+      "/services/graphic-design-branding/index.html",
+      "/services/domain-hosting/index.html",
+      "/sitemap.xml"
+    ],
+    "care_chunk": "/_next/static/chunks/app/care/page-249182b8083838e7.js"
   }
 }
