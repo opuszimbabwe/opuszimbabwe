@@ -10,7 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 ACCOUNT = 'bfdd1ae2b409f941958f78ea99348c2e'
 PROJECT = 'opuszimbabwe'
 DATABASE = '885cb934-939a-4080-a48f-40901a111cc2'
-BASELINE = '3c8c980b-d2a3-4781-a3fa-83cf00044fc9'
+BASELINE = 'dbf8baa3-9777-4a71-8275-dd0b9edd1644'
 API = 'https://api.cloudflare.com/client/v4'
 PREFIX = f'/accounts/{ACCOUNT}/pages/projects/{PROJECT}'
 RELEASE = pathlib.Path('/tmp/opus-pay-release')
@@ -64,7 +64,10 @@ def main():
     changed={x['file'] for x in changes['changes']}
     assert changes['baseline_deployment']==BASELINE
     assert {changes['checkout_chunk'],changes['checkout_css'],'/payments/index.html','/payments/index.txt'}.issubset(changed)
-    assert all(name in {'/payments/index.html','/payments/index.txt',changes['checkout_chunk'],changes['checkout_css'],'/fonts/OFL.txt'} or name.startswith(('/images/opus-pay/','/images/payments/','/fonts/poppins-latin-')) for name in changed),'Only checkout assets may change'
+    consent=changes.get('shared_cookie_consent')
+    consent_html=set(consent.get('public_html',[])) if consent else set()
+    assert consent_html.issubset(original) and all(name.endswith('.html') and not name.startswith(('/admin/','/sysadmin/')) for name in consent_html),'Consent additions must target public HTML only'
+    assert all(name in {'/payments/index.html','/payments/index.txt',changes['checkout_chunk'],changes['checkout_css'],'/fonts/OFL.txt'} or name.startswith(('/images/opus-pay/','/images/payments/','/fonts/poppins-latin-')) or (consent and (name in consent_html or name=='/cookie-policy/index.html' or name.startswith('/shared-privacy/consent-'))) for name in changed),'Only checkout and explicitly reviewed shared-consent assets may change'
     columns=api(f'/accounts/{ACCOUNT}/d1/database/{DATABASE}/query',{'sql':'PRAGMA table_info(customer_payments)'})[0]['results']
     assert {'gateway_provider','gateway_poll_url','care_order_id'}.issubset({c['name'] for c in columns}),'Existing production payment schema is incomplete'
     assert all(manifest[f]==h for f,h in original.items() if f not in changed)
@@ -81,7 +84,7 @@ def main():
         candidate=(RELEASE/'assets'/filename.lstrip('/')) if filename in changed else (ROOT/'production/pages-assets'/filename.lstrip('/'))
         assert candidate.is_file(),f'Original asset hash no longer available: {filename}'
         files[digest]=(filename,candidate)
-    print(json.dumps({'preflight':'passed','original_assets_retained':len(original),'checkout_only_changes':len(changed),'assets_to_upload':len(files),'secret_values_exported':False,'supporting_workers_unchanged':True}),flush=True)
+    print(json.dumps({'preflight':'passed','original_assets_retained':len(original),'frontend_changes':len(changed),'shared_cookie_choice':bool(consent),'assets_to_upload':len(files),'secret_values_exported':False,'supporting_workers_unchanged':True}),flush=True)
     if not (args.preview or args.activate):return
     assert not subprocess.check_output(['git','status','--porcelain'],cwd=ROOT).strip(),'Commit all release changes first'
     commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
@@ -113,7 +116,7 @@ def main():
     }
     body,content_type=multipart(fields)
     result=api(PREFIX+'/deployments',body,'POST',content_type=content_type)
-    safe={'deployment_id':result['id'],'url':result['url'],'environment':result['environment'],'commit':commit,'baseline':BASELINE,'checkout_changes':changes['changes'],'database_migrations_applied':['0028_direct_wallet_checkout.sql'] if args.apply_wallet_migration else []}
+    safe={'deployment_id':result['id'],'url':result['url'],'environment':result['environment'],'commit':commit,'baseline':BASELINE,'checkout_changes':changes['changes'],'database_migrations_applied':['0028_direct_wallet_checkout.sql'] if args.apply_wallet_migration else [],'shared_cookie_consent':consent}
     pathlib.Path(args.output).write_text(json.dumps(safe,indent=2)+'\n')
     print(json.dumps(safe),flush=True)
 

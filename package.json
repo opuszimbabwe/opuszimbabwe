@@ -29,7 +29,8 @@
     "test:checkout:first-paint": "node scripts/test-opus-pay-first-paint.cjs",
     "test:wallets": "node scripts/test-direct-wallets.cjs",
     "test:checkout:keyboard": "node scripts/test-opus-pay-keyboard.cjs",
-    "test:checkout:notifications": "node scripts/test-opus-pay-notifications.cjs"
+    "test:checkout:notifications": "node scripts/test-opus-pay-notifications.cjs",
+    "test:shared-cookie-choice": "node scripts/test-shared-cookie-choice.cjs"
   },
   "dependencies": {
     "@block65/webcrypto-web-push": "^2.0.0",

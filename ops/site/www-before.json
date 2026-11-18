@@ -1,0 +1,10 @@
+{
+  "routes": [
+    {
+      "id": "b2ab06edab7a420790e5b46da8c0e1ce",
+      "pattern": "opuszim.co.zw/*",
+      "script": "opus-content-first-paint",
+      "request_limit_fail_open": false
+    }
+  ]
+}

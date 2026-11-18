@@ -25,3 +25,9 @@
 - The Opus Pay checkout release uses `ops/activation/OPUS-PAY.md`. It preserves
   the existing frontend outside checkout, uses only the explicit additive 0028 wallet migration when activating direct wallet flows, and
   leaves the four supporting Workers and automatic deployment protection intact.
+
+- A shared-cookie-choice release may add the versioned shared preference script
+  to public HTML and a factual /cookie-policy/ notice. Keep existing page bodies,
+  protected admin HTML, payment storage and backend modules unchanged. The
+  dedicated opus-www-redirect Worker is scoped only to www.opuszim.co.zw/*;
+  it does not replace any of the four preserved supporting Workers.

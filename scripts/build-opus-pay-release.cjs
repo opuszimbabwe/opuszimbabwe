@@ -28,7 +28,10 @@ async function main(){
  const publicFiles=['images/logo-full.png','images/ecocash-logo.png',...fs.readdirSync(path.join(root,'public/images/opus-pay')).map(f=>'images/opus-pay/'+f),...['zimswitch.png','innbucks.png','omari.webp','onemoney.png','telecash.png'].map(f=>'images/payments/'+f),...fs.readdirSync(path.join(root,'public/fonts')).map(f=>'fonts/'+f)];
  for(const file of publicFiles){const bytes=fs.readFileSync(path.join(root,'public',file)),url='/'+file;if(manifest[url]!==hash(bytes,url))save(url,bytes)}
  for(const [file,digest] of Object.entries(original))if(!changes.some(c=>c.file===file)&&manifest[file]!==digest)throw Error('Unexpected non-checkout asset change');
- const metadata={baseline_deployment:JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json'))).deployment_id,checkout_chunk:newChunk,checkout_css:cssPath,changes,original_asset_paths_retained:Object.keys(original).length,protected_admin_assets_reused:true};
+ const current=JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json')));
+ const consentEnabled=process.argv.includes('--shared-cookie-choice')||current.validation?.shared_cookie_choice===true;
+ const sharedConsent=consentEnabled?require('./shared-cookie-assets.cjs')({root,out,original,changes,save}):undefined;
+ const metadata={shared_cookie_consent:sharedConsent,baseline_deployment:JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json'))).deployment_id,checkout_chunk:newChunk,checkout_css:cssPath,changes,original_asset_paths_retained:Object.keys(original).length,protected_admin_assets_reused:true};
  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest));fs.writeFileSync(path.join(out,'changes.json'),JSON.stringify(metadata,null,2));console.log(JSON.stringify({directory:out,assets:Object.keys(manifest).length,changes:changes.map(c=>c.file)}));
 }
 main().catch(e=>{console.error(e);process.exitCode=1});
