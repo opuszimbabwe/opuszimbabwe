@@ -1,0 +1,9 @@
+{
+  "origin": "https://opuszim.co.zw",
+  "routes": ["/", "/about/", "/services/", "/domains/", "/care/", "/projects/", "/templates/", "/faq/", "/contact/", "/company/", "/documents/", "/privacy/", "/terms/", "/sitemap/", "/cookie-policy/", "/services/web-design/", "/services/software-development/", "/services/ai-automation/", "/services/graphic-design/", "/services/domains-hosting/", "/services/api-integrations/", "/services/app-development/", "/services/business-email/", "/services/video-advert-production/"],
+  "aliases": {
+    "/services/web-design-development/": "/services/web-design/",
+    "/services/graphic-design-branding/": "/services/graphic-design/",
+    "/services/domain-hosting/": "/services/domains-hosting/"
+  }
+}

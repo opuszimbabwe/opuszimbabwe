@@ -1,5 +1,6 @@
 import type { PagesContext } from './_lib/types';
 import { requireAdmin } from './_lib/auth';
+import { publicRedirect, publicMetadata } from './_lib/site-seo';
 
 function noStore(response: Response) {
   const headers = new Headers(response.headers);
@@ -27,7 +28,9 @@ export const onRequest = async (context: PagesContext & { next: () => Promise<Re
     if (auth instanceof Response) return noStore(new Response('Authentication required.', { status: 401, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
   }
   if (url.hostname === 'payments.opuszim.co.zw' && path === '/') return noStore(Response.redirect(new URL('/payments/', url).href, 302));
-  let response = await context.next();
+  const redirect = publicRedirect(context.request);
+  if (redirect) return redirect;
+  let response = publicMetadata(context.request, await context.next());
   if (/^\/payments(?:\/|$)/.test(path)) {
     const headers = new Headers(response.headers);
     headers.set('referrer-policy', 'no-referrer');

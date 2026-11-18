@@ -94,3 +94,30 @@ Cookie notifications are centred in the visible viewport. Saving or closing remo
 the complete floating UI, including any confirmation/tab. Cookie preferences can
 be reopened from a normal footer button. Closing alone does not write a consent
 choice; saving still preserves the existing shared 180-day preference.
+
+## Public indexing repair
+
+`seo-routes.json` defines the canonical public URLs and three duplicate service
+aliases. `scripts/build-seo-release.cjs` starts from the active release, patches
+only canonical head links, the sitemap and the preserved Care module's empty
+initial render. The Care fallback uses the existing headline and description,
+without cached prices; normal API-loaded plans replace it. No legacy rebuild.
+The middleware adds public-document HTTP canonicals, preserves query strings on
+alias redirects and returns 404 for explicit 404 documents. Unknown URLs remain
+404. API, private pages and payment metadata retain their previous behavior.
+
+Run `node scripts/test-site-seo.cjs`, `node scripts/test-seo-release.cjs`,
+`npm run typecheck`, and `npm run test:reconstructed` before the read-only
+`CLOUDFLARE_API_TOKEN=$CF_TOKEN_INFO_OPUSZIM python3 ops/site/deploy-seo.py`
+preflight. `--activate` publishes only a clean, pushed, reviewed snapshot.
+The four supporting Workers and the www redirect stay unchanged. Future checkout
+builds apply the same SEO transform after their existing consent injection.
+
+The supplied Search Console coverage ZIP has chart/totals only, no example URLs.
+It records 25 non-indexed and 3 indexed pages through 13 November 2026. It cannot
+identify the specific 5xx, soft-404, missing or intentionally excluded URLs.
+The current sitemap's 21 original URLs all returned 200 before this repair.
+Google's indexing decision, Search Console validation and submission status need
+an authenticated Search Console session; none is available to this runtime.
+Keep checkout, receipts, admin and API exclusions; do not remove all noindex or
+robots directives to make coverage counts look smaller. No indexing guarantee.

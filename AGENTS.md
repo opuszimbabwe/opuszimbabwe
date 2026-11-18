@@ -31,3 +31,8 @@
   protected admin HTML, payment storage and backend modules unchanged. The
   dedicated opus-www-redirect Worker is scoped only to www.opuszim.co.zw/*;
   it does not replace any of the four preserved supporting Workers.
+
+- The reviewed SEO repair uses `ops/site/deploy-seo.py` and `seo-routes.json`.
+  Preserve the active snapshot; allow only canonical public metadata, sitemap,
+  three service aliases, correct 404 status and the preserved Care component
+  fallback. Keep private/checkout exclusions and all supporting Workers intact.

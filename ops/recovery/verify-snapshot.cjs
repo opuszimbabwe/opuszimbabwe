@@ -40,7 +40,9 @@ if(fs.existsSync(currentPath)){
  for(const item of current.checkout_changes){const bytes=fs.readFileSync(path.join(folder,'assets',item.file));assert.equal(bytes.length,item.bytes);assert.equal(blake3.hash(bytes.toString('base64')+path.extname(item.file).slice(1)).toString('hex').slice(0,32),manifest[item.file]);}
  assert.equal(changed.size,current.checkout_changes.length,'Duplicate release artifact paths');
  assert.ok(changed.size>=4);
- for(const file of changed)assert.ok((current.shared_cookie_consent?.public_html||[]).includes(file)||file==='/cookie-policy/index.html'||file.startsWith('/shared-privacy/consent-')||/^\/payments\/index\.(html|txt)$|^\/_next\/static\/(chunks\/app\/payments\/|css\/opus-pay-)|^\/images\/(payments|opus-pay)\/|^\/fonts\/(poppins-latin-|OFL\.txt$)/.test(file),'Non-checkout release artifact: '+file);
+ const seoConfig=read('ops/site/seo-routes.json');
+ const seoFiles=new Set([...seoConfig.routes,...Object.keys(seoConfig.aliases)].map(r=>r==='/'?'/index.html':r+'index.html').concat(['/sitemap.xml','/care/index.txt']));
+ for(const file of changed)assert.ok((current.seo_release&&(seoFiles.has(file)||/^\/_next\/static\/chunks\/app\/care\/page-[a-f0-9]+\.js$/.test(file)))||(current.shared_cookie_consent?.public_html||[]).includes(file)||file==='/cookie-policy/index.html'||file.startsWith('/shared-privacy/consent-')||/^\/payments\/index\.(html|txt)$|^\/_next\/static\/(chunks\/app\/payments\/|css\/opus-pay-)|^\/images\/(payments|opus-pay)\/|^\/fonts\/(poppins-latin-|OFL\.txt$)/.test(file),'Non-checkout release artifact: '+file);
  assert.equal(current.automatic_github_next_deployment_enabled,false);
  console.log('Verified current release bundle, '+changed.size+' checkout artifacts and preserved baseline asset hashes.');
 }

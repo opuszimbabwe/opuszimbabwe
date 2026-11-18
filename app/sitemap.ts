@@ -1,23 +1,7 @@
 import type { MetadataRoute } from 'next'
+import routes from '../ops/site/seo-routes.json'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://opuszim.co.zw'
-  return [
-    '',
-    '/services',
-    '/domains',
-    '/care',
-    '/projects',
-    '/faq',
-    '/contact',
-    '/privacy',
-    '/terms',
-    '/sitemap',
-    '/services/web-design',
-    '/services/software-development',
-    '/services/ai-automation',
-    '/services/graphic-design',
-    '/services/domains-hosting',
-    '/services/api-integrations',
-  ].map((path) => ({ url: base + path, lastModified: new Date() }))
+  // Do not invent modification dates on every build.
+  return routes.routes.map(path => ({ url: routes.origin + path }))
 }

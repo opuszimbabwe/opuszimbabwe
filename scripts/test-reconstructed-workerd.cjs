@@ -3,8 +3,11 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
 const {createHmac,createHash}=require('node:crypto');
 const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
 (async()=>{
- const mf=new Miniflare(convertV4MiniflareOptions({modules:true,modulesRoot:'/tmp/opus-reconstructed-pages-runtime',scriptPath:'/tmp/opus-reconstructed-pages-runtime/entry.js',compatibilityDate:'2026-09-01',compatibilityFlags:['nodejs_compat'],d1Databases:['DB'],r2Buckets:['MEDIA'],bindings:{ALLOWED_ADMINS:'admin@example.test',WHATSAPP_APP_SECRET:'runtime-fixture-secret',WHATSAPP_PHONE_NUMBER_ID:'123456789012345',WHATSAPP_VERIFY_TOKEN:'runtime-verify',PAYNOW_INTEGRATION_KEY:'runtime-paynow'},serviceBindings:{ASSETS:()=>new Response('Fixture public asset')},outboundService:()=>{throw Error('External requests are forbidden in this runtime test')}}));
+ const mf=new Miniflare(convertV4MiniflareOptions({modules:true,modulesRoot:'/tmp/opus-reconstructed-pages-runtime',scriptPath:'/tmp/opus-reconstructed-pages-runtime/entry.js',compatibilityDate:'2026-09-01',compatibilityFlags:['nodejs_compat'],d1Databases:['DB'],r2Buckets:['MEDIA'],bindings:{ALLOWED_ADMINS:'admin@example.test',WHATSAPP_APP_SECRET:'runtime-fixture-secret',WHATSAPP_PHONE_NUMBER_ID:'123456789012345',WHATSAPP_VERIFY_TOKEN:'runtime-verify',PAYNOW_INTEGRATION_KEY:'runtime-paynow'},serviceBindings:{ASSETS:()=>new Response('Fixture public asset',{headers:{'content-type':'text/html'}})},outboundService:()=>{throw Error('External requests are forbidden in this runtime test')}}));
  try{
+  let seoResponse=await mf.dispatchFetch('https://opuszim.co.zw/services/web-design-development/?keep=1',{redirect:'manual'});assert.equal(seoResponse.status,308);assert.equal(seoResponse.headers.get('location'),'https://opuszim.co.zw/services/web-design/?keep=1');
+  seoResponse=await mf.dispatchFetch('https://opuszim.co.zw/care/');assert.equal(seoResponse.headers.get('link'),'<https://opuszim.co.zw/care/>; rel="canonical"');
+  seoResponse=await mf.dispatchFetch('https://opuszim.co.zw/404/');assert.equal(seoResponse.status,404);
   const db=await mf.getD1Database('DB');const schema=JSON.parse(fs.readFileSync('production/state/database-schema.json'));
   for(const row of [...schema.filter(x=>x.type==='table'),...schema.filter(x=>x.type!=='table')].filter(x=>!x.name.startsWith('_cf_')&&x.name!=='d1_migrations'))await db.prepare(row.sql).run();
   const migration=fs.readFileSync('migrations/0027_reconstructed_pages_features.sql','utf8').replace(/^--.*$/gm,'');

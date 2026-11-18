@@ -31,7 +31,13 @@ async function main(){
  const current=JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json')));
  const consentEnabled=process.argv.includes('--shared-cookie-choice')||current.validation?.shared_cookie_choice===true;
  const sharedConsent=consentEnabled?require('./shared-cookie-assets.cjs')({root,out,original,changes,save}):undefined;
- const metadata={shared_cookie_consent:sharedConsent,baseline_deployment:JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json'))).deployment_id,checkout_chunk:newChunk,checkout_css:cssPath,changes,original_asset_paths_retained:Object.keys(original).length,protected_admin_assets_reused:true};
+ let seoRelease;
+ if(current.seo_release){
+  const seoAssets=[];const saveSeo=(file,bytes)=>{const index=changes.findIndex(c=>c.file===file);if(index>=0)changes.splice(index,1);save(file,Buffer.from(bytes));seoAssets.push(file)};
+  const readSeo=file=>fs.readFileSync(fs.existsSync(path.join(out,'assets',file))?path.join(out,'assets',file):path.join(root,'production/pages-assets',file),'utf8');
+  seoRelease={...require('./seo-assets.cjs')({read:readSeo,save:saveSeo}),assets:seoAssets};
+ }
+ const metadata={seo_release:seoRelease,shared_cookie_consent:sharedConsent,baseline_deployment:JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json'))).deployment_id,checkout_chunk:newChunk,checkout_css:cssPath,changes,original_asset_paths_retained:Object.keys(original).length,protected_admin_assets_reused:true};
  fs.writeFileSync(path.join(out,'manifest.json'),JSON.stringify(manifest));fs.writeFileSync(path.join(out,'changes.json'),JSON.stringify(metadata,null,2));console.log(JSON.stringify({directory:out,assets:Object.keys(manifest).length,changes:changes.map(c=>c.file)}));
 }
 main().catch(e=>{console.error(e);process.exitCode=1});
