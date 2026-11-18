@@ -1,0 +1,20 @@
+{
+  "www_checks": [
+    {
+      "url": "http://www.opuszim.co.zw/",
+      "status": 308,
+      "location": "https://opuszim.co.zw/"
+    },
+    {
+      "url": "https://www.opuszim.co.zw/",
+      "status": 308,
+      "location": "https://opuszim.co.zw/"
+    },
+    {
+      "url": "https://www.opuszim.co.zw/contact/?from=www",
+      "status": 308,
+      "location": "https://opuszim.co.zw/contact/?from=www"
+    }
+  ],
+  "followed_homepage": 200
+}

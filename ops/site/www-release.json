@@ -1,0 +1,30 @@
+{
+  "active_deployments": [
+    {
+      "id": "5ef556b7-0354-4566-a021-d5c49bfb4104",
+      "source": "api",
+      "strategy": "percentage",
+      "annotations": {
+        "workers/message": "Automatic deployment on upload.",
+        "workers/triggered_by": "upload"
+      },
+      "versions": [
+        {
+          "version_id": "d0958bf1-0222-46dd-be2c-3868a488b521",
+          "percentage": 100
+        }
+      ],
+      "created_on": "2026-11-18T06:54:44.609579Z"
+    }
+  ],
+  "worker": "opus-www-redirect",
+  "route": {
+    "id": "9630c96857664a32a8cc76e83415dec5",
+    "pattern": "www.opuszim.co.zw/*",
+    "script": "opus-www-redirect",
+    "request_limit_fail_open": false
+  },
+  "source_sha256": "6f1273ea237140c8c5e4391b0cb82aec5769cbe0097cc991ec02ac6eccbbcf91",
+  "existing_routes_preserved": true,
+  "dns_records_changed": false
+}
