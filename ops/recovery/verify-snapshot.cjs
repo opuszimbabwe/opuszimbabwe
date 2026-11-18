@@ -35,6 +35,7 @@ if(fs.existsSync(currentPath)){
  assert.equal(sha(fs.readFileSync(path.join(folder,'pages-worker.bundle'))),current.backend_bundle_sha256);
  const changed=new Set(current.checkout_changes.map(item=>item.file));
  const baseline=read('production/state/pages-asset-manifest.json');
+ for(const file of ['/admin/index.html','/admin/index.txt','/sysadmin/index.html','/sysadmin/index.txt'])assert.equal(manifest[file],baseline[file],'Protected admin hash: '+file);
  for(const [file,hash] of Object.entries(baseline))if(!changed.has(file))assert.equal(manifest[file],hash,file);
  for(const item of current.checkout_changes){const bytes=fs.readFileSync(path.join(folder,'assets',item.file));assert.equal(bytes.length,item.bytes);assert.equal(blake3.hash(bytes.toString('base64')+path.extname(item.file).slice(1)).toString('hex').slice(0,32),manifest[item.file]);}
  assert.equal(changed.size,current.checkout_changes.length,'Duplicate release artifact paths');
