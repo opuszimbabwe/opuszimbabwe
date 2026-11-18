@@ -1,0 +1,463 @@
+{
+  "deployment_id": "4b2b7b2c-72fd-444f-a495-6df0efb9618b",
+  "url": "https://4b2b7b2c.opuszimbabwe.pages.dev",
+  "environment": "production",
+  "commit": "0b029381349bb6b5d3fdb1ca1d8df6b8e46913c5",
+  "baseline": "dbf8baa3-9777-4a71-8275-dd0b9edd1644",
+  "checkout_changes": [
+    {
+      "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
+      "hash": "578696e0225635fa80531fdcbce4a202",
+      "bytes": 158334
+    },
+    {
+      "file": "/_next/static/css/opus-pay-c1090d39ba0ef678.css",
+      "hash": "156a682ae5558ff926a7ce524cfb17ba",
+      "bytes": 79195
+    },
+    {
+      "file": "/payments/index.txt",
+      "hash": "04b0d17cbd7bbda31c387f3e7e8cb74c",
+      "bytes": 3557
+    },
+    {
+      "file": "/images/opus-pay/mastercard.svg",
+      "hash": "4cee170f482b1a50ed775caa367da336",
+      "bytes": 8246
+    },
+    {
+      "file": "/images/opus-pay/official-logo-transparent.png",
+      "hash": "f8825b9e22ec8894f013d26965f5afc4",
+      "bytes": 344210
+    },
+    {
+      "file": "/images/opus-pay/official-logo.jpg",
+      "hash": "788e75d478ecc57c692598750583d167",
+      "bytes": 803731
+    },
+    {
+      "file": "/images/opus-pay/pos2u-4k.png",
+      "hash": "ba1ea41d2668225fe7188cecb7a40e69",
+      "bytes": 132395
+    },
+    {
+      "file": "/images/opus-pay/pos2u.svg",
+      "hash": "0cc8a6a6106a079addb6abd81f9f698f",
+      "bytes": 2120
+    },
+    {
+      "file": "/images/opus-pay/social-preview.png",
+      "hash": "80fb209a942218d3cedcc7af5b7ac78f",
+      "bytes": 40336
+    },
+    {
+      "file": "/images/opus-pay/visa.svg",
+      "hash": "41656b7c620f1671bc87f4f4785cb105",
+      "bytes": 808
+    },
+    {
+      "file": "/images/payments/onemoney.png",
+      "hash": "d265c791b8fcccba035680bc73148e66",
+      "bytes": 37844
+    },
+    {
+      "file": "/fonts/OFL.txt",
+      "hash": "d44bf0fc587c866807beec33d3cada05",
+      "bytes": 6175
+    },
+    {
+      "file": "/fonts/poppins-latin-400-normal.woff2",
+      "hash": "9cc0158c2f34a9bbf8afb6f59f1b7194",
+      "bytes": 7884
+    },
+    {
+      "file": "/fonts/poppins-latin-500-normal.woff2",
+      "hash": "bb17e458d195348d2c89141f6363e4fe",
+      "bytes": 7748
+    },
+    {
+      "file": "/fonts/poppins-latin-600-normal.woff2",
+      "hash": "c993c65c430077ccae90b3e7e5eb4f62",
+      "bytes": 8000
+    },
+    {
+      "file": "/fonts/poppins-latin-700-normal.woff2",
+      "hash": "91ec2edb63365377f289207a97941dea",
+      "bytes": 7816
+    },
+    {
+      "file": "/shared-privacy/consent-fd91fb85f8fd6167.js",
+      "hash": "a680aa9768e2d788169a4a5b49331494",
+      "bytes": 5556
+    },
+    {
+      "file": "/404.html",
+      "hash": "53fda7efcfdbf6e0bf23175b0a648cd7",
+      "bytes": 37782
+    },
+    {
+      "file": "/404/index.html",
+      "hash": "53fda7efcfdbf6e0bf23175b0a648cd7",
+      "bytes": 37782
+    },
+    {
+      "file": "/about/index.html",
+      "hash": "39960893235379a039c56f36efdcac22",
+      "bytes": 38267
+    },
+    {
+      "file": "/care/index.html",
+      "hash": "215d2d5359cb0b04e72d9a50e4b63ece",
+      "bytes": 35863
+    },
+    {
+      "file": "/company/index.html",
+      "hash": "2410669b89c59cba536d06ce1dbc4cb4",
+      "bytes": 40701
+    },
+    {
+      "file": "/contact/index.html",
+      "hash": "968e5320ea66eb334bc1e6f79ef23ef5",
+      "bytes": 46053
+    },
+    {
+      "file": "/documents/index.html",
+      "hash": "85da380b7f1177d458856e38021d8772",
+      "bytes": 39439
+    },
+    {
+      "file": "/documents/website-brief/index.html",
+      "hash": "cb9f11c71687b8c1ad3b2d4374800848",
+      "bytes": 40270
+    },
+    {
+      "file": "/domains/index.html",
+      "hash": "5e6ca4e64a264db7e7c65eda1e7fe655",
+      "bytes": 53213
+    },
+    {
+      "file": "/domains/register/index.html",
+      "hash": "b581161a684f0ca9aadfcc1082cd45ad",
+      "bytes": 36994
+    },
+    {
+      "file": "/faq/index.html",
+      "hash": "2f94c1d349ae5672d422b844ba4313a6",
+      "bytes": 51328
+    },
+    {
+      "file": "/index.html",
+      "hash": "b1260e4b42a8e366b1933191eaded54e",
+      "bytes": 86700
+    },
+    {
+      "file": "/loaners/index.html",
+      "hash": "a227fbf065cb3f2c20142f6a2d6f450f",
+      "bytes": 40160
+    },
+    {
+      "file": "/payments/index.html",
+      "hash": "d2fba0daea8c23ef3afdf39cb8d7b487",
+      "bytes": 109626
+    },
+    {
+      "file": "/payments/receipt/index.html",
+      "hash": "9c920a12f50028ebf74d45e9b68d6849",
+      "bytes": 7418
+    },
+    {
+      "file": "/privacy/index.html",
+      "hash": "a71a6e61ca45959af4ed10a8f62c09b3",
+      "bytes": 91458
+    },
+    {
+      "file": "/projects/index.html",
+      "hash": "d450ac2fddb85a081ee9b4c87cc65707",
+      "bytes": 46626
+    },
+    {
+      "file": "/services/ai-automation/index.html",
+      "hash": "f4c7a3103433d3b20bc9ad1d1868e1b1",
+      "bytes": 55787
+    },
+    {
+      "file": "/services/api-integrations/index.html",
+      "hash": "821045874bfd3f240496ee6ad0a63607",
+      "bytes": 58817
+    },
+    {
+      "file": "/services/app-development/index.html",
+      "hash": "5316c3470a11d4cac24bb243e689520c",
+      "bytes": 54443
+    },
+    {
+      "file": "/services/business-email/index.html",
+      "hash": "2b6ce2b3d0742f91122067e4d278a1dd",
+      "bytes": 46604
+    },
+    {
+      "file": "/services/domain-hosting/index.html",
+      "hash": "21cb4ccaca7e2abf39d7d2231fb60cbc",
+      "bytes": 63104
+    },
+    {
+      "file": "/services/domains-hosting/index.html",
+      "hash": "da4bb73479e8016215b134bf7845e9a0",
+      "bytes": 63110
+    },
+    {
+      "file": "/services/graphic-design-branding/index.html",
+      "hash": "c838d1e506b17e8890c8024373689038",
+      "bytes": 46285
+    },
+    {
+      "file": "/services/graphic-design/index.html",
+      "hash": "8eb7e0d7e5e447411137b81d39dae8b1",
+      "bytes": 46231
+    },
+    {
+      "file": "/services/index.html",
+      "hash": "f2dc0d9bac4a32de8363cb0c00762bd3",
+      "bytes": 64270
+    },
+    {
+      "file": "/services/software-development/index.html",
+      "hash": "6a88b713dcd64c1f0d81818d68cdbca0",
+      "bytes": 59806
+    },
+    {
+      "file": "/services/software-systems/index.html",
+      "hash": "5fa60706e0e2f6987c547d3683b55ad9",
+      "bytes": 59782
+    },
+    {
+      "file": "/services/video-advert-production/index.html",
+      "hash": "3f1c6ea376906c31ad248866cc447bec",
+      "bytes": 54741
+    },
+    {
+      "file": "/services/web-design-development/index.html",
+      "hash": "05b0fd3db0bd895f32e8abb4b3d1dfbe",
+      "bytes": 66213
+    },
+    {
+      "file": "/services/web-design/index.html",
+      "hash": "43b102aefe3d89afbb166390c58ce7a3",
+      "bytes": 66141
+    },
+    {
+      "file": "/sitemap/index.html",
+      "hash": "825dbf35a4f590b8029699b778a4b9cb",
+      "bytes": 53474
+    },
+    {
+      "file": "/templates/index.html",
+      "hash": "7449e2d877fb768ea135c64d95c18844",
+      "bytes": 42135
+    },
+    {
+      "file": "/terms/index.html",
+      "hash": "69fd62af56de957a2b431932a51d353e",
+      "bytes": 82573
+    },
+    {
+      "file": "/cookie-policy/index.html",
+      "hash": "cd3133cd2a23b0f59d2ab17fc0baa7df",
+      "bytes": 4635
+    }
+  ],
+  "database_migrations_applied": [],
+  "shared_cookie_consent": {
+    "script": "/shared-privacy/consent-fd91fb85f8fd6167.js",
+    "public_html": [
+      "/404.html",
+      "/404/index.html",
+      "/about/index.html",
+      "/care/index.html",
+      "/company/index.html",
+      "/contact/index.html",
+      "/documents/index.html",
+      "/documents/website-brief/index.html",
+      "/domains/index.html",
+      "/domains/register/index.html",
+      "/faq/index.html",
+      "/index.html",
+      "/loaners/index.html",
+      "/payments/index.html",
+      "/payments/receipt/index.html",
+      "/privacy/index.html",
+      "/projects/index.html",
+      "/services/ai-automation/index.html",
+      "/services/api-integrations/index.html",
+      "/services/app-development/index.html",
+      "/services/business-email/index.html",
+      "/services/domain-hosting/index.html",
+      "/services/domains-hosting/index.html",
+      "/services/graphic-design-branding/index.html",
+      "/services/graphic-design/index.html",
+      "/services/index.html",
+      "/services/software-development/index.html",
+      "/services/software-systems/index.html",
+      "/services/video-advert-production/index.html",
+      "/services/web-design-development/index.html",
+      "/services/web-design/index.html",
+      "/sitemap/index.html",
+      "/templates/index.html",
+      "/terms/index.html"
+    ],
+    "preference_cookie": "__Secure-opus_cookie_choice",
+    "days": 180
+  },
+  "artifact_directory": "production/releases/2026-11-18-shared-cookie-choice",
+  "backend_bundle_sha256": "e4ea631af4c63b3b0f5265780e4629e9c43809320261438854abd82d4f62559b",
+  "activated_on": "2026-11-17",
+  "automatic_github_next_deployment_enabled": false,
+  "original_functions_source_recovered": false,
+  "validation": {
+    "typecheck": true,
+    "preserved_runtime_browser": true,
+    "selector_viewport_sizes_tested": 13,
+    "details_viewport_sizes_tested": 11,
+    "only_required_fields_visible": true,
+    "single_form": true,
+    "floating_captions_centered_entry": true,
+    "outlined_focus_orbit": false,
+    "local_green_validation_on_blur": true,
+    "invalid_shake_and_notification": true,
+    "two_initial_cue_loops": true,
+    "idle_restart_ms": 15000,
+    "continuous_idle_cue": true,
+    "activity_interrupts_cue": true,
+    "desktop_layered_hover": true,
+    "touch_group_switch_show_both_back": true,
+    "reduced_motion_and_data_saving_respected": true,
+    "provider_handoffs_mock_tested": true,
+    "backend_unchanged": true,
+    "supporting_workers_unchanged": true,
+    "rear_card_captions_hidden_when_layered": true,
+    "desktop_card_exit_restores_both": true,
+    "gap_does_not_activate_rear_card": true,
+    "upper_card_moves_down_px": 12,
+    "lower_card_moves_up_px": 12,
+    "stable_hover_zones": true,
+    "label_gap_outline_trace": true,
+    "outline_animation_seconds": 3.6,
+    "end_segment_magnetic_acceleration": true,
+    "input_ticks": false,
+    "green_border_px": 2,
+    "amount_phone_examples_not_values": true,
+    "reference_label_and_requirement_unchanged": true,
+    "desktop_authorisation_centred": false,
+    "config_timeout_ms": 15000,
+    "chooser_retry_recovery_cases": [
+      "http-error",
+      "invalid-json",
+      "missing-methods",
+      "invalid-method",
+      "empty-methods",
+      "timeout"
+    ],
+    "provider_image_failure_fallback_verified": false,
+    "transparent_label_real_outline_gap": true,
+    "autofill_colour_blend": true,
+    "returned_checkout_change_method": true,
+    "legacy_browser_back_method_switch": true,
+    "previous_attempt_status_links_preserved": true,
+    "previous_paid_attempt_prevents_new_request": true,
+    "invalid_previous_status_blocks_new_request": true,
+    "unknown_attempt_fingerprint_preserved": true,
+    "existing_order_linkage_guards_preserved": true,
+    "method_switch_does_not_cancel_gateway_request": true,
+    "live_checkout_artifacts_verified": 17,
+    "live_public_config_method_count": 9,
+    "direct_wallets_mock_tested": [
+      "innbucks",
+      "omari",
+      "onemoney"
+    ],
+    "cancelled_pin_provider_status_verified": true,
+    "unknown_status_does_not_imply_cancelled_or_paid": true,
+    "omari_atomic_single_submission": true,
+    "no_otp_storage": true,
+    "no_real_payments_or_sms_tested": true,
+    "inline_first_paint_artwork": true,
+    "no_javascript_blocked_images_fonts_tested": true,
+    "slow_data_saving_first_paint_tested": true,
+    "css_notch_hydration_parity": true,
+    "no_loading_footer_overlap": true,
+    "glow_free_outline_trace_and_rotation": true,
+    "wallet_form_and_approval_viewports": [
+      "1366x768",
+      "390x844",
+      "320x568",
+      "390x300"
+    ],
+    "provider_logos_survive_blocked_image_requests": true,
+    "live_public_config_direct_wallet_flows_verified": true,
+    "published_asset_hashes_match_tested_build": true,
+    "live_payment_or_sms_initiated": false,
+    "keyboard_preserves_normal_stacked_geometry": true,
+    "keyboard_submit_bottom_clearance_px": 8,
+    "keyboard_helper_copy_may_be_obscured": true,
+    "keyboard_viewport_test_cases": 16,
+    "keyboard_visual_only_resize_and_pan_tested": true,
+    "keyboard_close_restores_normal_layout": true,
+    "keyboard_otp_and_method_switch_cleanup_tested": true,
+    "notch_white_seams_removed": true,
+    "notch_visual_check_widths": [
+      390,
+      502,
+      1366
+    ],
+    "horizontal_notch_edge_removed": true,
+    "notch_fractional_offset_dpr_checks": [
+      1,
+      1.25,
+      1.5,
+      2,
+      3
+    ],
+    "reference_example_on_empty_focus": true,
+    "omari_code_example_on_empty_focus": true,
+    "examples_are_hints_not_values": true,
+    "notches_use_single_continuous_clip": true,
+    "currency_bold_rounded_chevron": true,
+    "currency_chevron_rotates_on_open": true,
+    "currency_picker_interaction_widths": [
+      1366,
+      390,
+      320
+    ],
+    "informational_messages_in_popups": true,
+    "saved_attempt_restore_from_popup": true,
+    "notification_dismiss_and_reopen": true,
+    "notice_dismiss_does_not_reset_attempt": true,
+    "notification_does_not_replay_payment": true,
+    "routine_guidance_on_demand": true,
+    "authorisation_guidance_in_popup": true,
+    "notification_test_viewports": [
+      "1366x768",
+      "390x844",
+      "320x568"
+    ],
+    "customer_business_context_not_committed": true,
+    "shared_cookie_choice": true,
+    "shared_cookie_choice_lifetime_days": 180,
+    "consent_cookie_contains_no_payment_or_authentication_data": true,
+    "consent_shared_both_directions_tested": true,
+    "consent_cookie_secure_and_samesite_lax": true,
+    "shared_choice_keyboard_clearance": true,
+    "cookie_notice_cookieless_analytics_disclosure": true,
+    "public_html_changes_only_consent_include": true,
+    "original_supporting_workers_unchanged": true,
+    "www_redirect_live_verified": true,
+    "shared_cookie_live_pages_verified": [
+      "/",
+      "/privacy/",
+      "/payments/",
+      "/cookie-policy/",
+      "/contact/"
+    ],
+    "shared_cookie_script_live_hash_verified": true
+  }
+}
