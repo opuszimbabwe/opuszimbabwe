@@ -45,3 +45,7 @@
   additive migration 0029 only. Preserve every frontend hash and supporting Worker.
   Keep diagnostics behind strict Access auth; no live test sends, secret export,
   old-message replays, or Meta account/subscription changes during deployment.
+
+- Service-reply safeguards use `ops/site/deploy-whatsapp-service-policy.py` and
+  additive migration 0030 only. Keep outside-window/template sends disabled until
+  approved templates and documented opt-in exist. No live test sends or billing changes.

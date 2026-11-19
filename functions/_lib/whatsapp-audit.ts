@@ -1,6 +1,6 @@
 import type {Env} from './types';
 import {now,CheckoutError} from './http';
-export const WA_TRACKER_VERSION='wa-tracker-20261120-1';
+export const WA_TRACKER_VERSION='wa-tracker-20261120-2';
 export interface AuditFields {id?:string;phone_number_id?:string|null;waba_id?:string;conversation_id?:string;message_id?:string;provider_message_id?:string;recipient_phone?:string;occurred_at?:string;details?:Record<string,unknown>}
 export function safeMetaText(env:Env,value:unknown,max=1200):string|null{
  if(typeof value!=='string')return null;
@@ -18,14 +18,14 @@ export function metaError(env:Env,value:any,http_status:number|null){
 }
 export async function senderState(env:Env){return env.DB.prepare('SELECT * FROM whatsapp_sender_diagnostics WHERE phone_number_id=?').bind(env.WHATSAPP_PHONE_NUMBER_ID||'').first<Record<string,any>>();}
 export async function blockSender(env:Env,code:number|null,reason:string){
- if(code!==null&&![190,131031,131048].includes(code))return;
+ if(code!==null&&![190,131031,131042,131048].includes(code))return;
  const at=now();await env.DB.batch([
   env.DB.prepare('INSERT INTO whatsapp_sender_diagnostics(phone_number_id,blocked_code,blocked_at,blocked_reason,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(phone_number_id) DO UPDATE SET blocked_code=excluded.blocked_code,blocked_at=excluded.blocked_at,blocked_reason=excluded.blocked_reason,updated_at=excluded.updated_at').bind(env.WHATSAPP_PHONE_NUMBER_ID||'',code,at,reason,at),
-  env.DB.prepare("UPDATE whatsapp_messages SET state='CANCELLED',error='Sender paused after a Meta restriction/authentication error. Review before creating a new reply.' WHERE direction='OUT' AND state='QUEUED'")
+  env.DB.prepare("UPDATE whatsapp_messages SET state='CANCELLED',error='Sender paused after a Meta restriction, authentication or billing error. Review before creating a new reply.' WHERE direction='OUT' AND state='QUEUED'")
  ]);
  await audit(env,'sender_paused',{details:{code,reason}});
 }
-export async function assertSenderReady(env:Env){const s=await senderState(env);if(s?.blocked_at)throw new CheckoutError(409,'WhatsApp sending is paused after a Meta restriction/authentication error. Review the private tracker before resuming.');}
+export async function assertSenderReady(env:Env){const s=await senderState(env);if(s?.blocked_at)throw new CheckoutError(409,'WhatsApp sending is paused after a Meta restriction, authentication or billing error. Review the private tracker before resuming.');}
 export async function originInfo(env:Env,message_id:string){const row=await env.DB.prepare("SELECT details_json FROM whatsapp_audit_events WHERE message_id=? AND event_type='message_origin' ORDER BY created_at DESC LIMIT 1").bind(message_id).first<{details_json:string}>();return row?JSON.parse(row.details_json):{origin:'legacy-or-staff',ai_provider:null,ai_model:null,triggering_inbound_id:null};}
 export async function rememberIdentity(env:Env,phone_number_id:string,data:any){
  if(data?.id!==phone_number_id)throw new CheckoutError(502,'Meta returned a different sender ID.');
@@ -44,7 +44,8 @@ export async function verifySenderIdentity(env:Env){
 export async function diagnostics(env:Env,before?:string,beforeId?:string){
  const events=(await env.DB.prepare('SELECT * FROM whatsapp_audit_events WHERE (? IS NULL OR created_at<? OR (created_at=? AND id<?)) ORDER BY created_at DESC,id DESC LIMIT 100').bind(before||null,before||null,before||null,beforeId||'').all<Record<string,any>>()).results.map(r=>({...r,details:JSON.parse(r.details_json),details_json:undefined}));
  const recent=(await env.DB.prepare("SELECT m.id,m.created_at,m.occurred_at,m.direction,m.message_type,m.body,m.state,m.error,m.attempts,m.admin_email,c.phone AS recipient_phone,EXISTS(SELECT 1 FROM whatsapp_audit_events a WHERE a.message_id=m.id AND a.event_type='send_started') AS sender_captured FROM whatsapp_messages m JOIN whatsapp_conversations c ON c.id=m.conversation_id ORDER BY m.seq DESC LIMIT 50").all()).results;
- return {tracker_version:WA_TRACKER_VERSION,configured_phone_number_id:env.WHATSAPP_PHONE_NUMBER_ID||null,sender:await senderState(env),events,recent_messages:recent,server_time:now(),historical_sender_warning:'Legacy messages do not establish the historical sender or AI model. High number quality is distinct from account restrictions.'};
+ const preferences=(await env.DB.prepare('SELECT recipient_phone,stopped,human_hold,human_requested_at,updated_at FROM whatsapp_contact_preferences ORDER BY updated_at DESC LIMIT 100').all()).results;
+ return {service_messaging_policy:{customer_service_window_hours:24,outside_window_messaging_enabled:false,approved_templates_configured:0,marketing_enabled:false},contact_preferences:preferences,tracker_version:WA_TRACKER_VERSION,configured_phone_number_id:env.WHATSAPP_PHONE_NUMBER_ID||null,sender:await senderState(env),events,recent_messages:recent,server_time:now(),historical_sender_warning:'Legacy messages do not establish the historical sender or AI model. High number quality is distinct from account restrictions.'};
 }
 export async function resumeSender(env:Env,confirmed:unknown,actor:string){
  if(confirmed!==true)throw new CheckoutError(400,'Confirm that the Meta restriction has been reviewed and resolved.');

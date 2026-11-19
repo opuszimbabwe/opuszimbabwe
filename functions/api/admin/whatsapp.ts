@@ -1,5 +1,6 @@
 import {admin,body,identifier,integer,CheckoutError,response,failure,rate} from '../../_lib/http';
 import {configured,enqueue,dispatch,type WhatsAppConversation} from '../../_lib/whatsapp';
+import {resumeContactAutomation} from '../../_lib/whatsapp-preferences';
 import {diagnostics,verifySenderIdentity,verifySenderHealth,resumeSender,audit} from '../../_lib/whatsapp-audit';
 import type {PagesHandler} from '../../_lib/types';
 export const onRequestGet:PagesHandler=async c=>{try{
@@ -20,6 +21,7 @@ export const onRequestPost:PagesHandler=async c=>{try{
  if(data.action==='diagnostics_verify_sender'){await rate(c,'whatsapp-diagnostics',5);return response({identity:await verifySenderIdentity(c.env)});}
  if(data.action==='diagnostics_verify_health'){await rate(c,'whatsapp-diagnostics',5);return response({health:await verifySenderHealth(c.env)});}
  if(data.action==='diagnostics_resume'){await rate(c,'whatsapp-diagnostics',5);await resumeSender(c.env,data.confirmed,email);return response({ok:true});}
+ if(data.action==='diagnostics_resume_contact'){const phone=String(data.phone||'');if(!/^\d{7,20}$/.test(phone))throw new CheckoutError(400,'Choose a valid contact.');await resumeContactAutomation(c.env,phone,email);return response({ok:true});}
  const id=identifier(data.conversation_id,'conversation');
  const chat=await c.env.DB.prepare('SELECT * FROM whatsapp_conversations WHERE id=?').bind(id).first<WhatsAppConversation>();if(!chat)throw new CheckoutError(404,'Conversation not found.');
  if(data.action==='reply'){

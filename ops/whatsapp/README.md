@@ -42,9 +42,8 @@ Audit records are private and retained for 90 days by routine maintenance. Messa
 bodies stay in the existing private inbox rather than being duplicated in event
 logs; recipients and identifiers are operational personal data. Secrets, auth
 headers and URL query credentials are redacted from diagnostic fields. Exports
-are private browser downloads; do not commit them. A durable opt-out preference
-list and wider marketing/template workflows are separate follow-up work, not
-claimed as implemented by this tracker.
+are private browser downloads; do not commit them. Durable service opt-outs are implemented by migration 0030 below; wider
+marketing and approved-template workflows remain disabled.
 
 Validation:
 
@@ -66,3 +65,34 @@ frontend hash and supporting Worker version preserved. It does not change Meta
 account settings or send messages. Never apply the old migration backlog.
 
 Meta Health Status reference: https://developers.facebook.com/documentation/business-messaging/whatsapp/support/health-status
+
+## Service-reply policy (migration 0030)
+
+No Meta-approved templates are configured. Normal replies remain within the
+24-hour customer-service window; all outside-window and marketing sends remain
+blocked. No templates were submitted, billing details configured, or real test
+messages sent by this change. Approval and delivery charges are separate; do not
+promise all service messages are unconditionally free. Verify current account
+pricing and AI-provider eligibility with Meta before assuming a free allowance.
+
+STOP/unsubscribe preferences are durable across deployments, bot restarts and
+message cleanup. Only an explicit customer START/resume command clears STOP;
+staff cannot override it. START restores service replies, not marketing consent.
+Older commands cannot reverse newer preferences; STOP wins equal timestamps.
+A duplicate webhook repairs a command from its stored body/timestamp, rather
+than trusting a changed retry payload. Unsent queued replies are cancelled on STOP.
+
+Human requests pause automation for that contact and receive one deterministic
+acknowledgement. Staff may resume AI after handling the request from the private
+tracker, but cannot clear a customer STOP. AI replies identify automation until
+delivery of that disclosure is recorded in the last 24 hours, and their WhatsApp
+prompt is restricted to Opus business assistance rather than general-purpose AI.
+
+These safeguards do not guarantee that Meta will avoid or lift a restriction.
+The older sender and model remain unverified where historical records omit them.
+`deploy-whatsapp-service-policy.py` applies only the one additive 0030 table and
+preserves all frontend hashes, the tracker and supporting Worker versions.
+
+Service-policy safety pauses also include Meta 131042 (billing/payment error).
+No payment method is added or cost exemption assumed. Meta pricing reference:
+https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing
