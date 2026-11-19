@@ -1,9 +1,9 @@
 {
-  "deployment_id": "4fca155a-e1e0-481a-9622-673530063c9b",
-  "url": "https://4fca155a.opuszimbabwe.pages.dev",
+  "deployment_id": "5fcdbb4c-93fb-47b5-baaa-a8020466afd6",
+  "url": "https://5fcdbb4c.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "8323930c23c5623981b733e879d360ccb0f1d540",
-  "baseline": "2d20596f-381b-4d82-9758-45c8fd977ce9",
+  "commit": "d57d8d951896a6fbd3f553cde16debff4fc5e2c2",
+  "baseline": "4fca155a-e1e0-481a-9622-673530063c9b",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
@@ -102,8 +102,8 @@
     },
     {
       "file": "/about/index.html",
-      "hash": "2d9ee4411fa2455078a25f5e09033b6e",
-      "bytes": 38326
+      "hash": "5faf8c65becb32f9477fa60a20038bf4",
+      "bytes": 48973
     },
     {
       "file": "/care/index.html",
@@ -167,8 +167,8 @@
     },
     {
       "file": "/privacy/index.html",
-      "hash": "b9a526a2bcb01028ca14a327cd39652a",
-      "bytes": 91519
+      "hash": "bb0ebf4c095e410d73a34ce11d0dda55",
+      "bytes": 94015
     },
     {
       "file": "/projects/index.html",
@@ -257,8 +257,8 @@
     },
     {
       "file": "/terms/index.html",
-      "hash": "3c5570418e0a8e5d4d121851e36f4363",
-      "bytes": 82632
+      "hash": "4e7d9e85bfcf36c5e63526df74a44952",
+      "bytes": 85852
     },
     {
       "file": "/cookie-policy/index.html",
@@ -279,6 +279,31 @@
       "file": "/sitemap.xml",
       "hash": "3d084afe7cbf7b5065db3ec5b04852f8",
       "bytes": 1533
+    },
+    {
+      "file": "/about/index.txt",
+      "hash": "055d0fbcca5c5009af5eeb841b3741f9",
+      "bytes": 10497
+    },
+    {
+      "file": "/privacy/index.txt",
+      "hash": "76a476e28c98e9ca098b5af1e4a3ac54",
+      "bytes": 35059
+    },
+    {
+      "file": "/documents/opus-privacy-policy-2026-11-19.pdf",
+      "hash": "1d9e58433b20cba01c7f1ff4a212efe4",
+      "bytes": 691192
+    },
+    {
+      "file": "/terms/index.txt",
+      "hash": "4c1c6154d4955ebc2a049d1340c6add2",
+      "bytes": 29643
+    },
+    {
+      "file": "/documents/opus-terms-of-service-2026-11-19.pdf",
+      "hash": "c5cfd8df0d95ce6cd654a833b7cf7462",
+      "bytes": 682909
     }
   ],
   "database_migrations_applied": [],
@@ -323,9 +348,9 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-18-public-indexing",
+  "artifact_directory": "production/releases/2026-11-19-public-content",
   "backend_bundle_sha256": "4de38613fbb30865b6c7afc39b4eb13c62a4ac172d63200fb9fa3f2b2868aa37",
-  "activated_on": "2026-11-18",
+  "activated_on": "2026-11-19",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
@@ -486,7 +511,16 @@
     "care_no_javascript_and_delayed_api_verified": true,
     "explicit_and_unknown_error_pages_return_404": true,
     "search_console_validation_not_performed": true,
-    "google_indexing_not_guaranteed": true
+    "google_indexing_not_guaranteed": true,
+    "about_team_placeholder_removed": true,
+    "about_desktop_mobile_hydration_verified": true,
+    "policy_date": "2026-11-19",
+    "privacy_paynow_ai_cookie_disclosures_updated": true,
+    "terms_new_project_payment_and_revision_defaults": true,
+    "existing_accepted_agreements_preserved": true,
+    "matching_policy_pdfs_verified": true,
+    "loaners_noindex_retained": true,
+    "whatsapp_configuration_unchanged": true
   },
   "seo_release": {
     "assets": [
@@ -522,5 +556,23 @@
       "/sitemap.xml"
     ],
     "care_chunk": "/_next/static/chunks/app/care/page-249182b8083838e7.js"
+  },
+  "public_content_release": {
+    "pages": [
+      "/about/",
+      "/privacy/",
+      "/terms/"
+    ],
+    "assets": [
+      "/about/index.html",
+      "/about/index.txt",
+      "/privacy/index.html",
+      "/privacy/index.txt",
+      "/documents/opus-privacy-policy-2026-11-19.pdf",
+      "/terms/index.html",
+      "/terms/index.txt",
+      "/documents/opus-terms-of-service-2026-11-19.pdf"
+    ],
+    "policy_date": "2026-11-19"
   }
 }
