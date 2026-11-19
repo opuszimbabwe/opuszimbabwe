@@ -127,8 +127,8 @@ export async function ingest(env:Env,input:Record<string,any>,defer?:(task:Promi
      await assertContactAllowed(env,phone);
      if((await contactPreference(env,phone))?.human_hold){await audit(env,'ai_reply_skipped',{...auditFields,details:{reason:'human_assistance_hold'}});return;}
      await audit(env,'ai_generation_started',{...auditFields,details:{triggering_inbound_id:provider,event_age_ms:Date.now()-timestamp}});
-     const generated=await answer(env,conversation([{role:'user',content}]),'whatsapp');
-     const latest=await env.DB.prepare("SELECT id FROM whatsapp_messages WHERE conversation_id=? AND direction='IN' ORDER BY seq DESC LIMIT 1").bind(id).first<{id:string}>();
+     const generated=await answer(env,conversation([{role:'user',content}]),'whatsapp',async event=>{await audit(env,'ai_provider_diagnostic',{...auditFields,details:{...event,channel:'whatsapp'}});});
+     const latest=await env.DB.prepare("SELECT id FROM whatsapp_messages WHERE conversation_id=? AND direction='IN' ORDER BY occurred_at DESC,seq DESC LIMIT 1").bind(id).first<{id:string}>();
      if(latest?.id!==messageId||Date.now()-timestamp>300000){await audit(env,'ai_reply_skipped',{...auditFields,details:{reason:latest?.id!==messageId?'newer_inbound_arrived':'stale_after_generation',ai_provider:generated.provider||'rules',ai_model:generated.model||null}});return;}
      const disclosed=await env.DB.prepare("SELECT 1 AS found FROM whatsapp_messages m JOIN whatsapp_audit_events a ON a.message_id=m.id AND a.event_type='message_origin' WHERE m.conversation_id=? AND m.direction='OUT' AND m.state IN ('DELIVERED','READ') AND m.occurred_at>? AND json_extract(a.details_json,'$.automation_disclosed')=1 LIMIT 1").bind(id,new Date(Date.now()-86400000).toISOString()).first();
      const prefix=disclosed?'':'Opus Zimbabwe — automated assistant\n\n';

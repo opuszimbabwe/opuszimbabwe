@@ -1,6 +1,6 @@
 import type {Env} from './types';
 import {now,CheckoutError} from './http';
-export const WA_TRACKER_VERSION='wa-tracker-20261120-2';
+export const WA_TRACKER_VERSION='wa-tracker-20261120-3';
 export interface AuditFields {id?:string;phone_number_id?:string|null;waba_id?:string;conversation_id?:string;message_id?:string;provider_message_id?:string;recipient_phone?:string;occurred_at?:string;details?:Record<string,unknown>}
 export function safeMetaText(env:Env,value:unknown,max=1200):string|null{
  if(typeof value!=='string')return null;

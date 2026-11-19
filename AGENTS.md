@@ -49,3 +49,8 @@
 - Service-reply safeguards use `ops/site/deploy-whatsapp-service-policy.py` and
   additive migration 0030 only. Keep outside-window/template sends disabled until
   approved templates and documented opt-in exist. No live test sends or billing changes.
+
+- AI isolation uses `ops/site/deploy-ai-diagnostics.py`: backend only, no schema or
+  secret changes, preserve every frontend hash and supporting Worker. Provider
+  diagnostics contain metadata only. User-authorised controlled test is separate
+  from deployment and must wait for a successful no-delivery AI probe.
