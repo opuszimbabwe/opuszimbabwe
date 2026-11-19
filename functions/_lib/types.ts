@@ -40,6 +40,7 @@ export interface Env {
   WHATSAPP_TOKEN?: string;
   WHATSAPP_VERIFY_TOKEN?: string;
   WHATSAPP_AI_ENABLED?: string;
+  WHATSAPP_APP_ID?: string;
   WEB_PUSH_PUBLIC_KEY?: string;
   WEB_PUSH_PRIVATE_JWK?: string;
   PAYNOW_INTEGRATION_ID?: string;

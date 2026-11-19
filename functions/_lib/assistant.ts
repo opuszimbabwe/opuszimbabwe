@@ -20,7 +20,8 @@ export function conversation(input:unknown):Message[]{
 }
 const direct='You can speak directly with the Opus team through the website chat. I am opening it so you can send your message. A team member will reply when available.';
 function cleanAnswer(answer:string){return answer.slice(0,12000).replace(/\[OPEN:([^|\]]+)\|([^\]]+)\]/g,(_,url:string,label:string)=>/^\/(?!\/)[a-zA-Z0-9/_?=&%.-]*$/.test(url)?`[OPEN:${url}|${label}]`:label);}
-export async function answer(env:Env,messages:Message[]){
+export interface AssistantAnswer {answer:string;handoff?:boolean;provider?:'gemini'|'groq';model?:string}
+export async function answer(env:Env,messages:Message[]):Promise<AssistantAnswer>{
  const last=messages.filter(m=>m.role==='user').at(-1)?.content||'';
  if(!last)throw new CheckoutError(400,'A user question is required.');
  const personal=projectQuestion(messages);
@@ -36,11 +37,11 @@ export async function answer(env:Env,messages:Message[]){
  if(env.GEMINI_API_KEY)try{
   const model=env.GEMINI_MODEL||'gemini-2.5-flash';if(!/^[a-zA-Z0-9.-]+$/.test(model))throw Error();
   const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':env.GEMINI_API_KEY},body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content},...m.images.map(image=>({inlineData:image}))]})),generationConfig:{temperature:0.35,maxOutputTokens:1400}}),redirect:'manual',signal:AbortSignal.timeout(14000)});
-  if(r.ok){const d=await r.json() as {candidates?:{content?:{parts?:{text?:string}[]}}[]};const result=d.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('').trim();if(result)return {answer:cleanAnswer(result)};}else await r.body?.cancel();
+  if(r.ok){const d=await r.json() as {candidates?:{content?:{parts?:{text?:string}[]}}[]};const result=d.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('').trim();if(result)return {answer:cleanAnswer(result),provider:'gemini',model};}else await r.body?.cancel();
  }catch{/* Use the explicitly configured fallback without exposing provider errors. */}
  for(const key of [...new Set([env.GROQ_API_KEY,env.GROQ_API_KEY_FALLBACK].filter((k):k is string=>!!k))])try{
-  const hasImages=messages.some(m=>m.images.length);const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+key},body:JSON.stringify({model:hasImages?(env.GROQ_VISION_MODEL||'meta-llama/llama-4-scout-17b-16e-instruct'):(env.GROQ_MODEL||'llama-3.3-70b-versatile'),messages:[{role:'system',content:system},...messages.map(m=>({role:m.role,content:m.images.length?[{type:'text',text:m.content},...m.images.map(image=>({type:'image_url',image_url:{url:'data:'+image.mimeType+';base64,'+image.data}}))]:m.content}))],temperature:0.35,max_tokens:1400}),redirect:'manual',signal:AbortSignal.timeout(14000)});
-  if(r.ok){const d=await r.json() as {choices?:{message?:{content?:string}}[]};const result=d.choices?.[0]?.message?.content?.trim();if(result)return {answer:cleanAnswer(result)};}else await r.body?.cancel();
+  const hasImages=messages.some(m=>m.images.length);const model=hasImages?(env.GROQ_VISION_MODEL||'meta-llama/llama-4-scout-17b-16e-instruct'):(env.GROQ_MODEL||'llama-3.3-70b-versatile');const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:system},...messages.map(m=>({role:m.role,content:m.images.length?[{type:'text',text:m.content},...m.images.map(image=>({type:'image_url',image_url:{url:'data:'+image.mimeType+';base64,'+image.data}}))]:m.content}))],temperature:0.35,max_tokens:1400}),redirect:'manual',signal:AbortSignal.timeout(14000)});
+  if(r.ok){const d=await r.json() as {choices?:{message?:{content?:string}}[]};const result=d.choices?.[0]?.message?.content?.trim();if(result)return {answer:cleanAnswer(result),provider:'groq',model};}else await r.body?.cancel();
  }catch{/* Preserve the draft; never disclose credentials or fabricate an answer. */}
  throw new CheckoutError(503,'Opus AI is temporarily unavailable. Please use Direct chat to speak with the team.');
 }

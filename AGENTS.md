@@ -40,3 +40,8 @@
 - Confirmed public-content updates use `ops/site/deploy-public-content.py`: About,
   Privacy, Terms, their RSC payloads and dated policy PDFs only. Preserve all
   other assets, Loaners noindex, the backend and supporting Worker versions.
+
+- The authorised WhatsApp tracker uses `ops/site/deploy-whatsapp-tracker.py` and
+  additive migration 0029 only. Preserve every frontend hash and supporting Worker.
+  Keep diagnostics behind strict Access auth; no live test sends, secret export,
+  old-message replays, or Meta account/subscription changes during deployment.

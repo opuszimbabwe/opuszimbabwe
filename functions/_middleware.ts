@@ -1,5 +1,6 @@
 import type { PagesContext } from './_lib/types';
 import { requireAdmin } from './_lib/auth';
+import { trackerPage } from './_lib/whatsapp-tracker-ui';
 import { publicRedirect, publicMetadata } from './_lib/site-seo';
 
 function noStore(response: Response) {
@@ -27,6 +28,7 @@ export const onRequest = async (context: PagesContext & { next: () => Promise<Re
     const auth = await requireAdmin(context);
     if (auth instanceof Response) return noStore(new Response('Authentication required.', { status: 401, headers: { 'content-type': 'text/plain; charset=utf-8' } }));
   }
+  if (path === '/sysadmin/whatsapp-tracker/' && ['GET','HEAD'].includes(context.request.method)) return noStore(trackerPage());
   if (url.hostname === 'payments.opuszim.co.zw' && path === '/') return noStore(Response.redirect(new URL('/payments/', url).href, 302));
   const redirect = publicRedirect(context.request);
   if (redirect) return redirect;

@@ -10,6 +10,7 @@ for(const row of schema.filter(x=>x.type==='table'))sql.exec(row.sql);
 for(const row of schema.filter(x=>x.type!=='table'))sql.exec(row.sql);
 sql.exec(fs.readFileSync('migrations/0027_reconstructed_pages_features.sql','utf8'));
 sql.exec(fs.readFileSync('migrations/0028_direct_wallet_checkout.sql','utf8'));
+sql.exec(fs.readFileSync('migrations/0029_whatsapp_diagnostics.sql','utf8'));
 // Reapplying on an existing schema is safe.
 sql.exec(fs.readFileSync('migrations/0027_reconstructed_pages_features.sql','utf8'));
 class Statement{constructor(query){this.query=query;this.values=[]}bind(...v){this.values=v;return this}async first(column){const row=sql.prepare(this.query).get(...this.values);return row?(column?row[column]:row):null}async all(){return{results:sql.prepare(this.query).all(...this.values)}}async run(){const r=sql.prepare(this.query).run(...this.values);return{meta:{changes:Number(r.changes)}}}}
