@@ -1,9 +1,9 @@
 {
-  "deployment_id": "5fcdbb4c-93fb-47b5-baaa-a8020466afd6",
-  "url": "https://5fcdbb4c.opuszimbabwe.pages.dev",
+  "deployment_id": "0bd2e993-e2ff-42a3-9c22-cfbd82d6362d",
+  "url": "https://0bd2e993.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "d57d8d951896a6fbd3f553cde16debff4fc5e2c2",
-  "baseline": "4fca155a-e1e0-481a-9622-673530063c9b",
+  "commit": "ab53021af3ef7a8aa8aadbfc6a424e49e16c292a",
+  "baseline": "5fcdbb4c-93fb-47b5-baaa-a8020466afd6",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
@@ -306,7 +306,9 @@
       "bytes": 682909
     }
   ],
-  "database_migrations_applied": [],
+  "database_migrations_applied": [
+    "0029_whatsapp_diagnostics.sql"
+  ],
   "shared_cookie_consent": {
     "script": "/shared-privacy/consent-1a9a39f1e93fc8bf.js",
     "public_html": [
@@ -348,9 +350,9 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-19-public-content",
-  "backend_bundle_sha256": "4de38613fbb30865b6c7afc39b4eb13c62a4ac172d63200fb9fa3f2b2868aa37",
-  "activated_on": "2026-11-19",
+  "artifact_directory": "production/releases/2026-11-20-whatsapp-tracker",
+  "backend_bundle_sha256": "f12d44d07764bda658c3fe0fd34c63229bd57ec66a93b7250d50160a3f6f1368",
+  "activated_on": "2026-11-20",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
@@ -520,7 +522,17 @@
     "existing_accepted_agreements_preserved": true,
     "matching_policy_pdfs_verified": true,
     "loaners_noindex_retained": true,
-    "whatsapp_configuration_unchanged": true
+    "whatsapp_configuration_unchanged": true,
+    "whatsapp_tracker_migration_0029_applied": true,
+    "whatsapp_tracker_provider_mocks_passed": true,
+    "whatsapp_tracker_identity_and_health_gets_without_sends": true,
+    "whatsapp_tracker_auth_redaction_and_ui_verified": true,
+    "whatsapp_tracker_stale_and_superseded_ai_replies_suppressed": true,
+    "whatsapp_tracker_fast_webhook_ack_verified": true,
+    "whatsapp_tracker_restriction_pause_and_no_replay_verified": true,
+    "whatsapp_tracker_current_sender_owner_verification_pending": true,
+    "all_frontend_assets_unchanged": true,
+    "live_whatsapp_messages_sent_by_agent": false
   },
   "seo_release": {
     "assets": [
@@ -574,5 +586,18 @@
       "/documents/opus-terms-of-service-2026-11-19.pdf"
     ],
     "policy_date": "2026-11-19"
+  },
+  "whatsapp_tracker": {
+    "version": "wa-tracker-20261120-1",
+    "admin_path": "/sysadmin/whatsapp-tracker/",
+    "audit_retention_days": 90,
+    "fresh_auto_reply_max_age_seconds": 300,
+    "restriction_pause_codes": [
+      190,
+      131031,
+      131048
+    ],
+    "frontend_assets_unchanged": true,
+    "no_whatsapp_messages_sent": true
   }
 }
