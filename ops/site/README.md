@@ -121,3 +121,26 @@ Google's indexing decision, Search Console validation and submission status need
 an authenticated Search Console session; none is available to this runtime.
 Keep checkout, receipts, admin and API exclusions; do not remove all noindex or
 robots directives to make coverage counts look smaller. No indexing guarantee.
+
+## About page and pending legal review
+
+The authorised About update describes services, two delivered website examples,
+project scope/review/handover and contact. It removes the team placeholder without
+publishing founder details or implying additional staff. No founding date,
+registration status, partnership, credentials or customer financial details are
+invented. Confirmed legal updates describe Paynow and AI assistance as active, explain
+the shared cookie preference and keep Loaners for known contacts with noindex.
+New website/design quotations default to 50% before starting and 50% before
+launch/handover, with two consolidated revision rounds; explicit quotations can
+override these defaults and existing agreements are unchanged. Both public
+policies and their dated PDFs use the same content. No Meta account settings or
+WhatsApp sending behavior were changed; quality/restriction diagnosis is pending
+the exact Meta notice.
+
+`build-public-content-release.cjs` patches only About and policy HTML/RSC payloads plus the two new PDF downloads.
+The inline Flight stream and separately fetched payload use the same rendered
+React tree, preserving hydration and navigation. The preserved runtime and all
+other assets stay exact. `test-public-content-release.cjs` checks mobile/desktop
+hydration and preservation. `deploy-public-content.py` defaults to read-only
+preflight; `--activate` uses the exact active backend and a clean pushed commit.
+The checkout builder retains confirmed public-content updates on future builds.

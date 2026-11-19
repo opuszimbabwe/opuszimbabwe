@@ -1,0 +1,1 @@
+module.exports=async function(options){const about=await require('./public-pages.cjs')(options),legal=require('./legal-pages.cjs')(options);return {pages:[...about.pages,'/privacy/','/terms/'],assets:[...about.assets,...legal.assets],policy_date:'2026-11-19'};};

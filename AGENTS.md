@@ -36,3 +36,7 @@
   Preserve the active snapshot; allow only canonical public metadata, sitemap,
   three service aliases, correct 404 status and the preserved Care component
   fallback. Keep private/checkout exclusions and all supporting Workers intact.
+
+- Confirmed public-content updates use `ops/site/deploy-public-content.py`: About,
+  Privacy, Terms, their RSC payloads and dated policy PDFs only. Preserve all
+  other assets, Loaners noindex, the backend and supporting Worker versions.
