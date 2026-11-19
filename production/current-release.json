@@ -1,9 +1,9 @@
 {
-  "deployment_id": "51994ee2-e85e-4597-b2dd-860cdbbb7a81",
-  "url": "https://51994ee2.opuszimbabwe.pages.dev",
+  "deployment_id": "b13914e3-8c81-4751-9a2a-a4f6da8f2d1b",
+  "url": "https://b13914e3.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "babbc4db03fbfef6442910d3e8840c425d9837e8",
-  "baseline": "0bd2e993-e2ff-42a3-9c22-cfbd82d6362d",
+  "commit": "e67991a583a0ad692ed8c73f3f6634333b492294",
+  "baseline": "51994ee2-e85e-4597-b2dd-860cdbbb7a81",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
@@ -306,9 +306,7 @@
       "bytes": 682909
     }
   ],
-  "database_migrations_applied": [
-    "0030_whatsapp_contact_preferences.sql"
-  ],
+  "database_migrations_applied": [],
   "shared_cookie_consent": {
     "script": "/shared-privacy/consent-1a9a39f1e93fc8bf.js",
     "public_html": [
@@ -350,8 +348,8 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-20-whatsapp-service-policy",
-  "backend_bundle_sha256": "4ab0198239f4b4b643bce0ef3aa2e5b6bb81203acf12eddc6d5f2b46e7bcded6",
+  "artifact_directory": "production/releases/2026-11-20-ai-diagnostics",
+  "backend_bundle_sha256": "73210109f60f8a06e212cd7537ab947aef90650b0f2675b370076fb45deeccb2",
   "activated_on": "2026-11-20",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
@@ -537,7 +535,11 @@
     "whatsapp_stop_start_durable_and_replay_tested": true,
     "whatsapp_human_handoff_hold_and_resume_tested": true,
     "whatsapp_outside_window_messages_disabled": true,
-    "whatsapp_service_policy_provider_mocks_passed": true
+    "whatsapp_service_policy_provider_mocks_passed": true,
+    "ai_provider_diagnostics_mock_tested": true,
+    "chronological_delayed_message_replay_tested": true,
+    "whatsapp_sender_configured_contract_fixed": true,
+    "ai_synthetic_no_delivery_probe_performed": true
   },
   "seo_release": {
     "assets": [
@@ -593,7 +595,7 @@
     "policy_date": "2026-11-19"
   },
   "whatsapp_tracker": {
-    "version": "wa-tracker-20261120-2",
+    "version": "wa-tracker-20261120-3",
     "admin_path": "/sysadmin/whatsapp-tracker/",
     "audit_retention_days": 90,
     "fresh_auto_reply_max_age_seconds": 300,
@@ -619,6 +621,13 @@
       131048
     ],
     "new_billing_configured": false,
+    "no_whatsapp_messages_sent": true
+  },
+  "ai_diagnostics": {
+    "version": "wa-tracker-20261120-3",
+    "provider_metadata_only": true,
+    "sender_configuration_contract_fixed": true,
+    "chronological_preview_and_ai_supersession": true,
     "no_whatsapp_messages_sent": true
   }
 }

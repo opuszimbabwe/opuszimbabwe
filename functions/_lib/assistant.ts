@@ -45,8 +45,18 @@ export async function answer(env:Env,messages:Message[],channel:'website'|'whats
   const d=await inspect(r,'gemini',model);if(r.ok&&d){const result=d.candidates?.[0]?.content?.parts?.map((p:any)=>p.text||'').join('').trim();if(result)return {answer:cleanAnswer(result),provider:'gemini',model};await record({provider:'gemini',model,outcome:'empty_response',http_status:r.status});}
  }catch(error){await record({provider:'gemini',model:env.GEMINI_MODEL||'gemini-2.5-flash',outcome:'request_exception',error_name:token(error instanceof Error?error.name:'UnknownError')});}
  for(const key of [...new Set([env.GROQ_API_KEY,env.GROQ_API_KEY_FALLBACK].filter((k):k is string=>!!k))])try{
-  const hasImages=messages.some(m=>m.images.length);const model=hasImages?(env.GROQ_VISION_MODEL||'meta-llama/llama-4-scout-17b-16e-instruct'):(env.GROQ_MODEL||'llama-3.3-70b-versatile');const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:system},...messages.map(m=>({role:m.role,content:m.images.length?[{type:'text',text:m.content},...m.images.map(image=>({type:'image_url',image_url:{url:'data:'+image.mimeType+';base64,'+image.data}}))]:m.content}))],temperature:0.35,max_tokens:1400}),redirect:'manual',signal:AbortSignal.timeout(14000)});
-  const d=await inspect(r,'groq',model);if(r.ok&&d){const result=d.choices?.[0]?.message?.content?.trim();if(result)return {answer:cleanAnswer(result),provider:'groq',model};await record({provider:'groq',model,outcome:'empty_response',http_status:r.status});}
+  const hasImages=messages.some(m=>m.images.length);let model=hasImages?(env.GROQ_VISION_MODEL||'meta-llama/llama-4-scout-17b-16e-instruct'):(env.GROQ_MODEL||'llama-3.3-70b-versatile');const request=async()=>fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+key},body:JSON.stringify({model,messages:[{role:'system',content:system},...messages.map(m=>({role:m.role,content:m.images.length?[{type:'text',text:m.content},...m.images.map(image=>({type:'image_url',image_url:{url:'data:'+image.mimeType+';base64,'+image.data}}))]:m.content}))],temperature:0.35,max_tokens:1400}),redirect:'manual',signal:AbortSignal.timeout(14000)});
+  let r=await request();let d=await inspect(r,'groq',model);
+  if(!hasImages&&r.status===404&&d?.error?.code==='model_not_found'){
+   // Only recover an unavailable model, never bypass authentication or rate limits.
+   const catalog=await fetch('https://api.groq.com/openai/v1/models',{headers:{authorization:'Bearer '+key},redirect:'manual',signal:AbortSignal.timeout(10000)});
+   let listed:any;try{listed=JSON.parse((await catalog.text()).slice(0,131072))}catch{listed=null;}
+   const available=new Set(Array.isArray(listed?.data)?listed.data.filter((m:any)=>m.active!==false).map((m:any)=>m.id):[]);
+   const replacement=catalog.ok?['llama-3.1-8b-instant','openai/gpt-oss-20b','openai/gpt-oss-120b'].find(id=>id!==model&&available.has(id)):undefined;
+   await record({provider:'groq',model:replacement||model,outcome:replacement?'catalog_fallback_selected':'no_supported_catalog_fallback',http_status:catalog.status,request_id:token(catalog.headers.get('x-request-id'))});
+   if(replacement){model=replacement;r=await request();d=await inspect(r,'groq',model);}
+  }
+  if(r.ok&&d){const result=d.choices?.[0]?.message?.content?.trim();if(result)return {answer:cleanAnswer(result),provider:'groq',model};await record({provider:'groq',model,outcome:'empty_response',http_status:r.status});}
  }catch(error){await record({provider:'groq',model:env.GROQ_MODEL||'llama-3.3-70b-versatile',outcome:'request_exception',error_name:token(error instanceof Error?error.name:'UnknownError')});}
  throw new CheckoutError(503,'Opus AI is temporarily unavailable. Please use Direct chat to speak with the team.');
 }
