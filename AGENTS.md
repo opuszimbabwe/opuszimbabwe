@@ -54,3 +54,6 @@
   secret changes, preserve every frontend hash and supporting Worker. Provider
   diagnostics contain metadata only. User-authorised controlled test is separate
   from deployment and must wait for a successful no-delivery AI probe.
+
+- WhatsApp text-format releases use `ops/site/deploy-whatsapp-format.py`, with
+  unchanged frontend hashes, no migrations and mocked providers only.

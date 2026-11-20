@@ -1,3 +1,4 @@
+import {whatsappText} from './whatsapp-format';
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {CheckoutError,now,text,identifier,hash,integer} from './http';
 import {answer,conversation} from './assistant';
@@ -136,7 +137,7 @@ export async function ingest(env:Env,input:Record<string,any>,defer?:(task:Promi
       const chat=(await env.DB.prepare('SELECT * FROM whatsapp_conversations WHERE id=?').bind(id).first<WhatsAppConversation>())!;
       const replyId='ai-'+await hash(provider);
       await audit(env,'message_origin',{id:'origin:'+replyId,...auditFields,message_id:replyId,details:{origin:'ai_reply',ai_provider:generated.provider||'rules',ai_model:generated.model||null,triggering_inbound_id:provider,triggering_inbound_local_id:messageId,customer_initiated:true,automation_disclosed:!disclosed}});
-      const queued=await enqueue(env,chat,{id:replyId,kind:'text',body:prefix+generated.answer.trim().slice(0,2800),delay:0},'ai');await dispatch(env,queued.id);
+      const queued=await enqueue(env,chat,{id:replyId,kind:'text',body:prefix+whatsappText(generated.answer),delay:0},'ai');await dispatch(env,queued.id);
      }else{
       await requestHuman(env,phone,id,provider);
       await audit(env,'ai_handoff',{...auditFields,details:{ai_provider:'rules',reason:'human_assistance'}});
