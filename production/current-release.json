@@ -1,9 +1,9 @@
 {
-  "deployment_id": "c72892a8-57d7-4805-a08e-285710e362b1",
-  "url": "https://c72892a8.opuszimbabwe.pages.dev",
+  "deployment_id": "31e58f94-d25a-4ec0-8c55-95a774eeb02f",
+  "url": "https://31e58f94.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "dd2c6a093a9d51895606f5e237f01e88dd4c4f1a",
-  "baseline": "b13914e3-8c81-4751-9a2a-a4f6da8f2d1b",
+  "commit": "77282cdf867ebdfc78c5ebe98ca87b1c572ee037",
+  "baseline": "c72892a8-57d7-4805-a08e-285710e362b1",
   "checkout_changes": [
     {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
@@ -348,8 +348,8 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-20-ai-model-fallback",
-  "backend_bundle_sha256": "c886e03ac2652d8bb233aa4d964973b47f90190ec9164d5312151fcaf00d9696",
+  "artifact_directory": "production/releases/2026-11-20-whatsapp-format",
+  "backend_bundle_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
   "activated_on": "2026-11-20",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
@@ -539,7 +539,9 @@
     "ai_provider_diagnostics_mock_tested": true,
     "chronological_delayed_message_replay_tested": true,
     "whatsapp_sender_configured_contract_fixed": true,
-    "ai_synthetic_no_delivery_probe_performed": true
+    "ai_synthetic_no_delivery_probe_performed": true,
+    "whatsapp_plain_text_and_absolute_links_mock_tested": true,
+    "controlled_owner_test_one_reply_delivered": true
   },
   "seo_release": {
     "assets": [
@@ -628,6 +630,14 @@
     "provider_metadata_only": true,
     "sender_configuration_contract_fixed": true,
     "chronological_preview_and_ai_supersession": true,
+    "no_whatsapp_messages_sent": true
+  },
+  "whatsapp_format": {
+    "version": "wa-format-20261120-1",
+    "plain_text_tables_converted": true,
+    "absolute_https_links": true,
+    "website_rich_format_unchanged": true,
+    "provider_tests_mocked": true,
     "no_whatsapp_messages_sent": true
   }
 }
