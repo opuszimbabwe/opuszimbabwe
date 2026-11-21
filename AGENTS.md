@@ -57,3 +57,8 @@
 
 - WhatsApp text-format releases use `ops/site/deploy-whatsapp-format.py`, with
   unchanged frontend hashes, no migrations and mocked providers only.
+
+- Domain-provider logo updates use `ops/site/deploy-cloudflare-domains.py`.
+  Keep the exact current backend/checkout and all supporting Workers unchanged.
+  Patch the preserved search-widget chunk and matching SSR together; other
+  public page edits may only update that shared chunk reference. No migrations.

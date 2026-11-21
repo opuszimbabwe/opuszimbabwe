@@ -1,0 +1,192 @@
+{
+  "baseline_deployment": "31e58f94-d25a-4ec0-8c55-95a774eeb02f",
+  "backend_bundle_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
+  "original_chunk": "/_next/static/chunks/4454-0f78557ca72cf75a.js",
+  "updated_chunk": "/_next/static/chunks/4454-6af8ebef9ee60874.js",
+  "logo_source": "https://raw.githubusercontent.com/cloudflare/cloudflare-docs/production/src/assets/logo.svg",
+  "logo_sha256": "ca5df5ab3c083f8eddcf588c7dc883861abd8650d2cb6937cf94fc112aed37a3",
+  "widget_pages": [
+    "/domains/index.html",
+    "/index.html",
+    "/services/domain-hosting/index.html",
+    "/services/domains-hosting/index.html"
+  ],
+  "reference_only_pages": [
+    "/domains/index.txt",
+    "/index.txt",
+    "/services/ai-automation/index.html",
+    "/services/ai-automation/index.txt",
+    "/services/api-integrations/index.html",
+    "/services/api-integrations/index.txt",
+    "/services/app-development/index.html",
+    "/services/app-development/index.txt",
+    "/services/domain-hosting/index.txt",
+    "/services/domains-hosting/index.txt",
+    "/services/graphic-design-branding/index.html",
+    "/services/graphic-design-branding/index.txt",
+    "/services/graphic-design/index.html",
+    "/services/graphic-design/index.txt",
+    "/services/software-development/index.html",
+    "/services/software-development/index.txt",
+    "/services/software-systems/index.html",
+    "/services/software-systems/index.txt",
+    "/services/video-advert-production/index.html",
+    "/services/video-advert-production/index.txt",
+    "/services/web-design-development/index.html",
+    "/services/web-design-development/index.txt",
+    "/services/web-design/index.html",
+    "/services/web-design/index.txt"
+  ],
+  "changes": [
+    {
+      "file": "/_next/static/chunks/4454-6af8ebef9ee60874.js",
+      "hash": "6af8ebef9ee60874c4040931eb7d352c",
+      "bytes": 12018
+    },
+    {
+      "file": "/images/tools/cloudflare-domains.svg",
+      "hash": "50880b4ce65b8cd51bb13e23a224de2d",
+      "bytes": 1892
+    },
+    {
+      "file": "/domains/index.html",
+      "hash": "d23fbef429317f2dc913fb4e7ef1a156",
+      "bytes": 53786
+    },
+    {
+      "file": "/domains/index.txt",
+      "hash": "4acf7988768e04f68c1fc2e55d386197",
+      "bytes": 9411
+    },
+    {
+      "file": "/index.html",
+      "hash": "1c5cc3b22a028f7ed996a20fefd9a248",
+      "bytes": 87265
+    },
+    {
+      "file": "/index.txt",
+      "hash": "aede88450f7cca191f9daeabb048a038",
+      "bytes": 3479
+    },
+    {
+      "file": "/services/ai-automation/index.html",
+      "hash": "21198dd6074b6325b045a42570fdf68b",
+      "bytes": 55863
+    },
+    {
+      "file": "/services/ai-automation/index.txt",
+      "hash": "91ed056358a4b0854acda1e24a6ec2e4",
+      "bytes": 4626
+    },
+    {
+      "file": "/services/api-integrations/index.html",
+      "hash": "923a2102e7a5679bc4a614f8d3ee3c8c",
+      "bytes": 58896
+    },
+    {
+      "file": "/services/api-integrations/index.txt",
+      "hash": "e0e6f3843a25257f402de33c6ba42b05",
+      "bytes": 4611
+    },
+    {
+      "file": "/services/app-development/index.html",
+      "hash": "7e9308e54e1a7ca4d1b8f06240e35e2e",
+      "bytes": 54521
+    },
+    {
+      "file": "/services/app-development/index.txt",
+      "hash": "f86c034350a884e3dabdce27b8b52f6b",
+      "bytes": 4412
+    },
+    {
+      "file": "/services/domain-hosting/index.html",
+      "hash": "7e94be6322eb5e70a5e2e76b5ad2ca7d",
+      "bytes": 63707
+    },
+    {
+      "file": "/services/domain-hosting/index.txt",
+      "hash": "1a53796fd121997d813a7c3bcb43c78d",
+      "bytes": 4643
+    },
+    {
+      "file": "/services/domains-hosting/index.html",
+      "hash": "23607b055d93a042ad0b225bd35fe257",
+      "bytes": 63713
+    },
+    {
+      "file": "/services/domains-hosting/index.txt",
+      "hash": "f294bf15b9828620ab812a7cb28b3e8b",
+      "bytes": 4647
+    },
+    {
+      "file": "/services/graphic-design-branding/index.html",
+      "hash": "e3324769abe9ade750806baeb144fd4e",
+      "bytes": 46362
+    },
+    {
+      "file": "/services/graphic-design-branding/index.txt",
+      "hash": "6185b0f3a2d9d0887ab2ccbbee6d127a",
+      "bytes": 4619
+    },
+    {
+      "file": "/services/graphic-design/index.html",
+      "hash": "529d7027a8983e0d8503e84486e3169d",
+      "bytes": 46308
+    },
+    {
+      "file": "/services/graphic-design/index.txt",
+      "hash": "de3a4c00d550b83a0d848b74ced3eff2",
+      "bytes": 4583
+    },
+    {
+      "file": "/services/software-development/index.html",
+      "hash": "70ec63f0e5460c47b126b5f55c58af28",
+      "bytes": 59889
+    },
+    {
+      "file": "/services/software-development/index.txt",
+      "hash": "d9ec947f8ee8babe4c066c797732b0ea",
+      "bytes": 4679
+    },
+    {
+      "file": "/services/software-systems/index.html",
+      "hash": "6ce4a41731a0380bcfc07e32416307bd",
+      "bytes": 59782
+    },
+    {
+      "file": "/services/software-systems/index.txt",
+      "hash": "01d66f37bbcdf356eb82b5ead8f4b5b6",
+      "bytes": 4663
+    },
+    {
+      "file": "/services/video-advert-production/index.html",
+      "hash": "04323d6bc33f9650fc4f2c2d4c71fe3b",
+      "bytes": 54827
+    },
+    {
+      "file": "/services/video-advert-production/index.txt",
+      "hash": "56de01e6d8567fb7ca58bd4600a5b2a4",
+      "bytes": 4467
+    },
+    {
+      "file": "/services/web-design-development/index.html",
+      "hash": "b368f568cb1eafc36da342bdc6d70d73",
+      "bytes": 66286
+    },
+    {
+      "file": "/services/web-design-development/index.txt",
+      "hash": "b7298c3309a6c2b5ddf90bac31d71397",
+      "bytes": 6417
+    },
+    {
+      "file": "/services/web-design/index.html",
+      "hash": "c9d831e4ff636517a919338c9bda9963",
+      "bytes": 66214
+    },
+    {
+      "file": "/services/web-design/index.txt",
+      "hash": "3c0e5de03c97f27d19adc24b0c0a4452",
+      "bytes": 6369
+    }
+  ]
+}
