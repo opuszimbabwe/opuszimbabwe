@@ -1,0 +1,19 @@
+{
+  "deployment_id": "2109674d-5b54-49fa-991c-16cbc615c2f9",
+  "commit": "1c1c43088d3de1e3e337939bdce934bb23c1ac8c",
+  "date": "2026-11-21",
+  "viewports": [
+    320,
+    390,
+    1440
+  ],
+  "homepage_and_domains_and_hosting": true,
+  "official_logo_decodes": true,
+  "credit_fits_viewport": true,
+  "no_new_hydration_errors": true,
+  "client_navigation": true,
+  "domain_search_provider_mocked": true,
+  "actual_domain_purchases": 0,
+  "backend_and_checkout_unchanged": true,
+  "supporting_workers_unchanged": true
+}
