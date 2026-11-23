@@ -1,0 +1,11 @@
+{
+  "active_deployment": "6f96f764-53e3-46eb-a975-2e86fbc0f129",
+  "manifest_matches": true,
+  "locked_assets_match": true,
+  "preserved_non_payment_hash_count": 449,
+  "all_nine_methods_available": true,
+  "currency": "USD",
+  "paynow_configured": true,
+  "browser_live_check": "Blocked by environment browser CA trust; TLS verification was not bypassed. Preserved checkout browser tests were run locally with providers mocked.",
+  "no_payments_initiated": true
+}
