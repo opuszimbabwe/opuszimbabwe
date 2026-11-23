@@ -29,7 +29,7 @@ async function main(){
  for(const file of publicFiles){const bytes=fs.readFileSync(path.join(root,'public',file)),url='/'+file;if(manifest[url]!==hash(bytes,url))save(url,bytes)}
  for(const [file,digest] of Object.entries(original))if(!changes.some(c=>c.file===file)&&manifest[file]!==digest)throw Error('Unexpected non-checkout asset change');
  const current=JSON.parse(fs.readFileSync(path.join(root,'production/current-release.json')));
- const consentEnabled=process.argv.includes('--shared-cookie-choice')||current.validation?.shared_cookie_choice===true;
+ const consentEnabled=process.argv.includes('--shared-cookie-choice')||Boolean(current.shared_cookie_consent);
  const sharedConsent=consentEnabled?require('./shared-cookie-assets.cjs')({root,out,original,changes,save}):undefined;
  let seoRelease;
  if(current.seo_release){
