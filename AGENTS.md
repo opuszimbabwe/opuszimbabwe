@@ -62,3 +62,15 @@
   Keep the exact current backend/checkout and all supporting Workers unchanged.
   Patch the preserved search-widget chunk and matching SSR together; other
   public page edits may only update that shared chunk reference. No migrations.
+
+# Opus Pay deployment lock
+
+- `ops/activation/opus-pay-lock.json` pins every checkout route, branding asset,
+  checkout bundle/style and the approved payment-serving backend bundle.
+- Every Pages upload through the shared deployment API helper must pass
+  `checkout-guard.py`. Do not remove the guard, rebuild the legacy frontend,
+  restore an old deployment, or re-enable automatic GitHub deployments.
+- Backend changes require an explicit reviewed lock refresh with mocked payment
+  regressions; non-payment frontend changes must retain all locked hashes.
+- Restoration uses `ops/site/restore-opus-pay.py`, retaining actual live
+  non-payment asset hashes and restoring the verified backend. No new schema.

@@ -16,6 +16,11 @@ PREFIX = f'/accounts/{ACCOUNT}/pages/projects/{PROJECT}'
 RELEASE = pathlib.Path('/tmp/opus-pay-release')
 
 def api(path, body=None, method=None, token=None, content_type='application/json'):
+    if path==PREFIX+'/deployments' and isinstance(body,bytes) and (ROOT/'ops/activation/opus-pay-lock.json').exists():
+        import importlib.util
+        guard_spec=importlib.util.spec_from_file_location('checkout_guard',ROOT/'ops/activation/checkout-guard.py')
+        guard=importlib.util.module_from_spec(guard_spec);guard_spec.loader.exec_module(guard)
+        guard.verify_upload(body,content_type)
     headers = {'Authorization':'Bearer '+(token or os.environ['CLOUDFLARE_API_TOKEN']), 'Content-Type':content_type}
     data = body if isinstance(body,bytes) else json.dumps(body).encode() if body is not None else None
     try:

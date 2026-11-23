@@ -15,6 +15,8 @@ jobs:
       source_complete: ${{ steps.state.outputs.source_complete }}
     steps:
       - uses: actions/checkout@v4
+      - name: Test Opus Pay deployment lock
+        run: python3 ops/activation/test-checkout-guard.py
       - uses: actions/setup-node@v4
         with:
           node-version: 22
