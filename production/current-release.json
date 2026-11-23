@@ -1,9 +1,9 @@
 {
-  "deployment_id": "6f96f764-53e3-46eb-a975-2e86fbc0f129",
-  "url": "https://6f96f764.opuszimbabwe.pages.dev",
+  "deployment_id": "ffef8f7e-2a1a-4d20-b5bf-b30fbaeefe0d",
+  "url": "https://ffef8f7e.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "5a07fff66d5bffac9106f3d35a9a4b6bf30f0c4f",
-  "baseline": "dbfc8f79-9dde-4f0b-a04d-e6aa4d411449",
+  "commit": "9bbb14a9e283fd020df9556cf57a35c07d54a013",
+  "baseline": "6f96f764-53e3-46eb-a975-2e86fbc0f129",
   "checkout_changes": [
     {
       "file": "/_next/static/C_Ug-q-xfaPxCpfSZjyXO/_buildManifest.js",
@@ -201,7 +201,9 @@
       "bytes": 6485
     }
   ],
-  "database_migrations_applied": [],
+  "database_migrations_applied": [
+    "0031_payment_admin_notifications.sql"
+  ],
   "shared_cookie_consent": {
     "script": "/shared-privacy/consent-1a9a39f1e93fc8bf.js",
     "public_html": [
@@ -243,8 +245,8 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-23-opus-pay-restored",
-  "backend_bundle_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
+  "artifact_directory": "production/releases/2026-11-23-payment-admin-notifications",
+  "backend_bundle_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
   "activated_on": "2026-11-23",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
@@ -256,7 +258,11 @@
     "locked_checkout_upload_positive_negative_tests_passed": true,
     "supporting_workers_unchanged": true,
     "provider_tests_mocked": true,
-    "no_payments_initiated": true
+    "no_payments_initiated": true,
+    "payment_admin_notification_mock_tests_passed": true,
+    "admin_notification_recipient_verified": true,
+    "all_frontend_assets_unchanged": true,
+    "no_real_test_emails_or_payments": true
   },
   "seo_release": {
     "assets": [
@@ -882,5 +888,12 @@
       "/terms/index.html": "a79392c3a84263b2215c591a0334f0c8",
       "/terms/index.txt": "14b814e140aa9f55bc965ce0909b31d1"
     }
+  },
+  "payment_admin_notifications": {
+    "recipient": "admin@opuszim.co.zw",
+    "new_verified_success_only": true,
+    "atomic_outbox": true,
+    "duplicates_suppressed": true,
+    "no_real_test_payments_or_emails": true
   }
 }

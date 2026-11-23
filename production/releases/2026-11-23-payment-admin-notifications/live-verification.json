@@ -1,0 +1,11 @@
+{
+  "active_deployment": "ffef8f7e-2a1a-4d20-b5bf-b30fbaeefe0d",
+  "all_frontend_hashes_unchanged": true,
+  "checkout_lock_verified": true,
+  "notification_recipient": "admin@opuszim.co.zw",
+  "outbox_schema_verified": true,
+  "mail_bindings_present": true,
+  "all_nine_methods_available": true,
+  "no_real_test_email_or_payment": true,
+  "provider_delivery_not_live_tested": true
+}
