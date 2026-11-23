@@ -74,3 +74,8 @@
   regressions; non-payment frontend changes must retain all locked hashes.
 - Restoration uses `ops/site/restore-opus-pay.py`, retaining actual live
   non-payment asset hashes and restoring the verified backend. No new schema.
+
+- Payment admin alerts use `ops/site/deploy-payment-notifications.py` and additive
+  migration 0031 only. Keep every checkout/frontend hash; intentionally review
+  and refresh the backend lock after mocked payment/email regressions. Alerts
+  target admin@opuszim.co.zw for newly verified successful payments only.

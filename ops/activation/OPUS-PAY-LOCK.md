@@ -27,3 +27,15 @@ files and exact backend bundle. Live verification confirmed the full manifest,
 all nine configured methods, Paynow enabled and USD-only availability. The live
 Chromium check was blocked by the environment browser's CA trust; TLS checking
 was not bypassed. Local preserved-checkout tests had passed with providers mocked.
+
+## Approved payment-notification extension
+
+The 23 November backend lock refresh adds verified-success notifications to
+admin@opuszim.co.zw. All 19 checkout asset pins stay unchanged. Migration 0031
+adds the private notification outbox; PAYMENT_ADMIN_NOTIFY_TO enables it only
+for the configured admin address. New successes enqueue atomically with the
+verified payment update. Repeated callbacks do not resend; historical successes
+are not backfilled. The maintenance tick recovers unsent pending jobs. Rejected
+or uncertain email attempts remain for operator review; an accepted provider
+response does not itself establish inbox delivery. No live test email/payment
+is required for this release.

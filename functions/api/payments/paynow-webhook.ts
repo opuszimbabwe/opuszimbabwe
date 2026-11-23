@@ -1,3 +1,4 @@
+import {paymentAdminNotification,paymentNotificationStatement} from '../../_lib/payment-notifications';
 import {bytes,UUID,CheckoutError,failure,now} from '../../_lib/http';
 import {paynowForm,verifyPaynow,pollPaynow,amountMinor} from '../../_lib/paynow';
 import {fulfilDomainPayment} from '../../_lib/domains';
@@ -20,7 +21,9 @@ export const onRequestPost:PagesHandler=async c=>{try{
  if(verified.reference!==row.id||!verified.paynowreference||(row.gateway_reference&&verified.paynowreference!==row.gateway_reference)||amountMinor(verified.amount||'')!==row.amount_minor||(verified.currency&&verified.currency!==row.currency)||(!verified.currency&&row.currency!==(c.env.PAYNOW_CURRENCY||'USD')))throw new CheckoutError(409,'The verified payment details do not match.');
  const states:Record<string,string>={paid:'SUCCESS',awaitingdelivery:'PENDING',delivered:'SUCCESS',created:'PENDING',sent:'PENDING',cancelled:'CANCELLED',refunded:'REVERSED',disputed:'REVERSED'};
  const stateKey=String(verified.status).toLowerCase().replace(/\s+/g,'');const status=Object.hasOwn(states,stateKey)?states[stateKey]:'PENDING';
- await c.env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,now(),Date.now(),now(),row.id,status).run();
+ const update=c.env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,now(),Date.now(),now(),row.id,status);
+ const notice=paymentNotificationStatement(c.env,row.id,status);await c.env.DB.batch(notice?[notice,update]:[update]);
  const saved=(await c.env.DB.prepare('SELECT * FROM customer_payments WHERE id=?').bind(row.id).first<PaynowRow>())!;await fulfilDomainPayment(c.env,saved);if(saved.care_order_id)await fulfilCarePayment(c.env,saved);
+ await paymentAdminNotification(c.env,row,saved).catch(()=>{console.error('Payment admin notification needs outbox review.');});
  return new Response('Accepted',{headers:{'cache-control':'no-store'}});
  }catch(e){return failure(e)}};

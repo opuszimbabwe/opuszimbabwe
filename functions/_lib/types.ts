@@ -50,6 +50,7 @@ export interface Env {
   CARE_RENDERER?:{fetch(input:Request|string,init?:RequestInit):Promise<Response>};
   MAINTENANCE_CRON_SECRET?:string;
   RESEND_API_KEY?:string;
+  PAYMENT_ADMIN_NOTIFY_TO?:string;
   RECEIPT_FROM_EMAIL?:string;
   CLOUDFLARE_REGISTRAR_TOKEN?: string;
   CLOUDFLARE_REGISTRAR_ACCOUNT_ID?: string;

@@ -1,9 +1,9 @@
 {
-  "version": 1,
+  "version": 2,
   "locked_on": "2026-11-23",
   "restore_baseline": "dbfc8f79-9dde-4f0b-a04d-e6aa4d411449",
   "source_deployment": "2109674d-5b54-49fa-991c-16cbc615c2f9",
-  "backend_bundle_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
+  "backend_bundle_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
   "assets": {
     "/_next/static/chunks/app/payments/page-fec90863f26d70c5.js": "dbf63e904b57d2e2b2c9589c96bee3fd",
     "/images/payments/innbucks.png": "ee0b47e88b4c8e9a897cb041769ab806",
@@ -24,5 +24,12 @@
     "/images/opus-pay/pos2u.svg": "0cc8a6a6106a079addb6abd81f9f698f",
     "/images/opus-pay/social-preview.png": "80fb209a942218d3cedcc7af5b7ac78f",
     "/images/opus-pay/visa.svg": "41656b7c620f1671bc87f4f4785cb105"
+  },
+  "approved_backend_change": {
+    "date": "2026-11-23",
+    "reason": "User-requested verified payment notifications to admin@opuszim.co.zw",
+    "previous_backend_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
+    "checkout_asset_hashes_unchanged": true,
+    "mocked_payment_and_email_regressions_passed": true
   }
 }

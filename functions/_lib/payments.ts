@@ -1,3 +1,4 @@
+import {paymentAdminNotification,paymentNotificationStatement} from './payment-notifications';
 import { isTransactionStatus, Pesepay, type Transport, type PaymentResult } from 'pesepay';
 import type { Env, PagesContext } from './types';
 import type { LocalMethod, PaymentReceipt } from '../../lib/payments';
@@ -140,9 +141,10 @@ export async function reconcile(env: Env, row: PaymentRow, fulfil = true, strict
  if (payable !== null && (!Number.isFinite(payable) || Math.round(payable * 100) < row.amount_minor)) status = 'VERIFICATION_FAILED';
  const paidMinor = status === 'SUCCESS' && payable !== null ? Math.round(payable * 100) : null;
  const date = result.dateOfTransaction && Number.isFinite(Date.parse(result.dateOfTransaction)) ? new Date(result.dateOfTransaction).toISOString() : null;
- await env.DB.prepare("UPDATE customer_payments SET status = ?, transaction_date = COALESCE(?, transaction_date), amount_paid_minor = COALESCE(?, amount_paid_minor), checked_at = ?, updated_at = ? WHERE id = ? AND checked_at <= ? AND status <> 'REVERSED' AND (status <> 'SUCCESS' OR ? IN ('REVERSED', 'SUCCESS'))")
- .bind(status, date, paidMinor, started, new Date().toISOString(), row.id, started, status).run();
- const verified=(await findPayment(env,row.id))!;if(strictSuccess&&(status!=='SUCCESS'||verified.status!=='SUCCESS'))throw new CheckoutError(409,'Pesepay has not confirmed this payment as successful. A verified receipt cannot be issued.');const effective=verified.status==='SUCCESS'&&status!=='SUCCESS'?{...verified,status}:verified;if(fulfil){await (await import('./domains')).fulfilDomainPayment(env,effective);if(effective.care_order_id&&(status==='SUCCESS'||status==='REVERSED'||['FAILED','CANCELLED','EXPIRED'].includes(status)))await (await import('./client-care')).fulfilCarePayment(env,effective);}return effective;
+ const update=env.DB.prepare("UPDATE customer_payments SET status = ?, transaction_date = COALESCE(?, transaction_date), amount_paid_minor = COALESCE(?, amount_paid_minor), checked_at = ?, updated_at = ? WHERE id = ? AND checked_at <= ? AND status <> 'REVERSED' AND (status <> 'SUCCESS' OR ? IN ('REVERSED', 'SUCCESS'))")
+ .bind(status, date, paidMinor, started, new Date().toISOString(), row.id, started, status);
+ const notice=paymentNotificationStatement(env,row.id,status);await env.DB.batch(notice?[notice,update]:[update]);
+ const verified=(await findPayment(env,row.id))!;if(strictSuccess&&(status!=='SUCCESS'||verified.status!=='SUCCESS'))throw new CheckoutError(409,'Pesepay has not confirmed this payment as successful. A verified receipt cannot be issued.');const effective=verified.status==='SUCCESS'&&status!=='SUCCESS'?{...verified,status}:verified;if(fulfil){await (await import('./domains')).fulfilDomainPayment(env,effective);if(effective.care_order_id&&(status==='SUCCESS'||status==='REVERSED'||['FAILED','CANCELLED','EXPIRED'].includes(status)))await (await import('./client-care')).fulfilCarePayment(env,effective);}await paymentAdminNotification(env,row,effective).catch(()=>{console.error('Payment admin notification needs outbox review.');});return effective;
 }
 export async function limitAttempts(context: PagesContext, scope = 'payment', maximum = 6) {
  const now = Date.now(), bucket = await hash(scope + ':' + (context.request.headers.get('cf-connecting-ip') || 'local') + ':' + Math.floor(now / 600000));
@@ -159,9 +161,11 @@ async function reconcilePaynow(env:Env,row:PaymentRow,fulfil:boolean,strict:bool
  if(verified.reference!==row.id||!verified.paynowreference||(row.gateway_reference&&verified.paynowreference!==row.gateway_reference)||amountMinor(verified.amount||'')!==row.amount_minor||(verified.currency&&verified.currency!==row.currency)||(!verified.currency&&row.currency!==(env.PAYNOW_CURRENCY||'USD')))throw new CheckoutError(502,'The verified payment details do not match.');
  const states:Record<string,string>={paid:'SUCCESS',awaitingdelivery:'PENDING',delivered:'SUCCESS',created:'PENDING',sent:'PENDING',cancelled:'CANCELLED',canceled:'CANCELLED',refunded:'REVERSED',disputed:'REVERSED'};
  const status=states[String(verified.status).toLowerCase().replace(/\s+/g,'')]||'PENDING';
- await env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND checked_at<=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN ('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,new Date().toISOString(),start,new Date().toISOString(),row.id,start,status).run();
+ const update=env.DB.prepare("UPDATE customer_payments SET gateway_reference=COALESCE(gateway_reference,?),status=?,amount_paid_minor=CASE WHEN ?='SUCCESS' THEN amount_minor ELSE amount_paid_minor END,transaction_date=CASE WHEN ?='SUCCESS' THEN COALESCE(transaction_date,?) ELSE transaction_date END,checked_at=?,updated_at=? WHERE id=? AND checked_at<=? AND status<>'REVERSED' AND (status<>'SUCCESS' OR ? IN ('SUCCESS','REVERSED'))").bind(verified.paynowreference,status,status,status,new Date().toISOString(),start,new Date().toISOString(),row.id,start,status);
+ const notice=paymentNotificationStatement(env,row.id,status);await env.DB.batch(notice?[notice,update]:[update]);
  const saved=(await findPayment(env,row.id))!;
  if(strict&&saved.status!=='SUCCESS')throw new CheckoutError(409,'Paynow has not confirmed this payment as successful.');
  if(fulfil){await(await import('./domains')).fulfilDomainPayment(env,saved);if(saved.care_order_id)await(await import('./client-care')).fulfilCarePayment(env,saved);}
+ await paymentAdminNotification(env,row,saved).catch(()=>{console.error('Payment admin notification needs outbox review.');});
  return saved;
 }
