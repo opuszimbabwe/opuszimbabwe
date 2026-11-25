@@ -1,9 +1,9 @@
 {
-  "deployment_id": "ffef8f7e-2a1a-4d20-b5bf-b30fbaeefe0d",
-  "url": "https://ffef8f7e.opuszimbabwe.pages.dev",
+  "deployment_id": "4599ca08-2638-45dd-8259-b924de173b3d",
+  "url": "https://4599ca08.opuszimbabwe.pages.dev",
   "environment": "production",
-  "commit": "9bbb14a9e283fd020df9556cf57a35c07d54a013",
-  "baseline": "6f96f764-53e3-46eb-a975-2e86fbc0f129",
+  "commit": "3472628ea93db7f83da124c0447a5865d08b4330",
+  "baseline": "ffef8f7e-2a1a-4d20-b5bf-b30fbaeefe0d",
   "checkout_changes": [
     {
       "file": "/_next/static/C_Ug-q-xfaPxCpfSZjyXO/_buildManifest.js",
@@ -51,6 +51,11 @@
       "bytes": 241
     },
     {
+      "file": "/_next/static/chunks/app/payments/page-0845bc9aeddaf5d3.js",
+      "hash": "0845bc9aeddaf5d3c45913eb0be4bad1",
+      "bytes": 159618
+    },
+    {
       "file": "/_next/static/chunks/app/payments/page-578696e0225635fa.js",
       "hash": "578696e0225635fa80531fdcbce4a202",
       "bytes": 158334
@@ -84,6 +89,11 @@
       "file": "/_next/static/chunks/app/terms/page-fb4c9bd70f1accbc.js",
       "hash": "2b36723edd0ec293535180c01f6472fc",
       "bytes": 241
+    },
+    {
+      "file": "/_next/static/css/opus-pay-7043d7c6beaaf786.css",
+      "hash": "8bc0d6b683384d2662d5aaa587abcbe6",
+      "bytes": 80427
     },
     {
       "file": "/_next/static/css/opus-pay-c1090d39ba0ef678.css",
@@ -177,12 +187,12 @@
     },
     {
       "file": "/payments/index.html",
-      "hash": "3cb699ff967cc2645e429b32f8ccbd04",
-      "bytes": 109626
+      "hash": "b73fe358710913765c837e2142fd8422",
+      "bytes": 109645
     },
     {
       "file": "/payments/index.txt",
-      "hash": "04b0d17cbd7bbda31c387f3e7e8cb74c",
+      "hash": "df33429cc060ab7aa242762b481f20ee",
       "bytes": 3557
     },
     {
@@ -201,9 +211,7 @@
       "bytes": 6485
     }
   ],
-  "database_migrations_applied": [
-    "0031_payment_admin_notifications.sql"
-  ],
+  "database_migrations_applied": [],
   "shared_cookie_consent": {
     "script": "/shared-privacy/consent-1a9a39f1e93fc8bf.js",
     "public_html": [
@@ -245,9 +253,9 @@
     "preference_cookie": "__Secure-opus_cookie_choice",
     "days": 180
   },
-  "artifact_directory": "production/releases/2026-11-23-payment-admin-notifications",
-  "backend_bundle_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
-  "activated_on": "2026-11-23",
+  "artifact_directory": "production/releases/2026-11-25-card-handoff",
+  "backend_bundle_sha256": "749bb1e24f78ead979ba2891c29cfe319db8cfae34fe73a240a354c7f8435f93",
+  "activated_on": "2026-11-25",
   "automatic_github_next_deployment_enabled": false,
   "original_functions_source_recovered": false,
   "validation": {
@@ -262,7 +270,12 @@
     "payment_admin_notification_mock_tests_passed": true,
     "admin_notification_recipient_verified": true,
     "all_frontend_assets_unchanged": true,
-    "no_real_test_emails_or_payments": true
+    "no_real_test_emails_or_payments": true,
+    "grouped_card_choice_desktop_mobile_mock_tested": true,
+    "card_preselection_removed_including_legacy_clients": true,
+    "all_non_payment_frontend_hashes_unchanged": true,
+    "admin_notifications_preserved": true,
+    "no_live_test_payment": true
   },
   "seo_release": {
     "assets": [
@@ -895,5 +908,18 @@
     "atomic_outbox": true,
     "duplicates_suppressed": true,
     "no_real_test_payments_or_emails": true
+  },
+  "card_handoff": {
+    "grouped_choice": "International cards & Zimswitch",
+    "gateway_method_preselection": false,
+    "checkout_chunk": "/_next/static/chunks/app/payments/page-0845bc9aeddaf5d3.js",
+    "checkout_css": "/_next/static/css/opus-pay-7043d7c6beaaf786.css",
+    "changed_frontend_files": [
+      "/_next/static/chunks/app/payments/page-0845bc9aeddaf5d3.js",
+      "/_next/static/css/opus-pay-7043d7c6beaaf786.css",
+      "/payments/index.html",
+      "/payments/index.txt"
+    ],
+    "no_live_test_payment": true
   }
 }

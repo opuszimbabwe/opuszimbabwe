@@ -1,0 +1,10 @@
+{
+  "active_deployment": "4599ca08-2638-45dd-8259-b924de173b3d",
+  "live_grouped_selector_verified": true,
+  "static_manifest_matches": true,
+  "checkout_lock_verified": true,
+  "wallet_methods_and_usd_verified": true,
+  "admin_notification_recipient_preserved": true,
+  "mocked_desktop_mobile_handoff_passed": true,
+  "no_live_test_payment": true
+}
