@@ -645,7 +645,7 @@
 /* Cards are one hosted handoff. Pesepay owns the card-method selection. */
 .opus-pay-page .opus-card-choice{grid-column:1/-1;width:100%;max-width:none;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;text-align:left;height:auto;min-height:64px;border-radius:12px}
 .opus-card-choice-title{font:500 14px OpusPoppins,Poppins,sans-serif;color:#424650;line-height:1.5}
-.opus-card-choice-continue{font:500 12px OpusPoppins,Poppins,sans-serif;color:#ad3438;white-space:nowrap}
+.opus-card-choice-continue{display:inline-flex;align-items:center;gap:8px;font:700 12px OpusPoppins,Poppins,sans-serif;color:#ad3438;white-space:nowrap}
 .opus-card-logos{display:flex;align-items:center;justify-content:center;gap:14px;flex-shrink:0}
 .opus-card-logos .opus-provider-art,.opus-selected-method .opus-card-logos .opus-provider-art{width:44px!important;height:24px!important;transform:none!important;flex:none}
 .opus-card-logos .opus-provider-art img{width:100%;height:100%;object-fit:contain;position:static}

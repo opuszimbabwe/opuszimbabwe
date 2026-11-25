@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "locked_on": "2026-11-23",
   "restore_baseline": "dbfc8f79-9dde-4f0b-a04d-e6aa4d411449",
   "source_deployment": "2109674d-5b54-49fa-991c-16cbc615c2f9",
@@ -10,8 +10,8 @@
     "/images/payments/onemoney.png": "d265c791b8fcccba035680bc73148e66",
     "/images/payments/telecash.png": "8a171b102f11767f248d7d87021d11a0",
     "/images/payments/zimswitch.png": "27b71604b77f7c38d2b0adfa3385f56c",
-    "/payments/index.html": "b73fe358710913765c837e2142fd8422",
-    "/payments/index.txt": "df33429cc060ab7aa242762b481f20ee",
+    "/payments/index.html": "7ce5aa324d75ea3c2638c403e75311ec",
+    "/payments/index.txt": "c47e8a1bce1378c42469147468121f22",
     "/payments/receipt/index.html": "abcbcd588acbd3a729391b62629b4a71",
     "/payments/receipt/index.txt": "fbd9765b26cfc4b69f318571f1b0d293",
     "/images/opus-pay/mastercard.svg": "4cee170f482b1a50ed775caa367da336",
@@ -21,8 +21,8 @@
     "/images/opus-pay/pos2u.svg": "0cc8a6a6106a079addb6abd81f9f698f",
     "/images/opus-pay/social-preview.png": "80fb209a942218d3cedcc7af5b7ac78f",
     "/images/opus-pay/visa.svg": "41656b7c620f1671bc87f4f4785cb105",
-    "/_next/static/chunks/app/payments/page-0845bc9aeddaf5d3.js": "0845bc9aeddaf5d3c45913eb0be4bad1",
-    "/_next/static/css/opus-pay-7043d7c6beaaf786.css": "8bc0d6b683384d2662d5aaa587abcbe6"
+    "/_next/static/chunks/app/payments/page-5bfd89f32e30100f.js": "5bfd89f32e30100ffb1abfa42c41bf58",
+    "/_next/static/css/opus-pay-855b654b70f47bc0.css": "056b721b14c5dbc4dc626dbc4b7c30bd"
   },
   "approved_backend_change": {
     "date": "2026-11-23",
@@ -36,5 +36,9 @@
     "previous_backend_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
     "wallets_and_admin_notifications_preserved": true,
     "mocked_gateway_tests_passed": true
+  },
+  "approved_continue_style_change": {
+    "reason": "User-requested bold Continue with rounded SVG arrow",
+    "backend_unchanged": true
   }
 }
