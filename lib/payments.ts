@@ -1,5 +1,13 @@
 // Public checkout types only. Gateway SDK and secrets stay in Pages Functions.
 export type LocalMethod = { provider?: 'pesepay' | 'paynow'; flow?:'hosted'|'mobile'|'innbucks'|'omari'; requiresEmail?:boolean; code: string; name: string; minimumAmount: number; maximumAmount: number; redirectRequired?: boolean; phoneField?: string };
+export const HOSTED_CARDS_CODE='PESEPAY_CARDS';
+export const HOSTED_CARDS_NAME='International cards & Zimswitch';
+export const isHostedCard=(method:Pick<LocalMethod,'name'>)=>/^(visa|master\s?card|zimswitch)(?:\s+USD)?$/i.test(method.name);
+export function groupCardMethods(methods:LocalMethod[]):LocalMethod[]{
+ const cards=methods.filter(isHostedCard);
+ if(!cards.length)return methods;
+ return [{code:HOSTED_CARDS_CODE,name:HOSTED_CARDS_NAME,provider:'pesepay',flow:'hosted',redirectRequired:true,minimumAmount:Math.min(...cards.map(m=>m.minimumAmount)),maximumAmount:Math.max(...cards.map(m=>m.maximumAmount))},...methods.filter(m=>!isHostedCard(m))];
+}
 export type PaymentConfig = { configured: boolean; currencies: { code: string; name: string }[]; methods: LocalMethod[] };
 export type WalletCheckout={kind:'innbucks'|'omari'|'onemoney';instructions:string;code?:string;qr?:string;otpState?:'AWAITING'|'SUBMITTING'|'SUBMITTED'|'UNCERTAIN'|'NOT_REQUIRED'};
 export type PaymentReceipt = {

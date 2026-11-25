@@ -1,29 +1,28 @@
 {
-  "version": 2,
+  "version": 3,
   "locked_on": "2026-11-23",
   "restore_baseline": "dbfc8f79-9dde-4f0b-a04d-e6aa4d411449",
   "source_deployment": "2109674d-5b54-49fa-991c-16cbc615c2f9",
-  "backend_bundle_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
+  "backend_bundle_sha256": "749bb1e24f78ead979ba2891c29cfe319db8cfae34fe73a240a354c7f8435f93",
   "assets": {
-    "/_next/static/chunks/app/payments/page-fec90863f26d70c5.js": "dbf63e904b57d2e2b2c9589c96bee3fd",
     "/images/payments/innbucks.png": "ee0b47e88b4c8e9a897cb041769ab806",
     "/images/payments/omari.webp": "39c2ab48a35e4e0e5d43c81fea0df2c6",
     "/images/payments/onemoney.png": "d265c791b8fcccba035680bc73148e66",
     "/images/payments/telecash.png": "8a171b102f11767f248d7d87021d11a0",
     "/images/payments/zimswitch.png": "27b71604b77f7c38d2b0adfa3385f56c",
-    "/payments/index.html": "3cb699ff967cc2645e429b32f8ccbd04",
-    "/payments/index.txt": "04b0d17cbd7bbda31c387f3e7e8cb74c",
+    "/payments/index.html": "b73fe358710913765c837e2142fd8422",
+    "/payments/index.txt": "df33429cc060ab7aa242762b481f20ee",
     "/payments/receipt/index.html": "abcbcd588acbd3a729391b62629b4a71",
     "/payments/receipt/index.txt": "fbd9765b26cfc4b69f318571f1b0d293",
-    "/_next/static/chunks/app/payments/page-578696e0225635fa.js": "578696e0225635fa80531fdcbce4a202",
-    "/_next/static/css/opus-pay-c1090d39ba0ef678.css": "156a682ae5558ff926a7ce524cfb17ba",
     "/images/opus-pay/mastercard.svg": "4cee170f482b1a50ed775caa367da336",
     "/images/opus-pay/official-logo-transparent.png": "f8825b9e22ec8894f013d26965f5afc4",
     "/images/opus-pay/official-logo.jpg": "788e75d478ecc57c692598750583d167",
     "/images/opus-pay/pos2u-4k.png": "ba1ea41d2668225fe7188cecb7a40e69",
     "/images/opus-pay/pos2u.svg": "0cc8a6a6106a079addb6abd81f9f698f",
     "/images/opus-pay/social-preview.png": "80fb209a942218d3cedcc7af5b7ac78f",
-    "/images/opus-pay/visa.svg": "41656b7c620f1671bc87f4f4785cb105"
+    "/images/opus-pay/visa.svg": "41656b7c620f1671bc87f4f4785cb105",
+    "/_next/static/chunks/app/payments/page-0845bc9aeddaf5d3.js": "0845bc9aeddaf5d3c45913eb0be4bad1",
+    "/_next/static/css/opus-pay-7043d7c6beaaf786.css": "8bc0d6b683384d2662d5aaa587abcbe6"
   },
   "approved_backend_change": {
     "date": "2026-11-23",
@@ -31,5 +30,11 @@
     "previous_backend_sha256": "aae62afb378f48deff2e10670afccda82c769a09c9de88d9557dcfbbed38cddd",
     "checkout_asset_hashes_unchanged": true,
     "mocked_payment_and_email_regressions_passed": true
+  },
+  "approved_card_handoff_change": {
+    "reason": "User-requested single international cards and Zimswitch handoff with no gateway preselection",
+    "previous_backend_sha256": "826499f442078f150b54abf1c073f4f6e086dba0b6199fcaa40b88f9099fdce9",
+    "wallets_and_admin_notifications_preserved": true,
+    "mocked_gateway_tests_passed": true
   }
 }

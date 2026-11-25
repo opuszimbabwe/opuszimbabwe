@@ -4,6 +4,7 @@ import {paynowConfigured,paynowMethods,initiatePaynow} from '../../_lib/paynow';
 import {authorisedCareOrder,claimCarePayment,clientProject} from '../../_lib/client-care';
 import { authorisedOrder, prepareDomainPayment, claimDomainPayment } from '../../_lib/domains';
 import { CheckoutError, configured, fail, gateway, hash, accessToken, limitAttempts, localMethods, paymentInput, readPaymentJson, receipt, safeRedirect, trustedOrigin, type PaymentRow } from '../../_lib/payments';
+import {groupCardMethods,HOSTED_CARDS_CODE,isHostedCard} from '../../../lib/payments';
 import { mobileNetwork, mobileNumberError } from '../../../lib/payments';
 import { json } from '../../_lib/auth';
 import type { PagesHandler } from '../../_lib/types';
@@ -37,7 +38,8 @@ export const onRequestPost: PagesHandler = async context => {
   const previous = await existing(); if (previous) return await respond(previous);
   if(domainOrder)await prepareDomainPayment(context.env,domainOrder.id,raw.domain_order_token);
   const paynowMethod=paynowMethods(context.env,input.currency).find(item=>item.code===input.method);
-  const method = paynowMethod || (await localMethods(input.currency)).filter(item=>! /one\s?money|pos2u|telecash/i.test(item.name)).find(item => item.code === input.method);
+  const providerMethods=paynowMethod?[]:(await localMethods(input.currency)).filter(item=>! /one\s?money|pos2u|telecash/i.test(item.name));
+  const method = paynowMethod || (input.method===HOSTED_CARDS_CODE?groupCardMethods(providerMethods):providerMethods).find(item => item.code === input.method);
   if (!method) throw new CheckoutError(400, 'Please choose an available payment method for the selected currency.');
   const amount = input.minor / 100;
   if (amount < method.minimumAmount || amount > method.maximumAmount) throw new CheckoutError(400, `This method accepts ${input.currency} ${method.minimumAmount.toFixed(2)}–${method.maximumAmount.toFixed(2)}. Please choose another method or contact support@opuszim.co.zw.`);
@@ -62,10 +64,10 @@ export const onRequestPost: PagesHandler = async context => {
    await context.env.DB.prepare("UPDATE customer_payments SET gateway_poll_url=?,gateway_reference=?,redirect_url=?,status=?,updated_at=? WHERE id=? AND status='CREATING'").bind(result.pollUrl,result.reference,result.redirectUrl,result.redirectUrl?'INITIATED':'PENDING',new Date().toISOString(),id).run();
    }else{
    const client = gateway(context.env, { resultUrl: origin + '/api/payments/webhook', returnUrl: origin + '/payments/?payment=' + id + '&token=' + input.token });
-   const request = { amount, currencyCode: input.currency, reasonForPayment: 'Opus Zimbabwe — ' + input.invoice, merchantReference: id, paymentMethodCode: method.code, paymentMetadata: { paymentId: id } };
+   const request = { amount, currencyCode: input.currency, reasonForPayment: 'Opus Zimbabwe — ' + input.invoice, merchantReference: id, ...((method.code===HOSTED_CARDS_CODE||isHostedCard(method))?{}:{paymentMethodCode:method.code}), paymentMetadata: { paymentId: id } };
    const directMobile = Boolean(network && !method.redirectRequired)||omari||innbucks;
    const result = directMobile
-    ? await client.makeSeamlessPayment({ ...request, customer: { ...(input.phone?{phoneNumber:omari?'263'+input.phone.slice(1):input.phone}:{}), ...(input.email ? { email: input.email } : {}) }, requiredFields: innbucks?{}:{ [method.phoneField || 'customerPhoneNumber']: omari?'263'+input.phone.slice(1):input.phone } })
+    ? await client.makeSeamlessPayment({ ...request, paymentMethodCode:method.code, customer: { ...(input.phone?{phoneNumber:omari?'263'+input.phone.slice(1):input.phone}:{}), ...(input.email ? { email: input.email } : {}) }, requiredFields: innbucks?{}:{ [method.phoneField || 'customerPhoneNumber']: omari?'263'+input.phone.slice(1):input.phone } })
     : await client.initiateTransaction(request);
    if (!result.referenceNumber || result.referenceNumber.length > 200) throw new Error('Invalid reference');
    await context.env.DB.prepare('UPDATE customer_payments SET gateway_reference = ?, updated_at = ? WHERE id = ?').bind(result.referenceNumber, new Date().toISOString(), id).run();

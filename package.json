@@ -17,6 +17,7 @@
     "release:prepare": "node scripts/build-reconstructed-pages.cjs && node scripts/prepare-mastercard-release.cjs && node scripts/test-preserved-release.cjs",
     "build:checkout": "node scripts/build-opus-pay-release.cjs",
     "test:checkout:artifacts": "node scripts/test-opus-pay-release.cjs",
+    "test:checkout:cards": "node scripts/test-opus-pay-card-handoff.cjs",
     "test:checkout:browser": "node scripts/test-opus-pay-browser.cjs",
     "test:paynow": "node scripts/test-opus-pay-paynow.cjs",
     "preview:checkout": "node scripts/serve-opus-pay-preview.cjs",

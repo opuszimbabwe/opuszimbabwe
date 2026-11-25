@@ -39,3 +39,14 @@ are not backfilled. The maintenance tick recovers unsent pending jobs. Rejected
 or uncertain email attempts remain for operator review; an accepted provider
 response does not itself establish inbox delivery. No live test email/payment
 is required for this release.
+
+## Grouped hosted-card handoff
+
+The reviewed grouped-card release replaces the three card selectors with one
+International cards & Zimswitch row. Visa, Mastercard and Zimswitch logos are
+decorative, not individual choices. Continue opens the existing amount/reference
+form; Continue to Pesepay initiates hosted BASIC without paymentMethodCode,
+customer card details or method-required fields. Legacy card-code requests
+also omit the method code, so stale clients cannot reintroduce preselection.
+Wallet flows, verified admin notifications and non-payment assets are preserved.
+`test:checkout:cards` verifies desktop/mobile and the mocked generic handoff.

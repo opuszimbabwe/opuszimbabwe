@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, CalendarDays, Check, Coins, CreditCard, Heart, LoaderCircle, ShieldCheck, UserRound, Wallet, CircleAlert } from 'lucide-react';
-import { isPaymentReceipt, SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt, type WalletCheckout } from '@/lib/payments';
+import { groupCardMethods, isPaymentReceipt, SUPPORT_EMAIL, SUPPORT_PHONE, mobileNetwork, mobileNumberError, type PaymentConfig, type PaymentReceipt, type WalletCheckout } from '@/lib/payments';
 
 import PaymentNotifications,{type PaymentNotification} from '@/components/PaymentNotifications';
 import useMobileKeyboardLift from '@/components/useMobileKeyboardLift';
@@ -116,7 +116,7 @@ export default function PaymentCheckout() {
    .then(async response => { const body = await response.json().catch(()=>{throw new Error('Payment methods could not be loaded. Please try again.')}); if (!response.ok) throw new Error(typeof body?.error==='string'?body.error:'Payment methods could not be loaded.');
     if(!body||typeof body.configured!=='boolean'||!Array.isArray(body.currencies)||!body.currencies.every((c:PaymentConfig['currencies'][number])=>c&&typeof c.code==='string')||!Array.isArray(body.methods)||!body.methods.every((m:PaymentConfig['methods'][number])=>m&&typeof m.code==='string'&&Boolean(m.code.trim())&&typeof m.name==='string'&&Boolean(m.name.trim())&&Number.isFinite(m.minimumAmount)&&Number.isFinite(m.maximumAmount)&&m.minimumAmount>=0&&m.maximumAmount>=m.minimumAmount))throw new Error('Payment methods could not be verified. Please try again.');
     return body as PaymentConfig; })
-   .then(body => { if (controller.signal.aborted) return; setConfig(body); setForm(value => ({ ...value, method: body.methods.some(method => method.code === value.method) ? value.method : '' })); })
+   .then(body => { if (controller.signal.aborted) return; body={...body,methods:groupCardMethods(body.methods)}; setConfig(body); setForm(value => ({ ...value, method: body.methods.some(method => method.code === value.method) ? value.method : '' })); })
    .catch(reason => { if (!controller.signal.aborted) { setConfig(null); setConfigError(reason.message || 'Payment methods could not be loaded.'); } })
    .finally(() => {clearTimeout(timeout); if (!controller.signal.aborted) setConfigBusy(false); });
   return () => {clearTimeout(timeout);controller.abort()};

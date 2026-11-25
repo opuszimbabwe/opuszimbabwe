@@ -79,3 +79,8 @@
   migration 0031 only. Keep every checkout/frontend hash; intentionally review
   and refresh the backend lock after mocked payment/email regressions. Alerts
   target admin@opuszim.co.zw for newly verified successful payments only.
+
+- Grouped card handoff changes use `ops/site/deploy-card-handoff.py`: patch only
+  checkout HTML/RSC, its versioned JS/CSS and the reviewed backend. Card methods
+  must use hosted BASIC without paymentMethodCode or card authorisation fields.
+  Preserve mobile wallets, admin alerts, other frontend hashes and Workers.

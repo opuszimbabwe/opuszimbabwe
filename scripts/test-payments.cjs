@@ -16,7 +16,7 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
 (async()=>{
  let r=await config(ctx('/api/payments/config'));let data=await r.json();assert.deepEqual(data.methods.map(m=>m.code),['PZW205','PZW211','PZW212','PZW215','PZW216','PZW204']);assert.equal(data.configured,true);
  r=await create(ctx('/api/payments/create',details,{}, {DB}));assert.equal(r.status,503);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM customer_payments').get().n,0);
- r=await create(ctx('/api/payments/create',details));assert.equal(r.status,200);data=await r.json();const id=data.id,reference=data.receipt.reference;assert.equal(initiations,1);assert.equal(lastPayload.amountDetails.amount,25.1);assert.equal(lastPayload.paymentMethodCode,'PZW215');assert.match(lastPayload.returnUrl,/payment=/);assert.match(lastPayload.resultUrl,/\/api\/payments\/webhook$/);assert.equal(data.receipt.paid,false);assert.ok(!JSON.stringify(data).includes(integration));
+ r=await create(ctx('/api/payments/create',details));assert.equal(r.status,200);data=await r.json();const id=data.id,reference=data.receipt.reference;assert.equal(initiations,1);assert.equal(lastPayload.amountDetails.amount,25.1);assert.equal(lastPayload.paymentMethodCode,undefined);assert.match(lastPayload.returnUrl,/payment=/);assert.match(lastPayload.resultUrl,/\/api\/payments\/webhook$/);assert.equal(data.receipt.paid,false);assert.ok(!JSON.stringify(data).includes(integration));
  r=await create(ctx('/api/payments/create',details));assert.equal((await r.json()).id,id);assert.equal(initiations,1);
  r=await create(ctx('/api/payments/create',{...details,amount:'30'}));assert.equal(r.status,409);assert.equal(initiations,1);
  const other={...details,token:'b'.repeat(64)};const simultaneous=await Promise.all([create(ctx('/api/payments/create',other)),create(ctx('/api/payments/create',other))]);const bodies=await Promise.all(simultaneous.map(r=>r.json()));assert.equal(bodies[0].id,bodies[1].id);assert.equal(initiations,2);
@@ -67,13 +67,13 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
  const beforeCards=initiations;
  r=await create(ctx('/api/payments/create',card));data=await r.json();
  assert.equal(r.status,200);assert.equal(initiations,beforeCards+1);
- assert.equal(lastPayload.transactionType,'BASIC');assert.equal(lastPayload.paymentMethodCode,'PZW205');
+ assert.equal(lastPayload.transactionType,'BASIC');assert.equal(lastPayload.paymentMethodCode,undefined);
  assert.equal(lastPayload.paymentMethodRequiredFields,undefined);assert.equal(lastPayload.customer,undefined);
  assert.ok(data.redirectUrl.startsWith('https://payments.pesepay.com/'));assert.equal(data.receipt.paid,false);
  const cardId=data.id,cardReference=data.receipt.reference;
  const visa={...card,method:'PZW204',token:'0'.repeat(63)+'1'};
  r=await create(ctx('/api/payments/create',visa));const visaResult=await r.json();assert.equal(r.status,200);
- assert.equal(lastPayload.transactionType,'BASIC');assert.equal(lastPayload.paymentMethodCode,'PZW204');
+ assert.equal(lastPayload.transactionType,'BASIC');assert.equal(lastPayload.paymentMethodCode,undefined);
  assert.equal(lastPayload.customer,undefined);assert.equal(lastPayload.paymentMethodRequiredFields,undefined);
  assert.match(visaResult.redirectUrl,/^https:\/\/payments.pesepay.com\//);assert.equal(visaResult.receipt.paid,false);
  const beforeVisaRetry=initiations;r=await create(ctx('/api/payments/create',visa));assert.equal((await r.json()).id,visaResult.id);assert.equal(initiations,beforeVisaRetry);
@@ -97,6 +97,9 @@ const stale=id=>sql.prepare('UPDATE customer_payments SET checked_at=0 WHERE id=
  methods[0].active=false;r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
  methods[0].active=true;methods[0].minimumAmount='invalid';r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
  methods[0].minimumAmount=.1;methods[0].name='Other Card';r=await config(ctx('/api/payments/config?currency=USD'));assert.ok(!(await r.json()).methods.some(m=>m.code==='PZW205'));
- console.log('PASS: Visa and Mastercard USD hosted BASIC flows, limits, disabled/inactive filtering, safe redirects, private-order rejection, duplicate prevention and existing reconciliation.');
+ const generic={...details,method:'PESEPAY_CARDS',phone:'',token:'6'.repeat(64)};
+ r=await create(ctx('/api/payments/create',generic));const groupedResult=await r.json();assert.equal(r.status,200);assert.equal(lastPayload.transactionType,'BASIC');assert.equal(Object.hasOwn(lastPayload,'paymentMethodCode'),false,'Generic hosted checkout must not select a card method');assert.equal(lastPayload.customer,undefined);assert.equal(lastPayload.paymentMethodRequiredFields,undefined);assert.equal(groupedResult.receipt.method,'International cards & Zimswitch');
+ const beforeGenericRepeat=initiations;await create(ctx('/api/payments/create',generic));assert.equal(initiations,beforeGenericRepeat,'Grouped handoff remains idempotent');
+ console.log('PASS: Grouped cards and legacy card requests use hosted BASIC with no preselected method; limits, disabled/inactive filtering, safe redirects, private-order rejection, duplicate prevention and existing reconciliation.');
  console.log('PASS: encrypted gateway integration, unconfigured fail-closed, local-method filtering, unsupported-card rejection, amount/currency/reference verification, concurrent idempotency, capability privacy, forged/repeated callbacks, reversals, ambiguous timeout recovery, origin and redirect restrictions. Mobile prefix/length validation, direct mobile requests, optional identity and hosted-provider detail handoff also passed. No real provider requests or charges.');
 })().catch(error=>{console.error(error);process.exit(1)});
