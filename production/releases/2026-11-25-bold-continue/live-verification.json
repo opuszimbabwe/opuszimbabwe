@@ -1,0 +1,9 @@
+{
+  "active_deployment": "31f91352-df5a-4ba4-845e-fffe4f609bdd",
+  "new_arrow_live": true,
+  "manifest_matches": true,
+  "backend_unchanged": true,
+  "checkout_lock_verified": true,
+  "desktop_mobile_mocked_tests_passed": true,
+  "no_live_payment": true
+}
